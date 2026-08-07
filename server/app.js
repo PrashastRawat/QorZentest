@@ -1,18 +1,36 @@
-import express from 'express'
-import authRoutes from "./routes/authRoutes.js"
-import errorMiddleware from './middleware/errorHandler.js'
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
+import authRoutes from "./routes/authRoutes.js";
+import errorMiddleware from "./middleware/errorHandler.js";
 
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(helmet());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    error: "Too many requests, please try again later.",
+  },
+});
 
-app.get('/', (req,res)=>{
-    res.send("QorZen API is running")
-})
+app.use(limiter);
+app.use(express.json());
 
-app.use("/api/auth", authRoutes)
+app.get("/", (req, res) => {
+  res.send("QorZen API is running");
+});
 
-app.use(errorMiddleware)
+app.use("/api/auth", authRoutes);
+
+app.use(errorMiddleware);
 
 export default app;
