@@ -8,6 +8,7 @@ import serviceRoutes from "./routes/serviceRoutes.js"
 import portfolioRoutes from "./routes/portfolioRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import testimonialRoutes from "./routes/testimonialRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/services", serviceRoutes)
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/courses", courseRoutes);
 
 app.use(errorMiddleware);
 
