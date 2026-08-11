@@ -8,13 +8,14 @@ import {
   purchaseCourse,
 } from "../controllers/courseController.js";
 import { protect, authorize, optionalAuth } from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
 
 const router = Router();
 
 router.get("/", getCourses);
 router.get("/:id", optionalAuth, getCourseById);
 
-router.post("/", protect, authorize("admin"), createCourse);
+router.post("/", protect, authorize("admin"), upload.single("image"), createCourse);
 router.put("/:id", protect, authorize("admin"), updateCourse);
 router.delete("/:id", protect, authorize("admin"), deleteCourse);
 

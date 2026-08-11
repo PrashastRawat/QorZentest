@@ -1,10 +1,19 @@
 import Testimonial from "../models/Testimonial.js";
+import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
 
 // @desc   Create a new testimonial (admin only)
 // @route  POST /api/testimonials
 export const createTestimonial = async (req, res, next) => {
   try {
-    const { clientName, message, photo } = req.body;
+    const { clientName, message } = req.body;
+
+    if (!req.file) {
+      const error = new Error("Photo is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const photo = await uploadToCloudinary(req.file.buffer, "qorzen/testimonials");
 
     const testimonial = await Testimonial.create({ clientName, message, photo });
 

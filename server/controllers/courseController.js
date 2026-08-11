@@ -1,11 +1,20 @@
 import Course from "../models/Course.js";
 import User from "../models/User.js";
+import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
 
 // @desc   Create a new course (admin only)
 // @route  POST /api/courses
 export const createCourse = async (req, res, next) => {
   try {
-    const { title, description, thumbnail, price, instructor, lessons } = req.body;
+    const { title, description, price, instructor, lessons } = req.body;
+
+    if (!req.file) {
+      const error = new Error("Thumbnail is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const thumbnail = await uploadToCloudinary(req.file.buffer, "qorzen/courses");
 
     const course = await Course.create({
       title,
