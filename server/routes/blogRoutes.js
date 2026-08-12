@@ -8,13 +8,15 @@ import {
 } from "../controllers/blogController.js";
 import { protect, authorize } from "../middleware/auth.js";
 import upload from "../middleware/upload.js";
+import { validateCreateBlog } from "../validators/blogValidators.js";
+import validateRequest from "../middleware/validateRequest.js";
 
 const router = Router();
 
 router.get("/", getBlogs);
 router.get("/:identifier", getBlogBySlug);
 
-router.post("/", protect, authorize("admin"), upload.single("image"), createBlog);
+router.post("/", protect, authorize("admin"), upload.single("image"), validateCreateBlog, validateRequest, createBlog);
 router.put("/:id", protect, authorize("admin"), updateBlog);
 router.delete("/:id", protect, authorize("admin"), deleteBlog);
 

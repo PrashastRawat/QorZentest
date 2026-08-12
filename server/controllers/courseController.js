@@ -230,3 +230,19 @@ export const verifyPayment = async (req,res,next) =>{
     next(error)
   }
 }
+
+// @desc   Get all courses the logged-in user has purchased
+// @route  GET /api/courses/my/purchased
+export const getMyCourses = async (req, res, next) => {
+  try {
+    const user = await req.user.populate("purchasedCourses");
+
+    res.status(200).json({
+      success: true,
+      count: user.purchasedCourses.length,
+      data: user.purchasedCourses,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
