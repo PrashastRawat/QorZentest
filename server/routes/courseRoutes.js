@@ -5,7 +5,8 @@ import {
   getCourseById,
   updateCourse,
   deleteCourse,
-  purchaseCourse,
+  createOrder,
+  verifyPayment,
 } from "../controllers/courseController.js";
 import { protect, authorize, optionalAuth } from "../middleware/auth.js";
 import upload from "../middleware/upload.js";
@@ -19,6 +20,6 @@ router.post("/", protect, authorize("admin"), upload.single("image"), createCour
 router.put("/:id", protect, authorize("admin"), updateCourse);
 router.delete("/:id", protect, authorize("admin"), deleteCourse);
 
-router.post("/:id/purchase", protect, purchaseCourse);
-
+router.post("/:id/create-order", protect, createOrder);
+router.post("/:id/verify-payment", protect, verifyPayment);
 export default router;
