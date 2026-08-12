@@ -48,7 +48,7 @@ export const getTestimonials = async (req, res, next) => {
 export const updateTestimonial = async (req, res, next) => {
   try {
     const testimonial = await Testimonial.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 

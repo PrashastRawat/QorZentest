@@ -69,7 +69,7 @@ export const getPortfolioById = async (req, res, next) => {
 export const updatePortfolio = async (req, res, next) => {
   try {
     const project = await Portfolio.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 

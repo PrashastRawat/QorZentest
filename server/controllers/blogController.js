@@ -84,7 +84,7 @@ export const getBlogBySlug = async (req, res, next) => {
 export const updateBlog = async (req, res, next) => {
   try {
     const blog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 

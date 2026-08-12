@@ -82,7 +82,7 @@ export const getCourseById = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      hasAccess: isAdmin || hasPurchased,
+      hasAccess: Boolean(isAdmin || hasPurchased),
       data: courseObj,
     });
   } catch (error) {
@@ -95,7 +95,7 @@ export const getCourseById = async (req, res, next) => {
 export const updateCourse = async (req, res, next) => {
   try {
     const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 

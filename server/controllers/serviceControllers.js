@@ -77,8 +77,8 @@ export const getServiceById = async (req, res, next) => {
 export const updateService = async (req, res, next) => {
   try {
     const service = await Service.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // return the updated document, not the old one
-      runValidators: true, // re-run schema validation on update
+      returnDocument: "after",
+      runValidators: true,
     });
 
     if (!service) {
