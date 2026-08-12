@@ -9,6 +9,7 @@ import portfolioRoutes from "./routes/portfolioRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import testimonialRoutes from "./routes/testimonialRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/contacts", contactRoutes);
 
 app.use(errorMiddleware);
 
