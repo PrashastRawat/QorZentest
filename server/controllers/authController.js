@@ -79,3 +79,67 @@ export const signIn = async (req,res,next)=>{
         next(error)
     }
 }
+
+export const getMe = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      success: true,
+      data: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const adminLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (user.role !== "admin") {
+      const error = new Error("Access denied - admin only");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Admin signed in successfully",
+      data: {
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
