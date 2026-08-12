@@ -12,7 +12,7 @@ import upload from "../middleware/upload.js";
 const router = Router();
 
 router.get("/", getBlogs);
-router.get("/:slug", getBlogBySlug);
+router.get("/:identifier", getBlogBySlug);
 
 router.post("/", protect, authorize("admin"), upload.single("image"), createBlog);
 router.put("/:id", protect, authorize("admin"), updateBlog);

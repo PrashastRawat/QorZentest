@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Blog from "../models/Blog.js";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
 
@@ -56,7 +57,13 @@ export const getBlogs = async (req, res, next) => {
 // @route  GET /api/blogs/:slug
 export const getBlogBySlug = async (req, res, next) => {
   try {
-    const blog = await Blog.findOne({ slug: req.params.slug }).populate("author", "name email");
+    const { identifier } = req.params;
+
+    const isValidId = mongoose.Types.ObjectId.isValid(identifier);
+
+    const query = isValidId ? { _id: identifier } : { slug: identifier };
+
+    const blog = await Blog.findOne(query).populate("author", "name email");
 
     if (!blog) {
       const error = new Error("Blog post not found");
@@ -72,7 +79,6 @@ export const getBlogBySlug = async (req, res, next) => {
     next(error);
   }
 };
-
 // @desc   Update a blog post (admin only)
 // @route  PUT /api/blogs/:id
 export const updateBlog = async (req, res, next) => {
