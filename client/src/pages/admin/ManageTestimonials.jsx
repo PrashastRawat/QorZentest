@@ -7,12 +7,14 @@ import {
 
 export default function ManageTestimonials() {
   return (
-    <AdminCrudPage
+    <AdminCrudPage 
       title="Manage Testimonials"
       fields={["name", "role", "quote"]}
       loader={getItems}
       creator={createItem}
       deleter={deleteItem}
+      sectionBgClass="!bg-violet-950"
     />
   );
 }
+

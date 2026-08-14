@@ -16,7 +16,7 @@ export default function AdminLoginForm() {
     setLoading(true); setError("");
     try {
       const res = await adminLogin(form);
-      saveAuth(res.data);
+      saveAuth(res.data.data);
       navigate("/admin/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Admin login failed");

@@ -16,7 +16,7 @@ export default function LoginForm({ admin = false }) {
     setLoading(true); setError("");
     try {
       const res = await login(form);
-      saveAuth(res.data);
+      saveAuth(res.data.data);
       navigate(admin ? "/admin/dashboard" : "/");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid email or password");

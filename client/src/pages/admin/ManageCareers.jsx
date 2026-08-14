@@ -13,6 +13,7 @@ export default function ManageCareers() {
       loader={getItems}
       creator={createItem}
       deleter={deleteItem}
+      sectionBgClass="!bg-zinc-900"
     />
   );
 }

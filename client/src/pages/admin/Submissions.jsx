@@ -7,9 +7,11 @@ export default function Submissions() {
     getSubmissions()
       .then((r) => setItems(r.data?.data || r.data || []))
       .catch(() => {});
-  useEffect(load, []);
+  useEffect(() => {
+  load();
+}, []);
   return (
-    <section className="section bg-slate-50">
+    <section className="section !bg-neutral-900 min-h-screen">
       <div className="container-page">
         <h1 className="section-title">Contact Submissions</h1>
         <div className="mt-10 grid gap-5">

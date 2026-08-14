@@ -7,6 +7,7 @@ export default function AdminCrudPage({
   loader,
   creator,
   deleter,
+  sectionBgClass = "!bg-slate-900",
 }) {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(
@@ -17,7 +18,9 @@ export default function AdminCrudPage({
     loader()
       .then((r) => setItems(r.data?.data || r.data || []))
       .catch(() => {});
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+  }, []);
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -30,9 +33,9 @@ export default function AdminCrudPage({
     }
   };
   return (
-    <section className="section bg-slate-50">
+    <section className={`section ${sectionBgClass} min-h-screen`}>
       <div className="container-page">
-        <h1 className="section-title">{title}</h1>
+        <h1 className="section-title text-white">{title}</h1>
         <form
           onSubmit={submit}
           className="card mt-10 grid gap-4 p-6 md:grid-cols-2"

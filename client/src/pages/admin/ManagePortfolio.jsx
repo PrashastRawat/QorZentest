@@ -13,6 +13,7 @@ export default function ManagePortfolio() {
       loader={getPortfolio}
       creator={createPortfolioItem}
       deleter={deletePortfolioItem}
+      sectionBgClass="!bg-blue-950"
     />
   );
 }

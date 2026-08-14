@@ -9,6 +9,7 @@ export default function ManageBlog() {
       loader={getBlogs}
       creator={createBlog}
       deleter={deleteBlog}
+      sectionBgClass="!bg-purple-950"
     />
   );
 }
