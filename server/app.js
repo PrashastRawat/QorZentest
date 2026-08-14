@@ -10,6 +10,7 @@ import blogRoutes from "./routes/blogRoutes.js";
 import testimonialRoutes from "./routes/testimonialRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import careerRoutes from "./routes/careerRoutes.js";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/contacts", contactRoutes);
+app.use("/api/careers", careerRoutes);
 
 app.use(errorMiddleware);
 
