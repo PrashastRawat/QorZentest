@@ -3,22 +3,25 @@ import { Link, NavLink } from "react-router-dom";
 import { useState, useRef } from "react";
 import useAuth from "../../hooks/useAuth";
 import qorzenLogo from "../../assets/tech/qorzen_logo.png";
+import useFetch from "../../hooks/useFetch";
+import { getServices } from "../../api/serviceApi";
+import fallbackServices from "../../data/services";
 
 // Slugs must match the _id values in src/data/services.js so each link
 // resolves to a real ServiceDetail page.
-const serviceLinks = [
-  ["AI & Automation", "ai-automation"],
-  ["Data Analysis & Data Science", "data-analysis-data-science"],
-  ["Digital Marketing", "digital-marketing"],
-  ["Web Design & Development", "web-design-development"],
-  ["Software Development", "software-development"],
-  ["Graphic Designing", "graphic-designing"],
-  ["Search Engine Optimization (SEO)", "seo"],
-  ["Social Media Marketing", "social-media-marketing"],
-  ["Cloud Computing", "cloud-computing"],
-  ["Cyber Security", "cyber-security"],
-  ["Networking & IT Infrastructure", "networking-it-infrastructure"],
-];
+// const serviceLinks = [
+//   ["AI & Automation", "ai-automation"],
+//   ["Data Analysis & Data Science", "data-analysis-data-science"],
+//   ["Digital Marketing", "digital-marketing"],
+//   ["Web Design & Development", "web-design-development"],
+//   ["Software Development", "software-development"],
+//   ["Graphic Designing", "graphic-designing"],
+//   ["Search Engine Optimization (SEO)", "seo"],
+//   ["Social Media Marketing", "social-media-marketing"],
+//   ["Cloud Computing", "cloud-computing"],
+//   ["Cyber Security", "cyber-security"],
+//   ["Networking & IT Infrastructure", "networking-it-infrastructure"],
+// ];
 
 const trainingLinks = [
   ["Technical", "/training/technical"],
@@ -40,12 +43,17 @@ export default function Navbar() {
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileTrainingOpen, setMobileTrainingOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
-  
+
   const servicesTimeoutRef = useRef(null);
   const trainingTimeoutRef = useRef(null);
   const resourcesTimeoutRef = useRef(null);
-  
+
   const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { data: servicesData } = useFetch(getServices, fallbackServices);
+  const serviceLinks =
+    Array.isArray(servicesData) && servicesData.length
+      ? servicesData
+      : fallbackServices;
 
   const handleDropdownOpen = (setState) => {
     setState(true);
@@ -97,7 +105,9 @@ export default function Navbar() {
             {/* Services dropdown */}
             <div
               className="relative"
-              onMouseLeave={() => handleDropdownClose(setServicesOpen, servicesTimeoutRef)}
+              onMouseLeave={() =>
+                handleDropdownClose(setServicesOpen, servicesTimeoutRef)
+              }
             >
               <button
                 type="button"
@@ -116,14 +126,14 @@ export default function Navbar() {
                   className="absolute left-1/2 top-full mt-2 w-72 -translate-x-1/2 rounded-2xl border border-slate-800 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl"
                   onMouseEnter={() => handleDropdownEnter(servicesTimeoutRef)}
                 >
-                  {serviceLinks.map(([label, slug]) => (
+                  {serviceLinks.map((s) => (
                     <Link
-                      key={slug}
-                      to={`/services/${slug}`}
+                      key={s._id}
+                      to={`/services/${s._id}`}
                       onClick={() => setServicesOpen(false)}
                       className="block rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-brand-500/10 hover:text-brand-300 transition"
                     >
-                      {label}
+                      {s.title}
                     </Link>
                   ))}
                 </div>
@@ -133,7 +143,9 @@ export default function Navbar() {
             {/* Training dropdown */}
             <div
               className="relative"
-              onMouseLeave={() => handleDropdownClose(setTrainingOpen, trainingTimeoutRef)}
+              onMouseLeave={() =>
+                handleDropdownClose(setTrainingOpen, trainingTimeoutRef)
+              }
             >
               <button
                 type="button"
@@ -178,7 +190,9 @@ export default function Navbar() {
             {/* Resources dropdown */}
             <div
               className="relative"
-              onMouseLeave={() => handleDropdownClose(setResourcesOpen, resourcesTimeoutRef)}
+              onMouseLeave={() =>
+                handleDropdownClose(setResourcesOpen, resourcesTimeoutRef)
+              }
             >
               <button
                 type="button"
@@ -273,14 +287,14 @@ export default function Navbar() {
               </button>
               {mobileServicesOpen && (
                 <div className="mt-2 flex flex-col gap-2.5 pl-3">
-                  {serviceLinks.map(([label, slug]) => (
+                  {serviceLinks.map((s) => (
                     <Link
-                      key={slug}
-                      to={`/services/${slug}`}
+                      key={s._id}
+                      to={`/services/${s._id}`}
                       onClick={() => setOpen(false)}
                       className="text-xs font-medium text-slate-400 hover:text-brand-300"
                     >
-                      {label}
+                      {s.title}
                     </Link>
                   ))}
                 </div>

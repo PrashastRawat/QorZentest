@@ -3,7 +3,7 @@ import LoginForm from "../../components/forms/LoginForm";
 
 export default function Login() {
   return (
-    <section className="flex min-h-[70vh] items-center justify-center bg-slate-50 px-5 py-16">
+    <section className="flex min-h-[70vh] items-center justify-center px-5 py-16">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-soft">
         <h1 className="text-3xl font-black">Welcome back</h1>
         <p className="mt-2 mb-7 text-sm text-slate-500">
@@ -11,6 +11,12 @@ export default function Login() {
         </p>
         <LoginForm />
         <p className="mt-6 text-center text-sm text-slate-500">
+          Don't have an account?{" "}
+          <Link className="font-bold text-brand-600" to="/signup">
+            Sign up
+          </Link>
+        </p>
+        <p className="mt-3 text-center text-sm text-slate-500">
           Admin?{" "}
           <Link className="font-bold text-brand-600" to="/admin/login">
             Admin login

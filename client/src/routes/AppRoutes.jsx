@@ -13,6 +13,7 @@ import Blog from "../pages/public/Blog";
 import BlogDetail from "../pages/public/BlogDetail";
 import Career from "../pages/public/Career";
 import Contact from "../pages/public/Contact";
+import Signup from "../pages/public/Signup";
 import Login from "../pages/public/Login";
 import Courses from "../pages/public/Courses";
 import CourseDetail from "../pages/public/CourseDetail";
@@ -58,6 +59,7 @@ export default function AppRoutes() {
         <Route path="/career" element={<Career />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup/>}/>
       </Route>
 
       <Route path="/admin/login" element={<AdminLogin />} />

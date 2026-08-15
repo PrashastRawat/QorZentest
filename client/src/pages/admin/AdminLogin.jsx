@@ -1,4 +1,5 @@
 import AdminLoginForm from "../../components/forms/AdminLoginForm";
+import { Link } from "react-router-dom";
 
 export default function AdminLogin() {
   return (
@@ -10,6 +11,12 @@ export default function AdminLogin() {
           Authorized administrators only.
         </p>
         <AdminLoginForm />
+        <p className="mt-6 text-center text-sm text-slate-500">
+          Not an admin?{" "}
+          <Link className="font-bold text-brand-600" to="/login">
+            User login
+          </Link>
+        </p>
       </div>
     </section>
   );

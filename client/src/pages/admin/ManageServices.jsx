@@ -11,6 +11,8 @@ const initial = {
   description: "",
   priceStartingFrom: "",
   features: "",
+  whyChooseUs: "",
+  technologies: "",
 };
 
 export default function ManageServices() {
@@ -48,6 +50,15 @@ export default function ManageServices() {
         .map((f) => f.trim())
         .filter(Boolean)
         .forEach((f) => data.append("features[]", f));
+
+      data.append("whyChooseUs", form.whyChooseUs);
+
+      form.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .forEach((t) => data.append("technologies[]", t));
+
       data.append("image", imageFile);
 
       await createService(data);
@@ -62,7 +73,7 @@ export default function ManageServices() {
   };
 
   return (
-    <AdminPage title="Manage Services" >
+    <AdminPage title="Manage Services">
       <form
         onSubmit={submit}
         className="card mb-8 grid gap-4 p-6 md:grid-cols-2"
@@ -96,6 +107,19 @@ export default function ManageServices() {
           placeholder="Features, comma separated (e.g. React, Node.js, Responsive)"
           value={form.features}
           onChange={(e) => setForm({ ...form, features: e.target.value })}
+        />
+        <textarea
+          className="input md:col-span-2"
+          placeholder="Why choose us (one paragraph)"
+          rows={3}
+          value={form.whyChooseUs}
+          onChange={(e) => setForm({ ...form, whyChooseUs: e.target.value })}
+        />
+        <input
+          className="input md:col-span-2"
+          placeholder="Technologies used, comma separated (e.g. React, AWS, Node.js)"
+          value={form.technologies}
+          onChange={(e) => setForm({ ...form, technologies: e.target.value })}
         />
         <input
           className="input md:col-span-2"

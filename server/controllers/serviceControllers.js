@@ -5,8 +5,14 @@ import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
 // @route  POST /api/services
 export const createService = async (req, res, next) => {
   try {
-    const { title, description, features, priceStartingFrom } = req.body;
-
+    const {
+      title,
+      description,
+      features,
+      priceStartingFrom,
+      whyChooseUs,
+      technologies,
+    } = req.body;
     if (!req.file) {
       const error = new Error("Image is required");
       error.statusCode = 400;
@@ -21,6 +27,8 @@ export const createService = async (req, res, next) => {
       image,
       features,
       priceStartingFrom,
+      whyChooseUs,
+      technologies,
     });
 
     res.status(201).json({
@@ -33,12 +41,13 @@ export const createService = async (req, res, next) => {
   }
 };
 
-
 // @desc   Get all active services (public)
 // @route  GET /api/services
 export const getServices = async (req, res, next) => {
   try {
-    const services = await Service.find({ isActive: true }).sort({ createdAt: -1 });
+    const services = await Service.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
 
     res.status(200).json({
       success: true,
@@ -71,7 +80,6 @@ export const getServiceById = async (req, res, next) => {
   }
 };
 
-
 // @desc   Update a service (admin only)
 // @route  PUT /api/services/:id
 export const updateService = async (req, res, next) => {
@@ -96,7 +104,6 @@ export const updateService = async (req, res, next) => {
     next(error);
   }
 };
-
 
 // @desc   Delete a service (admin only)
 // @route  DELETE /api/services/:id

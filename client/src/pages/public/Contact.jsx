@@ -3,7 +3,7 @@ import ContactForm from "../../components/forms/ContactForm";
 
 export default function Contact() {
   return (
-    <section className="section bg-slate-50">
+    <section className="section bg-oklch(35.9% 0.144 278.697)">
       <div className="container-page grid gap-10 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <p className="font-bold text-brand-600">CONTACT</p>
@@ -11,7 +11,7 @@ export default function Contact() {
           <p className="section-subtitle">
             Tell us what you are working on and our team will get back to you.
           </p>
-          <div className="mt-8 grid gap-5 text-sm text-slate-600">
+          <div className="mt-8 grid gap-5 text-sm text-slate-50">
             <p className="flex gap-3">
               <Mail /> hello@qorzen.com
             </p>
