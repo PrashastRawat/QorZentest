@@ -177,7 +177,14 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-
+            <NavLink
+              to="/portfolio"
+              className={({ isActive }) =>
+                `text-sm font-semibold transition ${isActive ? "text-brand-400" : "text-slate-300 hover:text-brand-300"}`
+              }
+            >
+              Portfolio
+            </NavLink>
             <NavLink
               to="/courses"
               className={({ isActive }) =>
@@ -327,7 +334,13 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-
+            <Link
+              onClick={() => setOpen(false)}
+              className="font-semibold text-slate-200"
+              to="/portfolio"
+            >
+              Portfolio
+            </Link>
             <Link
               onClick={() => setOpen(false)}
               className="font-semibold text-slate-200"

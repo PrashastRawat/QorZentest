@@ -16,14 +16,16 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: [true, "Content is required"],
     },
-    image: {
-      url: {
-        type: String,
-        required: [true, "Image is required"],
-      },
-      publicId: {
-        type: String,
-        required: true,
+    images: {
+      type: [
+        {
+          url: { type: String, required: true },
+          publicId: { type: String, required: true },
+        },
+      ],
+      validate: {
+        validator: (arr) => arr.length > 0,
+        message: "At least one image is required",
       },
     },
     author: {
@@ -45,7 +47,7 @@ const blogSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Auto-generate a URL-friendly slug from the title before saving,

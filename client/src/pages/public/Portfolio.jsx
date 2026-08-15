@@ -76,19 +76,19 @@ export default function Portfolio() {
             {items.map((p) => (
               <article
                 key={p._id}
-                className="group overflow-hidden rounded-2xl border border-slate-200 bg-white"
+                className="group overflow-hidden rounded-2xl border-2 border-indigo-500/70 bg-slate-900 shadow-glow transition-all duration-300 hover:border-indigo-400 hover:shadow-glow hover:-translate-y-1.5"
               >
                 <img
-                  src={p.image}
+                  src={p.images ? p.images[0]?.url : p.image}
                   alt={p.title}
-                  className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
+                  className="h-64 w-full object-cover transition duration-500 "
                 />
-                <div className="p-6">
-                  <p className="text-sm font-bold text-brand-600">
-                    {p.category}
-                  </p>
-                  <h2 className="mt-2 text-xl font-bold">{p.title}</h2>
-                  <p className="mt-2 text-sm text-slate-600">{p.description}</p>
+                <div className="p-6 bg-slate-950">
+                  <p className="text-sm font-bold text-sky-300">{p.category}</p>
+                  <h2 className="mt-2 text-xl font-bold text-cyan-500">
+                    {p.title}
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-300">{p.description}</p>
                 </div>
               </article>
             ))}

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Blog from "../models/Blog.js";
-import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
+import { uploadToCloudinary, uploadMultipleToCloudinary } from "../utils/cloudinaryUpload.js";
 
 // @desc   Create a new blog post (admin only)
 // @route  POST /api/blogs
@@ -8,18 +8,18 @@ export const createBlog = async (req, res, next) => {
   try {
     const { title, content, category, tags } = req.body;
 
-    if (!req.file) {
-      const error = new Error("Image is required");
+    if (!req.files || req.files.length === 0) {
+      const error = new Error("At least one image is required");
       error.statusCode = 400;
       throw error;
     }
 
-    const image = await uploadToCloudinary(req.file.buffer, "qorzen/blogs");
+    const images = await uploadMultipleToCloudinary(req.files, "qorzen/blogs");
 
     const blog = await Blog.create({
       title,
       content,
-      image,
+      images,
       category,
       tags,
       author: req.user._id,

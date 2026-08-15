@@ -12,14 +12,16 @@ const portfolioSchema = new mongoose.Schema(
       required: [true, "Description is required"],
       trim: true,
     },
-    image: {
-      url: {
-        type: String,
-        required: [true, "Image is required"],
-      },
-      publicId: {
-        type: String,
-        required: true,
+    images: {
+      type: [
+        {
+          url: { type: String, required: true },
+          publicId: { type: String, required: true },
+        },
+      ],
+      validate: {
+        validator: (arr) => arr.length > 0,
+        message: "At least one image is required",
       },
     },
     category: {
@@ -32,7 +34,7 @@ const portfolioSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Portfolio = mongoose.model("Portfolio", portfolioSchema);

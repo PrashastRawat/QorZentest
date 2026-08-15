@@ -39,20 +39,29 @@ export default function Blog() {
         ) : (
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {blogs.map((b) => (
-              <article className="card p-7" key={b._id}>
-                <p className="text-xs font-bold uppercase text-slate-400">
-                  {b.createdAt?.slice(0, 10)}
-                </p>
-                <h2 className="mt-4 text-xl font-bold">{b.title}</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  {b.excerpt}
-                </p>
-                <Link
-                  className="mt-5 inline-block font-bold text-brand-600"
-                  to={`/blog/${b._id}`}
-                >
-                  Read article →
-                </Link>
+              <article className="card overflow-hidden" key={b._id}>
+                {b.images?.[0]?.url && (
+                  <img
+                    src={b.images[0].url}
+                    alt={b.title}
+                    className="h-44 w-full object-cover"
+                  />
+                )}
+                <div className="p-7">
+                  <p className="text-xs font-bold uppercase text-slate-400">
+                    {b.createdAt?.slice(0, 10)}
+                  </p>
+                  <h2 className="mt-4 text-xl font-bold">{b.title}</h2>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    {b.excerpt}
+                  </p>
+                  <Link
+                    className="mt-5 inline-block font-bold text-brand-600"
+                    to={`/blog/${b._id}`}
+                  >
+                    Read article →
+                  </Link>
+                </div>
               </article>
             ))}
           </div>

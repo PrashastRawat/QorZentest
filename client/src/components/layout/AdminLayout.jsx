@@ -13,6 +13,7 @@ const navItems = [
   ["Dashboard", "/admin/dashboard", LayoutDashboard],
   ["Services", "/admin/services", BriefcaseBusiness],
   ["Portfolio", "/admin/portfolio", LayoutDashboard],
+  ["Courses", "/admin/courses", BriefcaseBusiness],
   ["Blog", "/admin/blog", FileText],
   ["Testimonials", "/admin/testimonials", MessageSquareQuote],
   ["Careers", "/admin/careers", BriefcaseBusiness],

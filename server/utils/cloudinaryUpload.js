@@ -18,6 +18,13 @@ export const uploadToCloudinary = (fileBuffer, folder = "qorzen") => {
     uploadStream.end(fileBuffer);
   });
 };
+// Uploads multiple file buffers to Cloudinary in parallel.
+// Returns an array of { url, publicId } objects, same shape as
+// uploadToCloudinary but for many files at once.
+export const uploadMultipleToCloudinary = async (files, folder = "qorzen") => {
+  const uploads = files.map((file) => uploadToCloudinary(file.buffer, folder));
+  return Promise.all(uploads);
+};
 
 // Deletes an image from Cloudinary using its publicId.
 // Used when an admin replaces or removes an image.

@@ -19,6 +19,7 @@ import Courses from "../pages/public/Courses";
 import CourseDetail from "../pages/public/CourseDetail";
 
 import AdminLayout from "../components/layout/AdminLayout";
+import ManageCourses from "../pages/admin/ManageCourses";
 import AdminLogin from "../pages/admin/AdminLogin";
 import Dashboard from "../pages/admin/Dashboard";
 import ManageServices from "../pages/admin/ManageServices";
@@ -73,6 +74,7 @@ export default function AppRoutes() {
           <Route path="/admin/testimonials" element={<ManageTestimonials />} />
           <Route path="/admin/submissions" element={<Submissions />} />
           <Route path="/admin/careers" element={<ManageCareers />} />
+          <Route path="/admin/courses" element={<ManageCourses/>}/>
         </Route>
       </Route>
 

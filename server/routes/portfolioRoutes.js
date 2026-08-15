@@ -16,7 +16,7 @@ const router = Router();
 router.get("/", getPortfolios);
 router.get("/:id", getPortfolioById);
 
-router.post("/", protect, authorize("admin"), upload.single("image"), validateCreatePortfolio, validateRequest, createPortfolio);
+router.post("/", protect, authorize("admin"), upload.array("images", 10), validateCreatePortfolio, validateRequest, createPortfolio);
 router.put("/:id", protect, authorize("admin"), updatePortfolio);
 router.delete("/:id", protect, authorize("admin"), deletePortfolio);
 
