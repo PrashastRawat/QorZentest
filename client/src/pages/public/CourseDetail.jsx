@@ -3,6 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import { getCourse } from "../../api/courseApi";
 import Loader from "../../components/common/Loader";
 
+function getYouTubeEmbedUrl(url) {
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+  );
+  return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+}
+
 export default function CourseDetail() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
@@ -21,11 +28,14 @@ export default function CourseDetail() {
         setHasAccess(Boolean(res.data?.hasAccess));
       })
       .catch((err) => {
-        if (mounted) setError(err.response?.data?.error || "Unable to load course");
+        if (mounted)
+          setError(err.response?.data?.error || "Unable to load course");
       })
       .finally(() => mounted && setLoading(false));
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   if (loading) return <Loader />;
@@ -56,28 +66,51 @@ export default function CourseDetail() {
           <span className="text-3xl font-black text-brand-600">
             ₹{course.price}
           </span>
-          {!hasAccess && (
-            <button className="btn-primary">Buy Now</button>
-          )}
+          {!hasAccess && <button className="btn-primary">Buy Now</button>}
         </div>
 
         <div className="mt-10">
           <h2 className="text-xl font-bold">Course Content</h2>
 
           {hasAccess ? (
-            <ul className="mt-4 space-y-3">
-              {course.lessons?.map((lesson) => (
-                <li
-                  key={lesson._id}
-                  className="rounded-xl border border-slate-200 p-4"
-                >
-                  <p className="font-semibold">{lesson.title}</p>
-                  {lesson.duration && (
-                    <p className="text-sm text-slate-500">{lesson.duration}</p>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <div className="mt-4 space-y-4">
+              {course.lessons?.map((lesson) => {
+                const youtubeEmbed = getYouTubeEmbedUrl(lesson.videoUrl || "");
+                return (
+                  <div
+                    key={lesson._id}
+                    className="rounded-xl border border-slate-200 p-4"
+                  >
+                    <p className="font-semibold">{lesson.title}</p>
+                    {lesson.duration && (
+                      <p className="text-sm text-slate-500">
+                        {lesson.duration}
+                      </p>
+                    )}
+
+                    {lesson.videoUrl && (
+                      <div className="mt-4 overflow-hidden rounded-lg">
+                        {youtubeEmbed ? (
+                          <iframe
+                            src={youtubeEmbed}
+                            title={lesson.title}
+                            className="aspect-video w-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video
+                            src={lesson.videoUrl}
+                            controls
+                            className="aspect-video w-full bg-black"
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             <div className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-center text-slate-500">
               Purchase this course to unlock all lessons.
