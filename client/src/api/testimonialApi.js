@@ -1,6 +1,8 @@
 import api from "./axiosInstance";
 
-export const getTestimonials = () => api.get("/testimonials");
-export const createTestimonial = (data) => api.post("/testimonials", data);
+export const getTestimonials  = ()        => api.get("/testimonials");
+export const createTestimonial = (data)   => api.post("/testimonials", data, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
 export const updateTestimonial = (id, data) => api.put(`/testimonials/${id}`, data);
-export const deleteTestimonial = (id) => api.delete(`/testimonials/${id}`);
+export const deleteTestimonial = (id)     => api.delete(`/testimonials/${id}`);
