@@ -1,0 +1,214 @@
+
+
+.service-projects-section {
+  padding: 3rem 0;
+  background-color: var(--primary-light);
+}
+
+.header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.95rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.85rem;
+}
+
+.pill-icon {
+  color: var(--deep-accent);
+}
+
+.highlight-category {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--deep-accent);
+  text-underline-offset: 6px;
+}
+
+/* Mobile-First Grid (Default 1 Column) */
+.service-projects-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.service-project-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition-normal);
+}
+
+.service-project-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--deep-accent);
+  transform: translateY(-4px);
+}
+
+.proj-image-box {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background-color: var(--surface-bg);
+}
+
+.proj-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.service-project-card:hover .proj-image-box img {
+  transform: scale(1.05);
+}
+
+.proj-client-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: rgba(28, 25, 23, 0.85);
+  color: var(--primary-light);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(4px);
+}
+
+.proj-card-content {
+  padding: 1.35rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.proj-card-title {
+  font-size: clamp(1.15rem, 4vw, 1.35rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.85rem;
+  line-height: 1.3;
+}
+
+.proj-metric-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xs);
+  margin-bottom: 1.15rem;
+}
+
+.metric-zap-icon {
+  color: var(--deep-accent);
+  min-width: 16px;
+}
+
+.metric-lbl {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+}
+
+.metric-val {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.proj-card-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.proj-tech-stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-medium);
+}
+
+.tech-badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+}
+
+.tech-chip-icon {
+  color: var(--deep-accent);
+}
+
+.empty-projects-fallback {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--surface-card);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-md);
+  margin-top: 2rem;
+}
+
+.empty-icon {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.empty-projects-fallback h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-projects-fallback p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+/* Mobile-First Progressive Enhancements */
+@media (min-width: 768px) {
+  .service-projects-grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .service-projects-section {
+    padding: 5rem 0;
+  }
+  .service-projects-grid-layout {
+    gap: 2.25rem;
+    margin-top: 3rem;
+  }
+  .proj-card-content {
+    padding: 1.75rem;
+  }
+}

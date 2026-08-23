@@ -1,0 +1,15 @@
+
+
+.app-layout-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-light);
+}
+
+.app-main-viewport {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  padding-top: var(--nav-height);
+}

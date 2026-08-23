@@ -1,0 +1,279 @@
+/* ==========================================================================
+   EnquiryForm Component Styles (src/components/EnquiryForm/EnquiryForm.css)
+   ========================================================================== */
+
+.enquiry-global-section {
+  padding: 4.5rem 0;
+  background-color: var(--secondary-light);
+  border-top: 1px solid var(--border-medium);
+}
+
+.enquiry-card-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 3rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 3.25rem;
+  box-shadow: var(--shadow-md);
+  align-items: center;
+}
+
+.enquiry-left-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.enquiry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background-color: var(--secondary-light);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  align-self: flex-start;
+}
+
+.enquiry-badge-icon {
+  color: var(--deep-accent);
+}
+
+.enquiry-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.enquiry-description {
+  font-size: 0.98rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+.enquiry-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.highlight-check {
+  color: var(--deep-accent);
+}
+
+/* Form Header Row */
+.form-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.form-heading {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.subject-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: var(--secondary-light);
+  color: var(--text-primary);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-medium);
+}
+
+/* Form Controls */
+.enquiry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.form-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-field label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.input-with-icon {
+  position: relative;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.textarea-icon-wrap .textarea-icon {
+  top: 1.1rem;
+  transform: none;
+}
+
+.input-with-icon input,
+.input-with-icon select,
+.input-with-icon textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem 0.8rem 2.75rem;
+  font-size: 0.9rem;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.input-with-icon select {
+  cursor: pointer;
+}
+
+.input-with-icon input:focus,
+.input-with-icon select:focus,
+.input-with-icon textarea:focus {
+  border-color: var(--deep-accent);
+  background-color: var(--surface-card);
+}
+
+.btn-submit-enquiry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background-color: var(--text-primary);
+  color: var(--primary-light);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  margin-top: 0.25rem;
+}
+
+.btn-submit-enquiry:hover {
+  background-color: #332d28;
+}
+
+/* Success Box */
+.enquiry-success-box {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-icon {
+  color: var(--deep-accent);
+  margin-bottom: 1rem;
+}
+
+.enquiry-success-box h3 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.enquiry-success-box p {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+  max-width: 440px;
+}
+
+.btn-send-another {
+  padding: 0.65rem 1.25rem;
+  font-weight: 700;
+  background-color: var(--secondary-light);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+@media (max-width: 992px) {
+  .enquiry-card-wrapper {
+    grid-template-columns: 1fr;
+    padding: 2.25rem;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-group-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .enquiry-global-section {
+    padding: 3rem 0;
+  }
+  .enquiry-card-wrapper {
+    padding: 1.35rem 1.15rem;
+    gap: 1.5rem;
+  }
+  .enquiry-title {
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .enquiry-card-wrapper {
+    padding: 1.15rem 0.85rem;
+    gap: 1.25rem;
+    border-radius: var(--radius-md);
+  }
+  .input-with-icon input,
+  .input-with-icon select,
+  .input-with-icon textarea {
+    padding: 0.75rem 0.85rem 0.75rem 2.4rem;
+    font-size: 0.85rem;
+  }
+}

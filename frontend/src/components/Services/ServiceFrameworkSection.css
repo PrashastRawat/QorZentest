@@ -1,0 +1,211 @@
+
+
+.service-framework-section {
+  padding: 3rem 0;
+  background-color: var(--primary-light);
+  border-top: 1px solid var(--border-medium);
+}
+
+/* Mobile-First Top Grid (Default 1 Column) */
+.framework-top-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.framework-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.25rem;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.framework-badge-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  padding: 0.35rem 0.95rem !important;
+  background-color: var(--secondary-light) !important;
+  border: 1px solid var(--border-medium) !important;
+  border-radius: var(--radius-full) !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 1.25rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: fit-content !important;
+  max-width: fit-content !important;
+}
+
+.framework-badge-pill.accent-badge {
+  background-color: var(--surface-dark) !important;
+  color: var(--primary-light) !important;
+  border-color: var(--surface-dark) !important;
+}
+
+.framework-badge-pill.accent-badge .card-badge-icon {
+  color: var(--deep-accent) !important;
+}
+
+.framework-badge-pill .card-badge-icon {
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.framework-card-title {
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.framework-card-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  text-align: center;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 4-Step Methodology Timeline Grid */
+.framework-methodology-wrap {
+  margin-bottom: 3rem;
+}
+
+.methodology-timeline-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.methodology-step-card {
+  position: relative;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.methodology-step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--deep-accent);
+}
+
+.step-num-badge {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--deep-accent);
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.step-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.step-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Specialized Techniques Grid */
+.techniques-2x2-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.technique-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.technique-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: var(--secondary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tech-check-icon {
+  color: var(--text-primary);
+}
+
+.technique-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.technique-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Mobile-First Progressive Enhancements */
+@media (min-width: 640px) {
+  .methodology-timeline-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .techniques-2x2-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .service-framework-section {
+    padding: 5rem 0;
+  }
+  .framework-top-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 5rem;
+  }
+  .framework-card {
+    padding: 2.5rem;
+  }
+  .framework-methodology-wrap {
+    margin-bottom: 5rem;
+  }
+  .methodology-timeline-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  .methodology-step-card {
+    padding: 2rem 1.5rem;
+  }
+  .technique-item-card {
+    padding: 1.75rem 1.5rem;
+  }
+}

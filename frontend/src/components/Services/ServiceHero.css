@@ -1,0 +1,175 @@
+
+.service-hero-wrapper {
+  padding: 3rem 0 2rem 0;
+  background: radial-gradient(circle at 50% 0%, var(--secondary-light) 0%, var(--primary-light) 80%);
+  border-bottom: 1px solid var(--border-medium);
+}
+
+.back-services-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: var(--transition-fast);
+}
+
+.back-services-link:hover {
+  color: var(--deep-accent);
+  transform: translateX(-3px);
+}
+
+.service-hero-header {
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto 2rem auto;
+}
+
+.service-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.95rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--deep-accent);
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.25rem;
+}
+
+.sparkle-icon {
+  color: var(--deep-accent);
+}
+
+.service-main-title {
+  font-size: clamp(1.75rem, 6vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.85rem;
+  word-break: break-word;
+}
+
+.service-tagline-text {
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Sleek Centered Overview Card */
+.service-overview-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.overview-center-block {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.overview-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.45rem;
+}
+
+.overview-p-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.capabilities-center-block {
+  width: 100%;
+  border-top: 1px dashed var(--border-medium);
+  padding-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.capabilities-sublabel {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.capabilities-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 880px;
+}
+
+.hero-cap-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: var(--surface-bg);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-medium);
+  transition: var(--transition-fast);
+}
+
+.hero-cap-chip:hover {
+  border-color: var(--deep-accent);
+  background-color: var(--secondary-light);
+}
+
+.cap-check-icon {
+  color: var(--deep-accent);
+}
+
+/* Mobile-First Progressive Enhancements */
+@media (min-width: 640px) {
+  .service-overview-card {
+    padding: 2.25rem 2rem;
+    gap: 1.75rem;
+  }
+  .overview-p-text {
+    font-size: 0.98rem;
+  }
+  .capabilities-center-block {
+    padding-top: 1.5rem;
+    gap: 1rem;
+  }
+  .hero-cap-chip {
+    font-size: 0.88rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .service-hero-wrapper {
+    padding: 4rem 0 3rem 0;
+  }
+  .service-hero-header {
+    margin-bottom: 2.5rem;
+  }
+}

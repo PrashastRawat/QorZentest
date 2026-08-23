@@ -1,0 +1,114 @@
+
+.learning-classroom-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.learning-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.learning-course-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--deep-accent, #8b7050);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.learning-lesson-title {
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  margin-top: 0.15rem;
+  word-break: break-word;
+}
+
+.learning-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+}
+
+@media (min-width: 60em) {
+  .learning-content-grid {
+    grid-template-columns: 2fr 1.1fr;
+  }
+}
+
+.learning-video-container {
+  width: 100%;
+  background-color: #000000;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+.learning-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.learning-details-box {
+  background-color: var(--surface-card, #ffffff);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+}
+
+.learning-nav-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0.0625rem solid var(--border-light, #efe9e3);
+  flex-wrap: wrap;
+}
+
+.btn-lesson-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  background-color: var(--secondary-light, #efe9e3);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-lesson-nav:hover:not(:disabled) {
+  background-color: var(--border-medium, #d9cfc7);
+}
+
+.btn-lesson-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.curriculum-sidebar-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  height: fit-content;
+}

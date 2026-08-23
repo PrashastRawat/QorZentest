@@ -1,0 +1,198 @@
+
+.about-us-page {
+  min-height: 100vh;
+  background-color: var(--primary-light);
+  padding-bottom: 4rem;
+}
+
+.about-hero {
+  padding: 3.5rem 0 2.5rem 0;
+  text-align: center;
+  background: radial-gradient(circle at 50% 0%, var(--secondary-light) 0%, var(--primary-light) 75%);
+  border-bottom: 1px solid var(--border-medium);
+}
+
+/* Mission & Vision Section */
+.mission-vision-section {
+  padding: 3rem 0;
+}
+
+/* Mobile-First Grid (Default 1 Column) */
+.mission-vision-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.mv-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+}
+
+.mv-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--deep-accent);
+}
+
+.mv-icon-box {
+  width: 44px;
+  height: 44px;
+  background-color: var(--secondary-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.mv-title {
+  font-size: clamp(1.35rem, 4vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.mv-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* Why QorZen Section */
+.why-qorzen-section {
+  padding: 3rem 0;
+  background-color: var(--secondary-light);
+}
+
+/* Mobile-First Why Us Grid (Default 1 Column) */
+.why-us-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.pillar-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+}
+
+.pillar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--deep-accent);
+}
+
+.pillar-icon-box {
+  width: 40px;
+  height: 40px;
+  background-color: var(--secondary-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.pillar-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.pillar-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.about-cta-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-about-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem 1.75rem;
+  font-weight: 700;
+  background-color: var(--text-primary);
+  color: var(--primary-light);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.btn-about-primary:hover {
+  background-color: #332d28;
+}
+
+.btn-about-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.85rem 1.75rem;
+  font-weight: 700;
+  background-color: var(--surface-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+}
+
+/* Mobile-First Progressive Enhancements */
+@media (min-width: 640px) {
+  .why-us-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .btn-about-primary,
+  .btn-about-secondary {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .about-hero {
+    padding: 4.5rem 0 3.5rem 0;
+  }
+  .mission-vision-section {
+    padding: 4.5rem 0;
+  }
+  .mission-vision-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .mv-card {
+    padding: 2.5rem;
+  }
+  .why-qorzen-section {
+    padding: 4rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .why-us-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .pillar-card {
+    padding: 1.75rem 1.5rem;
+  }
+}

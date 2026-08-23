@@ -1,0 +1,408 @@
+
+
+.student-portal-shell {
+  min-height: 100vh;
+  display: flex;
+  background-color: var(--surface-bg, #f9f8f6);
+  color: var(--text-primary, #1c1917);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mobile Header Bar */
+.student-mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.75rem;
+  background-color: var(--surface-card, #ffffff);
+  border-bottom: 0.0625rem solid var(--border-medium, #d9cfc7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 90;
+  box-shadow: 0 0.0625rem 0.25rem rgba(28, 25, 23, 0.05);
+}
+
+@media (min-width: 64em) {
+  .student-mobile-header {
+    display: none;
+  }
+}
+
+.student-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-primary, #1c1917);
+}
+
+.student-mobile-logo-img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  object-fit: cover;
+}
+
+.student-mobile-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.student-mobile-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #44403c);
+  padding: 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sidebar */
+.student-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 16.5rem;
+  background-color: var(--surface-card, #ffffff);
+  border-right: 0.0625rem solid var(--border-medium, #d9cfc7);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0.25rem 1rem rgba(28, 25, 23, 0.04);
+}
+
+@media (min-width: 64em) {
+  .student-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transform: none !important;
+  }
+}
+
+.student-sidebar-brand {
+  padding: 1.25rem 1.15rem;
+  border-bottom: 0.0625rem solid var(--border-light, #efe9e3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.student-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.student-sidebar-logo {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.student-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-brand-main {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  line-height: 1.1;
+}
+
+.student-brand-sub {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--deep-accent, #8b7050);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* User Card Snippet in Sidebar */
+.student-sidebar-user {
+  padding: 1rem 1.15rem;
+  background-color: var(--secondary-light, #efe9e3);
+  border-bottom: 0.0625rem solid var(--border-medium, #d9cfc7);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-user-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 0.125rem solid var(--surface-card, #ffffff);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.student-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-user-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.student-user-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary, #78716c);
+}
+
+/* Nav links */
+.student-nav-menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 0.75rem;
+  overflow-y: auto;
+}
+
+.student-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary, #44403c);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.student-nav-link:hover {
+  background-color: var(--secondary-light, #efe9e3);
+  color: var(--text-primary, #1c1917);
+}
+
+.student-nav-link.active {
+  background-color: var(--text-primary, #1c1917);
+  color: #ffffff;
+  box-shadow: 0 0.125rem 0.5rem rgba(28, 25, 23, 0.2);
+}
+
+.student-nav-link.active .student-nav-icon {
+  color: var(--deep-accent, #c9b59c);
+}
+
+.student-nav-badge {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 624.9375rem;
+  background-color: var(--deep-accent, #c9b59c);
+  color: #ffffff;
+}
+
+/* Sidebar Footer */
+.student-sidebar-footer {
+  padding: 0.85rem 0.75rem;
+  border-top: 0.0625rem solid var(--border-light, #efe9e3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.student-signout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #b91c1c;
+  background: none;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.student-signout-btn:hover {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* Backdrop */
+.student-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(0.125rem);
+  z-index: 95;
+}
+
+@media (min-width: 64em) {
+  .student-drawer-backdrop {
+    display: none;
+  }
+}
+
+/* Main Viewport Container */
+.student-main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 63.9375em) {
+  .student-main-content {
+    padding-top: 3.75rem;
+  }
+}
+
+/* Top App Bar in Desktop */
+.student-topbar {
+  height: 4rem;
+  background-color: var(--surface-card, #ffffff);
+  border-bottom: 0.0625rem solid var(--border-medium, #d9cfc7);
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.75rem;
+}
+
+@media (min-width: 64em) {
+  .student-topbar {
+    display: flex;
+  }
+}
+
+.student-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.student-batch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  background-color: var(--secondary-light, #efe9e3);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  border-radius: 624.9375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+}
+
+.student-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.student-icon-action-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: var(--surface-bg, #f9f8f6);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  color: var(--text-secondary, #44403c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.student-icon-action-btn:hover {
+  background-color: var(--secondary-light, #efe9e3);
+  color: var(--text-primary, #1c1917);
+}
+
+.student-unread-dot {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #dc2626;
+  border-radius: 50%;
+  border: 0.0625rem solid #ffffff;
+}
+
+/* Content Container Inside Viewport */
+.student-viewport-body {
+  padding: 1.5rem 1rem;
+  max-width: 75rem;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (min-width: 48em) {
+  .student-viewport-body {
+    padding: 2rem 1.75rem;
+  }
+}
+
+.student-visit-site-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background-color: var(--surface-bg, #f9f8f6);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  border-radius: 624.9375rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.student-visit-site-pill:hover {
+  background-color: var(--deep-accent, #c9b59c);
+  color: #1c1917;
+  transform: translateY(-0.0625rem);
+}
+
+.student-nav-link.site-link {
+  background-color: rgba(201, 181, 156, 0.15);
+  border: 0.0625rem solid var(--border-medium, #d9cfc7);
+  color: var(--text-primary, #1c1917);
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.student-nav-link.site-link:hover {
+  background-color: var(--deep-accent, #c9b59c);
+  color: #1c1917;
+}

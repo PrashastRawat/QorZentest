@@ -1,0 +1,117 @@
+
+.error-boundary-container {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  background-color: var(--primary-light);
+}
+
+.error-boundary-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  padding: 3.5rem 2.5rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error-badge-icon {
+  width: 56px;
+  height: 56px;
+  background-color: var(--secondary-light);
+  color: #dc2626;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.error-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.error-description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 480px;
+}
+
+.error-log-box {
+  width: 100%;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-medium);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-xs);
+  margin-bottom: 2rem;
+  text-align: left;
+  overflow-x: auto;
+}
+
+.error-log-box code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82rem;
+  color: #dc2626;
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.btn-error-reload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  background-color: var(--text-primary);
+  color: var(--primary-light);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border: none;
+}
+
+.btn-error-reload:hover {
+  background-color: #332d28;
+}
+
+.btn-error-home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  background-color: var(--secondary-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium);
+  transition: var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-error-home:hover {
+  background-color: var(--tertiary-accent);
+}

@@ -2,7 +2,7 @@
 node_modules/
 server/node_modules/
 client/node_modules/
-
+frontend/node_modules/
 # environment variables
 .env
 server/.env

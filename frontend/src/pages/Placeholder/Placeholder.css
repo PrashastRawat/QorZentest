@@ -1,0 +1,122 @@
+
+
+.placeholder-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+}
+
+.placeholder-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 3.5rem 2.5rem;
+  max-width: 680px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.placeholder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background-color: var(--secondary-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+}
+
+.placeholder-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+.placeholder-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 1rem 0 2rem 0;
+  line-height: 1.6;
+}
+
+.placeholder-subtitle code {
+  background-color: var(--secondary-light);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.9em;
+  color: var(--text-primary);
+}
+
+.placeholder-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: var(--surface-bg);
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 2.5rem;
+  text-align: left;
+  border: 1px solid var(--border-light);
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.highlight-icon {
+  color: var(--deep-accent);
+  flex-shrink: 0;
+}
+
+.placeholder-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  background-color: var(--text-primary);
+  color: var(--primary-light);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.btn-primary-placeholder:hover {
+  background-color: #332d28;
+}
+
+.btn-secondary-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  background-color: var(--secondary-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+}
+
+.btn-secondary-placeholder:hover {
+  background-color: var(--tertiary-accent);
+}
