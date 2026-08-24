@@ -49,9 +49,9 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-decoration: underline;
-  text-decoration-color: var(--deep-accent);
-  text-underline-offset: 8px;
+  text-decoration: none;
+  
+  
 }
 
 .hero-description {

@@ -65,9 +65,9 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-decoration: underline;
-  text-decoration-color: var(--deep-accent);
-  text-underline-offset: 6px;
+  text-decoration: none;
+  
+  
   display: inline-block;
   white-space: nowrap;
 }
