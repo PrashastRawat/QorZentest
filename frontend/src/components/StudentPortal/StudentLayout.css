@@ -7,8 +7,10 @@
   color: var(--text-primary, #1c1917);
   font-family: 'Plus Jakarta Sans', sans-serif;
   overflow-x: hidden;
+  max-width: 100vw;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
 }
 
 /* Mobile Header Bar */
@@ -197,6 +199,13 @@
   border-radius: 0.5rem;
   transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap;
+}
+
+.student-nav-link span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .student-nav-link:hover {
@@ -273,13 +282,17 @@
 .student-main-content {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 @media (max-width: 63.9375em) {
   .student-main-content {
     padding-top: 3.75rem;
+    max-width: 100vw;
   }
 }
 
@@ -359,11 +372,12 @@
 
 /* Content Container Inside Viewport */
 .student-viewport-body {
-  padding: 1.5rem 1rem;
+  padding: 1.25rem 0.75rem;
   max-width: 75rem;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 @media (min-width: 48em) {
@@ -405,4 +419,172 @@
 .student-nav-link.site-link:hover {
   background-color: var(--deep-accent, #c9b59c);
   color: #1c1917;
+}
+
+/* ==========================================================================
+   Admin Sidebar Manage Bar & Live Student Counts Widget
+   ========================================================================== */
+
+.admin-sidebar-manage-bar {
+  margin: 0.65rem 0.75rem 0.5rem 0.75rem;
+  padding: 0.85rem;
+  background-color: #faf8f5;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebar-manage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.manage-live-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-primary, #1c1917);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.25);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+
+.sidebar-metrics-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background-color: #ffffff;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #efe9e3;
+}
+
+.mini-metric-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.mini-label {
+  color: var(--text-secondary, #78716c);
+  font-weight: 600;
+}
+
+.mini-count {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+}
+
+.mini-count.count-internship {
+  color: #2563eb;
+}
+
+.mini-count.count-training {
+  color: #8b5cf6;
+}
+
+.mini-count.count-course {
+  color: #d97706;
+}
+
+.sidebar-recent-logins {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed #e7ded7;
+}
+
+.recent-logins-title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #8b7050;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recent-login-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.recent-login-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar-dot-wrap {
+  position: relative;
+}
+
+.user-initials {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--secondary-light, #efe9e3);
+  color: var(--text-primary, #1c1917);
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-medium, #d9cfc7);
+}
+
+.online-indicator {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #16a34a;
+  border: 1px solid #ffffff;
+}
+
+.online-indicator.offline {
+  background-color: #9ca3af;
+}
+
+.user-login-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.user-login-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+}
+
+.user-login-time {
+  font-size: 0.62rem;
+  color: #78716c;
 }

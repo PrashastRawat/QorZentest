@@ -83,11 +83,11 @@ const Hero = () => {
               className="hero-floating-card"
             >
               <img
-                src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
+                src="/assets/hero/hero-developer-desk.png"
                 alt="QorZen Enterprise IT & Software Development"
                 loading="eager"
                 onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80';
+                  e.target.src = '/hero-main.png';
                 }}
               />
               

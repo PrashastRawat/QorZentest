@@ -22,7 +22,7 @@ export const blogArticlesData = [
     date: 'Aug 14, 2026',
     readTime: '5 min read',
     author: 'Dr. Evelyn Vance',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
+    image: '/assets/blog/agentic-ai.jpg',
     excerpt: 'Explore how modern n8n workflows, LangChain RAG pipelines, and autonomous AI agents are revolutionizing software development velocity and enterprise automation.'
   },
   {

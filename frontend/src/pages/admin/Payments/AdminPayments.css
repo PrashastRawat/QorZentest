@@ -1,0 +1,654 @@
+/* ==========================================================================
+   Admin Payments & Revenue Analytics - Warm Gold / Charcoal Palette
+   ========================================================================== */
+
+.admin-payments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Page Header */
+.payments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.payments-title-group h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  margin: 0.35rem 0 0 0;
+  letter-spacing: -0.02em;
+}
+
+.payments-title-group p {
+  font-size: 0.88rem;
+  color: var(--text-secondary, #78716c);
+  margin: 0.25rem 0 0 0;
+}
+
+.payments-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-export-csv {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.15rem;
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-export-csv:hover {
+  background-color: var(--secondary-light, #efe9e3);
+  border-color: var(--text-primary, #1c1917);
+}
+
+.btn-record-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  background-color: var(--text-primary, #1c1917);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(28, 25, 23, 0.15);
+}
+
+.btn-record-payment:hover {
+  background-color: #38332e;
+  transform: translateY(-1px);
+}
+
+/* Big Revenue KPI Cards Grid */
+.revenue-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.15rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.revenue-kpi-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.85rem;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.04);
+  box-sizing: border-box;
+}
+
+.revenue-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--card-accent, #8b7050);
+}
+
+.revenue-kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-icon-wrap {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-badge-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.kpi-badge-growth.positive {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.kpi-badge-growth.negative {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.kpi-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary, #78716c);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.kpi-amount {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.kpi-subtext {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #78716c);
+  margin: 0;
+}
+
+/* Time-Period Comparison Switcher & Chart Section */
+.analytics-section-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 1rem;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 1px 4px rgba(28, 25, 23, 0.04);
+}
+
+.analytics-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.analytics-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  margin: 0;
+}
+
+/* Mobile Period Dropdown Selector vs Desktop Tab Group */
+.period-mobile-dropdown-wrap {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.period-mobile-select {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  background-color: #faf8f5;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.desktop-only-period-tabs {
+  display: none !important;
+}
+
+@media (min-width: 64em) {
+  .period-mobile-dropdown-wrap {
+    display: none !important;
+  }
+  .desktop-only-period-tabs {
+    display: flex !important;
+  }
+}
+
+.period-tab-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--secondary-light, #efe9e3);
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-medium, #d9cfc7);
+}
+
+.period-tab-btn {
+  padding: 0.4rem 0.85rem;
+  border: none;
+  background: none;
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary, #78716c);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.period-tab-btn.active {
+  background-color: #ffffff;
+  color: var(--text-primary, #1c1917);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Visual Bar Chart Breakdown */
+.bars-chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 40em) {
+  .chart-bar-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .bar-label-col {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .bar-track-wrap {
+    width: 100% !important;
+  }
+  .bar-compare-col {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+  }
+}
+
+.bar-label-col {
+  width: 100px;
+  min-width: 100px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+}
+
+.bar-track-wrap {
+  flex: 1;
+  height: 28px;
+  background-color: #f3f0ec;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bar-fill-current {
+  height: 100%;
+  background: linear-gradient(90deg, #c9b59c 0%, #8b7050 100%);
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.65rem;
+}
+
+.bar-fill-text {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.bar-compare-col {
+  width: 140px;
+  min-width: 140px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.compare-val {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+}
+
+.compare-growth {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.compare-growth.up { color: #16a34a; }
+.compare-growth.down { color: #dc2626; }
+
+/* Stream Revenue Donut/Grid Breakdown */
+.stream-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+.stream-card {
+  padding: 1rem 1.15rem;
+  background-color: #faf8f5;
+  border: 1px solid #e7ded7;
+  border-radius: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stream-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stream-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+}
+
+.stream-amount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+}
+
+.stream-progress {
+  height: 6px;
+  background-color: #e5e0da;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.stream-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* Transactions Table Card */
+.transactions-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(28, 25, 23, 0.04);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.transactions-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-light, #efe9e3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-search-input {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.45rem;
+  font-size: 0.82rem;
+  min-width: 220px;
+  box-sizing: border-box;
+}
+
+/* Mobile Stacked Cards Feed vs Desktop Table Switcher */
+.mobile-tx-cards-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.mobile-tx-card {
+  background-color: #faf8f5;
+  border: 1px solid #efe9e3;
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: all 0.2s ease;
+}
+
+.mobile-tx-card:hover {
+  background-color: #ffffff;
+  border-color: #d9cfc7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-tx-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-tx-main-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-tx-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.65rem;
+  border-top: 1px dashed #e7ded7;
+}
+
+.desktop-only-table {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  .mobile-tx-cards-feed {
+    display: none !important;
+  }
+  .desktop-only-table {
+    display: block !important;
+  }
+}
+
+.transactions-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+.admin-tx-table {
+  width: 100%;
+  min-width: 660px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.admin-tx-table th {
+  background-color: #faf8f5;
+  padding: 0.75rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-secondary, #78716c);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-medium, #d9cfc7);
+  white-space: nowrap;
+}
+
+.admin-tx-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid #f0eae4;
+  color: var(--text-primary, #1c1917);
+  vertical-align: middle;
+}
+
+.admin-tx-table tr:hover td {
+  background-color: #fdfbf9;
+}
+
+.tx-id {
+  font-family: monospace;
+  font-weight: 700;
+  color: #8b7050;
+  font-size: 0.8rem;
+}
+
+.tx-student-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.tx-student-name {
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+}
+
+.tx-student-email {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #78716c);
+}
+
+.tx-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.tx-status-pill.paid {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.tx-status-pill.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.tx-status-pill.refunded {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.btn-invoice-download {
+  padding: 0.45rem 0.85rem;
+  background-color: #faf8f5;
+  border: 1px solid #d9cfc7;
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  min-width: max-content;
+  transition: all 0.2s ease;
+}
+
+.btn-invoice-download:hover {
+  background-color: var(--text-primary, #1c1917);
+  color: #ffffff;
+}
+
+.admin-tx-table th:last-child,
+.admin-tx-table td:last-child {
+  white-space: nowrap !important;
+  min-width: 110px;
+  text-align: right;
+}
+
+/* Modal Overlay for Manual Payment */
+.manual-payment-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.manual-payment-modal-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 500px;
+  padding: 1.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.modal-input-field {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #d9cfc7;
+  border-radius: 0.45rem;
+  font-size: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}

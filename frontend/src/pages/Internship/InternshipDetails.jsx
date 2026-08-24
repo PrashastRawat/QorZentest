@@ -63,9 +63,9 @@ const InternshipDetails = ({ propsInternship }) => {
     passedInternship?.description ||
     'Master real-world practical skills with live project assignments, expert 1-on-1 mentorship, and guaranteed internship credentials.';
 
-  const price1Month = passedInternship?.price1Month || 799;
-  const price3Month = passedInternship?.price3Month || 1399;
-  const price6Month = passedInternship?.price6Month || 2399;
+  const price1Month = passedInternship?.price1Month || 499;
+  const price3Month = passedInternship?.price3Month || 999;
+  const price6Month = passedInternship?.price6Month || 1499;
   const tools = passedInternship?.tools || ['React.js', 'Node.js', 'Express', 'MongoDB', 'Python'];
 
   const [selectedPlanModal, setSelectedPlanModal] = useState(null);
@@ -74,7 +74,7 @@ const InternshipDetails = ({ propsInternship }) => {
     {
       duration: '1 Month',
       badge: '80% OFF',
-      originalPrice: '₹3,999',
+      originalPrice: '₹2,499',
       discountPrice: `₹${price1Month}`,
       mode: 'Online',
       subtext: 'Perfect for quick skill development & baseline project experience.',
@@ -83,7 +83,7 @@ const InternshipDetails = ({ propsInternship }) => {
     {
       duration: '3 Months',
       badge: '80% OFF',
-      originalPrice: '₹6,999',
+      originalPrice: '₹4,999',
       discountPrice: `₹${price3Month}`,
       mode: 'Online',
       subtext: 'Ideal for in-depth learning, real client projects, and full certification.',
@@ -92,7 +92,7 @@ const InternshipDetails = ({ propsInternship }) => {
     {
       duration: '6 Months',
       badge: '80% OFF',
-      originalPrice: '₹11,999',
+      originalPrice: '₹7,499',
       discountPrice: `₹${price6Month}`,
       mode: 'Online',
       subtext: 'Complete professional experience with LOR, performance stipend & PPO track.',

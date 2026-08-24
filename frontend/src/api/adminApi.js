@@ -71,10 +71,15 @@ export const getTestimonials = () => api.get('/testimonials');
 export const createTestimonial = (data) => api.post('/testimonials', data);
 export const deleteTestimonial = (id) => api.delete(`/testimonials/${id}`);
 
-// --- Careers & Job Openings ---
-export const getJobs = () => api.get('/jobs');
-export const createJob = (data) => api.post('/jobs', data);
-export const deleteJob = (id) => api.delete(`/jobs/${id}`);
+// --- Internships & Programs ---
+export const getInternships = () => api.get('/internships');
+export const createInternship = (data) => api.post('/internships', data);
+export const deleteInternship = (id) => api.delete(`/internships/${id}`);
+
+// --- Careers & Job Openings (Backward Compatibility) ---
+export const getJobs = () => api.get('/internships');
+export const createJob = (data) => api.post('/internships', data);
+export const deleteJob = (id) => api.delete(`/internships/${id}`);
 
 // --- Contact Form & Enrollment Submissions ---
 export const getSubmissions = () => api.get('/submissions');

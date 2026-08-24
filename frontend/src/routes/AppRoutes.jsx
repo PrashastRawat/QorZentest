@@ -43,6 +43,9 @@ import AdminLogin from '../pages/Auth/AdminLogin/AdminLogin';
 import Dashboard from '../pages/admin/Dashboard';
 import AdminCrudPage from '../pages/admin/shared/AdminCrudPage';
 import AdminProfile from '../pages/admin/Profile/AdminProfile';
+import AdminPayments from '../pages/admin/Payments/AdminPayments';
+import AdminStudents from '../pages/admin/Students/AdminStudents';
+import AdminInquiries from '../pages/admin/Inquiries/AdminInquiries';
 /**
  * Centralized Application Routes Architecture with Automated Subdomain Routing
  * 
@@ -129,6 +132,15 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="training"
+          element={
+            <AdminCrudPage
+              title="Training Programs"
+              fields={['title', 'category', 'duration', 'description']}
+            />
+          }
+        />
+        <Route
           path="courses"
           element={
             <AdminCrudPage
@@ -156,23 +168,19 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="careers"
+          path="internships"
           element={
             <AdminCrudPage
-              title="Careers & Roles"
-              fields={['title', 'department', 'location', 'type']}
+              title="Internships & Domains"
+              fields={['title', 'category', 'duration', 'price1Month']}
             />
           }
         />
-        <Route
-          path="submissions"
-          element={
-            <AdminCrudPage
-              title="Form Submissions"
-              fields={['name', 'email', 'service', 'message']}
-            />
-          }
-        />
+        <Route path="careers" element={<Navigate to="/admin/internships" replace />} />
+        <Route path="submissions" element={<AdminInquiries />} />
+        <Route path="inquiries" element={<AdminInquiries />} />
+        <Route path="students" element={<AdminStudents />} />
+        <Route path="payments" element={<AdminPayments />} />
         <Route path="profile" element={<AdminProfile />} />
       </Route>
 

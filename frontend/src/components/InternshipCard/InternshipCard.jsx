@@ -38,18 +38,6 @@ const InternshipCard = ({ internship, index, onApplyClick }) => {
         </div>
       </div>
 
-      {/* Internship Meta Specs */}
-      <div className="internship-meta-row">
-        <div className="meta-item">
-          <Calendar size={14} className="meta-icon" />
-          <span>Duration: <strong>{duration}</strong></span>
-        </div>
-        <div className="meta-item">
-          <MapPin size={14} className="meta-icon" />
-          <span>Access Mode: <strong>{mode || 'Online'}</strong></span>
-        </div>
-      </div>
-
       <div className="card-tools-container">
         <span className="tools-list-label">Required Skills & Stack:</span>
         <div className="tools-flex-wrap">

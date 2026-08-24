@@ -145,12 +145,12 @@ const TermsAndConditions = () => {
                 <span>Ithum Towers, Block A, Industrial Area, Sector 62, Noida, Uttar Pradesh 201309</span>
               </div>
               <div className="legal-contact-item">
-                <Mail size={16} />
-                <span>Email: <a href="mailto:info@qorzen.in">info@qorzen.in</a></span>
+                <Phone size={16} />
+                <span>Phone / Mobile: +91 9917529504</span>
               </div>
               <div className="legal-contact-item">
-                <Phone size={16} />
-                <span>Phone: +91 9917529504</span>
+                <Mail size={16} />
+                <span>Email: <a href="mailto:info@qorzen.in">info@qorzen.in</a></span>
               </div>
             </div>
           </section>

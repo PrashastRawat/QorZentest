@@ -36,12 +36,6 @@ const CourseCard = ({ course, index }) => {
     >
       <div className="card-badge-header">
         <span className="category-tag-pill">{tag || 'Certified'}</span>
-        {duration && (
-          <div className="duration-tag-badge">
-            <Clock size={13} className="duration-tag-icon" />
-            <span className="duration-text">{duration}</span>
-          </div>
-        )}
       </div>
 
       <div className="card-main-info">
@@ -75,15 +69,13 @@ const CourseCard = ({ course, index }) => {
       )}
 
       <div className="card-meta-pricing-box" style={{ marginTop: '0.25rem' }}>
-        <span className="card-meta-label">Cost & Duration</span>
+        <span className="card-meta-label">Program Fee</span>
         <div className="meta-values-row">
           {formattedPrice ? (
             <span className="bold-price">{formattedPrice}</span>
           ) : (
             <span className="bold-price free-tag">Enrollment Open</span>
           )}
-          <span className="meta-separator">•</span>
-          <span className="bold-duration">{duration || 'Flexible Track'}</span>
         </div>
       </div>
 

@@ -224,7 +224,8 @@ const NonTechnical = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-main-title"
           >
-            15 Specialized <span className="text-highlight-gradient">Business & Growth Programs</span>
+            15 Specialized <br />
+            <span className="text-highlight-gradient">Business & Growth Programs</span>
           </motion.h1>
 
           <motion.p

@@ -140,7 +140,8 @@ const NonTechnicalInternship = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-title"
           >
-            Guaranteed Practical <span className="highlight-text">Business & HR Internships</span>
+            Guaranteed Practical <br />
+            <span className="highlight-text">Business & HR Internships</span>
           </motion.h1>
 
           <motion.p

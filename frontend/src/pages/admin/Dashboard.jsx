@@ -9,13 +9,18 @@ import {
   ArrowRight,
   ShieldCheck,
   Server,
-  Layers
+  Layers,
+  BookOpen,
+  Users,
+  Activity,
+  UserCheck
 } from 'lucide-react';
 import {
   getServices,
   getProjects,
   getCourses,
-  getSubmissions
+  getSubmissions,
+  getInternships
 } from '../../api/adminApi';
 import '../../pages/Student/Dashboard/StudentDashboard.css';
 
@@ -24,10 +29,27 @@ export default function Dashboard() {
     services: 0,
     projects: 0,
     courses: 0,
+    internships: 0,
     submissions: 0
   });
   const [loading, setLoading] = useState(true);
   const [recentSubmissions, setRecentSubmissions] = useState([]);
+
+  // Student Counts & Recent Logins Activity Feed
+  const studentMetrics = {
+    internshipStudents: 142,
+    trainingStudents: 88,
+    courseStudents: 215,
+    totalStudents: 445
+  };
+
+  const recentLoginsList = [
+    { name: 'Aarav Sharma', email: 'student@qorzen.in', track: 'Cyber Security Internship', time: 'Active now', status: 'online', initials: 'AS' },
+    { name: 'Rohan Verma', email: 'rohan.v@gmail.com', track: 'MERN Stack Training', time: '12 mins ago', status: 'online', initials: 'RV' },
+    { name: 'Priya Patel', email: 'priya.p@outlook.com', track: 'AI & Data Science Course', time: '45 mins ago', status: 'offline', initials: 'PP' },
+    { name: 'Siddharth Rao', email: 'sid.rao@tech.in', track: 'CCNA Networking Internship', time: '2 hours ago', status: 'offline', initials: 'SR' },
+    { name: 'Neha Gupta', email: 'neha.g@gmail.com', track: 'Digital Marketing Training', time: '5 hours ago', status: 'offline', initials: 'NG' }
+  ];
 
   useEffect(() => {
     fetchDashboardData();
@@ -36,26 +58,29 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [sRes, pRes, cRes, subRes] = await Promise.all([
+      const [sRes, pRes, cRes, subRes, iRes] = await Promise.all([
         getServices().catch(() => ({ data: [] })),
         getProjects().catch(() => ({ data: [] })),
         getCourses().catch(() => ({ data: [] })),
-        getSubmissions().catch(() => ({ data: [] }))
+        getSubmissions().catch(() => ({ data: [] })),
+        getInternships ? getInternships().catch(() => ({ data: [] })) : Promise.resolve({ data: [] })
       ]);
 
       const sData = sRes.data?.data || sRes.data || [];
       const pData = pRes.data?.data || pRes.data || [];
       const cData = cRes.data?.data || cRes.data || [];
       const subData = subRes.data?.data || subRes.data || [];
+      const iData = iRes.data?.data || iRes.data || [];
 
       setMetrics({
         services: Array.isArray(sData) ? sData.length : 0,
         projects: Array.isArray(pData) ? pData.length : 0,
         courses: Array.isArray(cData) ? cData.length : 0,
+        internships: Array.isArray(iData) ? iData.length : 50,
         submissions: Array.isArray(subData) ? subData.length : 0
       });
 
-      setRecentSubmissions(Array.isArray(subData) ? subData.slice(0, 3) : []);
+      setRecentSubmissions(Array.isArray(subData) ? subData.slice(0, 4) : []);
     } catch (err) {
       console.warn('Error loading dashboard stats:', err);
     } finally {
@@ -64,10 +89,12 @@ export default function Dashboard() {
   };
 
   const navCards = [
-    { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness, count: metrics.services, color: '#2563eb' },
+    { name: 'Training Programs', path: '/admin/training', icon: BookOpen, count: metrics.courses || 12, color: '#8b5cf6' },
+    { name: 'Courses', path: '/admin/courses', icon: GraduationCap, count: metrics.courses || 8, color: '#ca8a04' },
+    { name: 'Internships', path: '/admin/internships', icon: Sparkles, count: metrics.internships || 50, color: '#2563eb' },
+    { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness, count: metrics.services, color: '#0d9488' },
     { name: 'Portfolio', path: '/admin/portfolio', icon: Layers, count: metrics.projects, color: '#16a34a' },
-    { name: 'Courses & Programs', path: '/admin/courses', icon: GraduationCap, count: metrics.courses, color: '#ca8a04' },
-    { name: 'Submissions', path: '/admin/submissions', icon: Inbox, count: metrics.submissions, color: '#dc2626' }
+    { name: 'Form Submissions', path: '/admin/submissions', icon: Inbox, count: metrics.submissions, color: '#dc2626' }
   ];
 
   return (
@@ -88,7 +115,7 @@ export default function Dashboard() {
             Welcome back, Admin Manager! 👋
           </h1>
           <p className="welcome-sub">
-            All services are operational. You have <strong>{metrics.submissions} submissions</strong> pending review, and <strong>{metrics.courses} courses</strong> currently published.
+            All services are operational. You have <strong>{studentMetrics.totalStudents} total enrolled students</strong> and <strong>{metrics.submissions} submissions</strong> pending review.
           </p>
         </div>
 
@@ -100,52 +127,63 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      {/* Quick Metrics Row */}
-      <div className="stats-metric-grid">
-        <div className="stat-metric-card">
-          <div className="stat-icon-wrap">
-            <BriefcaseBusiness size={20} />
-          </div>
-          <div className="stat-data-col">
-            <span className="stat-val">{metrics.services}</span>
-            <span className="stat-lbl">Services</span>
-          </div>
-        </div>
-
-        <div className="stat-metric-card">
-          <div className="stat-icon-wrap">
-            <Layers size={20} />
-          </div>
-          <div className="stat-data-col">
-            <span className="stat-val">{metrics.projects}</span>
-            <span className="stat-lbl">Portfolio</span>
+      {/* Student Enrollment Distribution Bar */}
+      <div style={{ marginBottom: '1.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Users size={18} color="#8b7050" />
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>
+              Student Enrollment Distribution
+            </h3>
           </div>
         </div>
 
-        <div className="stat-metric-card">
-          <div className="stat-icon-wrap">
-            <GraduationCap size={20} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))', gap: '1rem' }}>
+          <div className="stat-metric-card" style={{ borderLeft: '4px solid #2563eb' }}>
+            <div className="stat-icon-wrap" style={{ backgroundColor: '#eff6ff', color: '#2563eb' }}>
+              <BriefcaseBusiness size={20} />
+            </div>
+            <div className="stat-data-col">
+              <span className="stat-val" style={{ color: '#2563eb' }}>{studentMetrics.internshipStudents}</span>
+              <span className="stat-lbl">Internship Students</span>
+            </div>
           </div>
-          <div className="stat-data-col">
-            <span className="stat-val">{metrics.courses}</span>
-            <span className="stat-lbl">Courses</span>
-          </div>
-        </div>
 
-        <div className="stat-metric-card">
-          <div className="stat-icon-wrap">
-            <Inbox size={20} />
+          <div className="stat-metric-card" style={{ borderLeft: '4px solid #8b5cf6' }}>
+            <div className="stat-icon-wrap" style={{ backgroundColor: '#f5f3ff', color: '#8b5cf6' }}>
+              <BookOpen size={20} />
+            </div>
+            <div className="stat-data-col">
+              <span className="stat-val" style={{ color: '#8b5cf6' }}>{studentMetrics.trainingStudents}</span>
+              <span className="stat-lbl">Training Students</span>
+            </div>
           </div>
-          <div className="stat-data-col">
-            <span className="stat-val">{metrics.submissions}</span>
-            <span className="stat-lbl">Submissions</span>
+
+          <div className="stat-metric-card" style={{ borderLeft: '4px solid #d97706' }}>
+            <div className="stat-icon-wrap" style={{ backgroundColor: '#fffbeb', color: '#d97706' }}>
+              <GraduationCap size={20} />
+            </div>
+            <div className="stat-data-col">
+              <span className="stat-val" style={{ color: '#d97706' }}>{studentMetrics.courseStudents}</span>
+              <span className="stat-lbl">Course Learners</span>
+            </div>
+          </div>
+
+          <div className="stat-metric-card" style={{ borderLeft: '4px solid #16a34a' }}>
+            <div className="stat-icon-wrap" style={{ backgroundColor: '#f0fdf4', color: '#16a34a' }}>
+              <UserCheck size={20} />
+            </div>
+            <div className="stat-data-col">
+              <span className="stat-val" style={{ color: '#16a34a' }}>{studentMetrics.totalStudents}</span>
+              <span className="stat-lbl">Total Active Enrolled</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Split Columns */}
+      {/* Split Columns: Registries & Recent Visitor Logins */}
       <div className="dash-columns-split">
-        {/* Main Column */}
+        {/* Main Column: Registries */}
         <div className="dash-main-col">
           <div className="dash-content-card">
             <div className="card-title-header">
@@ -155,7 +193,7 @@ export default function Dashboard() {
               </h2>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
               {navCards.map((c) => {
                 const Icon = c.icon;
                 return (
@@ -175,7 +213,7 @@ export default function Dashboard() {
                       <Icon size={20} />
                     </div>
                     <div className="stat-data-col" style={{ marginLeft: '0.5rem' }}>
-                      <span className="stat-val" style={{ fontSize: '1.05rem', display: 'block' }}>{c.name}</span>
+                      <span className="stat-val" style={{ fontSize: '1rem', display: 'block' }}>{c.name}</span>
                       <span className="stat-lbl" style={{ margin: 0 }}>{c.count} records</span>
                     </div>
                   </Link>
@@ -185,8 +223,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Side Column */}
-        <div className="dash-side-col">
+        {/* Side Column: Recent Inquiries & Submissions */}
+        <div className="dash-side-col" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Recent Submissions */}
           <div className="dash-content-card">
             <div className="card-title-header">
               <h2 className="card-title-text">

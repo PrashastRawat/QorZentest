@@ -120,7 +120,7 @@ const SignIn = () => {
                 name="email"
                 required
                 autoComplete="email"
-                placeholder="name@company.com"
+                placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
                 className="form-input"
@@ -141,7 +141,7 @@ const SignIn = () => {
                 name="password"
                 required
                 autoComplete="current-password"
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
                 className="form-input"

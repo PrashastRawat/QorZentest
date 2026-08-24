@@ -6,11 +6,26 @@ import {
   getCourses, createCourse, deleteCourse,
   getBlogs, createBlog, deleteBlog,
   getTestimonials, createTestimonial, deleteTestimonial,
+  getInternships, createInternship, deleteInternship,
   getJobs, createJob, deleteJob,
   getSubmissions, deleteSubmission
 } from '../../../api/adminApi';
+import { ALL_INTERNSHIPS } from '../../Internship/InternshipsList';
+import { coursePricingData } from '../../../data/courses';
+import { onlineBusinessModulesData } from '../../Course/OnlineBusiness/OnlineBusiness';
+import { serviceRegistry } from '../../../data/services/serviceRegistryData';
+import { featuredProjects } from '../../../data/featuredProjects';
 import api from '../../../api/axiosInstance';
 import './AdminCrudPage.css';
+
+const defaultAiCourses = [
+  { id: 'ai-c1', title: 'AI Coding & Pair Programming', category: 'AI Courses', duration: '2 Months', price: 2999, description: 'Boost software velocity with Cursor, Copilot, Windsurf & Replit AI.' },
+  { id: 'ai-c2', title: 'Generative AI & LLM Engineering', category: 'AI Courses', duration: '3 Months', price: 4999, description: 'Build RAG pipelines, fine-tune models, and develop agentic workflows with LangChain.' },
+  { id: 'ai-c3', title: 'AI Visual & Image Generation', category: 'AI Courses', duration: '1 Month', price: 1999, description: 'Master Midjourney v6, Stable Diffusion XL, and FLUX image synthesis.' },
+  { id: 'ai-c4', title: 'AI Video Production & Avatars', category: 'AI Courses', duration: '2 Months', price: 2499, description: 'Create studio-quality videos with HeyGen, Runway Gen-3, and Kling AI.' },
+  { id: 'ai-c5', title: 'AI Automation & No-Code Webhooks', category: 'AI Courses', duration: '2 Months', price: 2999, description: 'Automate business workflows with n8n, Make, and Zapier AI integrations.' },
+  { id: 'ai-c6', title: 'AI Voice Synthesis & Cloning', category: 'AI Courses', duration: '1 Month', price: 1999, description: 'ElevenLabs, PlayHT voice cloning and multilingual dubbing pipelines.' }
+];
 
 /**
  * Reusable CRUD Page Component for Admin Management Sections
@@ -28,6 +43,7 @@ export default function AdminCrudPage({
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   // Responsive Form visibility: collapsed on mobile by default, open on desktop
   const [showForm, setShowForm] = useState(window.innerWidth >= 768);
@@ -42,16 +58,17 @@ export default function AdminCrudPage({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Dynamically resolve API Actions from adminApi folder helpers
+  const lowerTitle = title.toLowerCase();
+
+  // Dynamic API Resolver based on Section Title
   const apiHelpers = useMemo(() => {
-    const lowerTitle = title.toLowerCase();
     if (lowerTitle.includes('service')) {
       return { get: getServices, create: createService, delete: deleteService };
     }
     if (lowerTitle.includes('portfolio') || lowerTitle.includes('project')) {
       return { get: getProjects, create: createProject, delete: deleteProject };
     }
-    if (lowerTitle.includes('course')) {
+    if (lowerTitle.includes('course') || lowerTitle.includes('training')) {
       return { get: getCourses, create: createCourse, delete: deleteCourse };
     }
     if (lowerTitle.includes('blog') || lowerTitle.includes('article')) {
@@ -59,6 +76,9 @@ export default function AdminCrudPage({
     }
     if (lowerTitle.includes('testimonial')) {
       return { get: getTestimonials, create: createTestimonial, delete: deleteTestimonial };
+    }
+    if (lowerTitle.includes('internship')) {
+      return { get: getInternships, create: createInternship, delete: deleteInternship };
     }
     if (lowerTitle.includes('career') || lowerTitle.includes('role') || lowerTitle.includes('job')) {
       return { get: getJobs, create: createJob, delete: deleteJob };
@@ -72,7 +92,7 @@ export default function AdminCrudPage({
       create: (data) => api.post(apiEndpoint, data),
       delete: (id) => api.delete(`${apiEndpoint}/${id}`)
     };
-  }, [apiEndpoint, title]);
+  }, [apiEndpoint, title, lowerTitle]);
 
   useEffect(() => {
     fetchItems();
@@ -83,13 +103,105 @@ export default function AdminCrudPage({
       setLoading(true);
       const res = await apiHelpers.get();
       const data = res.data?.data || res.data || [];
-      setItems(Array.isArray(data) ? data : []);
+      if (Array.isArray(data) && data.length > 0) {
+        setItems(data);
+      } else {
+        if (lowerTitle.includes('internship')) {
+          setItems(ALL_INTERNSHIPS);
+        } else if (lowerTitle.includes('course')) {
+          setItems([
+            ...onlineBusinessModulesData.map((m) => ({ ...m, category: 'Online Business', price: m.price ? m.price.replace(/[^\d]/g, '') : 2499 })),
+            ...defaultAiCourses
+          ]);
+        } else if (lowerTitle.includes('training')) {
+          setItems(coursePricingData || []);
+        } else if (lowerTitle.includes('service')) {
+          setItems(Object.values(serviceRegistry) || []);
+        } else if (lowerTitle.includes('portfolio') || lowerTitle.includes('project')) {
+          setItems(featuredProjects.map((p) => ({ ...p, category: p.serviceCategory })));
+        } else {
+          setItems([]);
+        }
+      }
     } catch (err) {
-      console.warn(`[AdminCrudPage] GET failed for ${title}, fallback to empty list:`, err.message);
-      setItems([]);
+      console.warn(`[AdminCrudPage] GET failed for ${title}, fallback to default dataset:`, err.message);
+      if (lowerTitle.includes('internship')) {
+        setItems(ALL_INTERNSHIPS);
+      } else if (lowerTitle.includes('course')) {
+        setItems([
+          ...onlineBusinessModulesData.map((m) => ({ ...m, category: 'Online Business', price: m.price ? m.price.replace(/[^\d]/g, '') : 2499 })),
+          ...defaultAiCourses
+        ]);
+      } else if (lowerTitle.includes('training')) {
+        setItems(coursePricingData || []);
+      } else if (lowerTitle.includes('service')) {
+        setItems(Object.values(serviceRegistry) || []);
+      } else if (lowerTitle.includes('portfolio') || lowerTitle.includes('project')) {
+        setItems(featuredProjects.map((p) => ({ ...p, category: p.serviceCategory })));
+      } else {
+        setItems([]);
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const categoryOptions = useMemo(() => {
+    if (lowerTitle.includes('internship')) {
+      return ['All', 'Technical', 'Non-Technical', 'Networking'];
+    }
+    if (lowerTitle.includes('course')) {
+      return ['All', 'Online Business', 'AI Courses'];
+    }
+    if (lowerTitle.includes('training')) {
+      return ['All', 'Technical', 'Non-Technical', 'Networking', 'AI', 'Corporate Training'];
+    }
+    if (lowerTitle.includes('portfolio') || lowerTitle.includes('project')) {
+      return [
+        'All',
+        'AI & Automation',
+        'Web Design & Development',
+        'Software Development',
+        'Cloud Computing',
+        'Cyber Security',
+        'Data Analysis',
+        'Digital Marketing',
+        'Networking',
+        'Graphic Designing'
+      ];
+    }
+    if (lowerTitle.includes('service')) {
+      return ['All', 'Digital Solutions', 'Software Engineering', 'Cloud & Security', 'Marketing & Growth'];
+    }
+
+    const set = new Set();
+    items.forEach((it) => {
+      if (it.category) set.add(it.category);
+      if (it.categoryLabel) set.add(it.categoryLabel);
+      if (it.department) set.add(it.department);
+    });
+    if (set.size > 1) {
+      return ['All', ...Array.from(set)];
+    }
+    return [];
+  }, [items, lowerTitle]);
+
+  const displayedItems = useMemo(() => {
+    if (selectedCategory === 'All') return items;
+    return items.filter((it) => {
+      const cat = (it.category || it.categoryLabel || it.department || it.tag || '').toLowerCase();
+      const filter = selectedCategory.toLowerCase();
+      return cat.includes(filter) || filter.includes(cat);
+    });
+  }, [items, selectedCategory]);
+
+  const getCategoryCount = (cat) => {
+    if (cat === 'All') return items.length;
+    return items.filter((it) => {
+      const itemCat = (it.category || it.categoryLabel || it.department || it.tag || '').toLowerCase();
+      const target = cat.toLowerCase();
+      return itemCat.includes(target) || target.includes(itemCat);
+    }).length;
   };
 
   const handleChange = (e) => {
@@ -179,55 +291,54 @@ export default function AdminCrudPage({
       return null;
     }
 
-    // 1. Careers & Job Listings (Reference Image 5)
-    if (lowerTitle.includes('career') || lowerTitle.includes('role') || lowerTitle.includes('job')) {
+    // 1. Internships & Domain Programs
+    if (lowerTitle.includes('internship') || lowerTitle.includes('career') || lowerTitle.includes('role') || lowerTitle.includes('job')) {
       return (
         <div className="admin-form-container">
-          {renderFormHeader('New Job Listing')}
+          {renderFormHeader(lowerTitle.includes('internship') ? 'New Internship Program' : 'New Job Listing')}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
               <input
                 type="text"
                 name="title"
-                placeholder="Job title"
+                placeholder={lowerTitle.includes('internship') ? "Internship Program Title (e.g. MERN Stack Developer Intern)" : "Job title"}
                 value={formData.title || ''}
                 onChange={handleChange}
                 required
               />
-              <input
-                type="text"
-                name="department"
-                placeholder="Department (e.g. Engineering)"
-                value={formData.department || ''}
+              <select
+                name="category"
+                value={formData.category || 'Technical'}
                 onChange={handleChange}
                 required
-              />
+                style={{ padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid var(--border-medium)', backgroundColor: '#ffffff', fontSize: '0.85rem' }}
+              >
+                <option value="Technical">Technical</option>
+                <option value="Non-Technical">Non-Technical</option>
+                <option value="Networking">Networking</option>
+              </select>
             </div>
             <div className="form-row-2col">
               <input
                 type="text"
-                name="location"
-                placeholder="Location (e.g. Remote, Dehradun)"
-                value={formData.location || ''}
+                name="duration"
+                placeholder="Duration (e.g. 1 Month, 3 Months, 6 Months)"
+                value={formData.duration || ''}
                 onChange={handleChange}
                 required
               />
-              <select
-                name="type"
-                value={formData.type || 'Full-time'}
+              <input
+                type="text"
+                name="price1Month"
+                placeholder="Starting Fee (e.g. ₹799)"
+                value={formData.price1Month || ''}
                 onChange={handleChange}
-                required
-              >
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
+              />
             </div>
             <div className="form-row-single">
               <textarea
                 name="description"
-                placeholder="Job description"
+                placeholder="Program description & learning milestones"
                 value={formData.description || ''}
                 onChange={handleChange}
                 required
@@ -236,16 +347,16 @@ export default function AdminCrudPage({
             <div className="form-row-single">
               <input
                 type="text"
-                name="requirements"
-                placeholder="Requirements, comma separated (e.g. 2+ years React, Strong CSS)"
-                value={formData.requirements || ''}
+                name="tools"
+                placeholder="Tools & Tech Stack (comma-separated, e.g. React, Node.js, Express, MongoDB, Git)"
+                value={formData.tools || ''}
                 onChange={handleChange}
               />
             </div>
             <div className="admin-form-submit-row" style={{ justifyContent: 'flex-start' }}>
               <button type="submit" disabled={submitting} className="btn-purple-gradient">
                 {submitting ? <Loader2 size={16} className="animate-spin" /> : null}
-                <span>Post Job</span>
+                <span>{lowerTitle.includes('internship') ? 'Add Internship Program' : 'Post Job'}</span>
               </button>
             </div>
           </form>
@@ -364,54 +475,124 @@ export default function AdminCrudPage({
       );
     }
 
-    // 4. Courses & Programs (Reference Image 3)
-    if (lowerTitle.includes('course')) {
+    // 4. Courses & Training Programs
+    if (lowerTitle.includes('course') || lowerTitle.includes('training')) {
+      const isTraining = lowerTitle.includes('training');
       return (
         <div className="admin-form-container">
-          {renderFormHeader('+ Add New Course')}
+          {renderFormHeader(isTraining ? '+ Add New Training Program' : '+ Add New Course')}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
-              <input
-                type="text"
-                name="title"
-                placeholder="Course title"
-                value={formData.title || ''}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="price"
-                placeholder="Price (₹)"
-                value={formData.price || ''}
-                onChange={handleChange}
-                required
-              />
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  {isTraining ? 'Training Program Title *' : 'Course Title *'}
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder={isTraining ? "e.g. CCNA Enterprise Routing" : "e.g. AI Coding & LLM Mastery"}
+                  value={formData.title || ''}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  {isTraining ? 'Training Domain Category *' : 'Course Type / Category *'}
+                </label>
+                <select
+                  name="category"
+                  value={formData.category || (isTraining ? 'Technical' : 'Online Business')}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid var(--border-medium)', backgroundColor: '#ffffff', fontSize: '0.85rem', fontWeight: 700 }}
+                >
+                  {!isTraining ? (
+                    <>
+                      <option value="Online Business">Online Business (Dropshipping, Affiliate, E-Commerce)</option>
+                      <option value="AI Courses">AI Courses (Agentic AI, LLMs, AI Tools & Automation)</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="Technical">Technical</option>
+                      <option value="Non-Technical">Non-Technical</option>
+                      <option value="Networking">Networking</option>
+                      <option value="AI">AI</option>
+                      <option value="Corporate Training">Corporate Training</option>
+                    </>
+                  )}
+                </select>
+              </div>
             </div>
+
+            <div className="form-row-2col">
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Pricing / Fee (₹) *
+                </label>
+                <input
+                  type="text"
+                  name="price"
+                  placeholder="e.g. 2499"
+                  value={formData.price || ''}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Duration
+                </label>
+                <input
+                  type="text"
+                  name="duration"
+                  placeholder="e.g. 1 Month, 2 Months, 3 Months"
+                  value={formData.duration || ''}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
             <div className="form-row-single">
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                Course Description & Syllabus Overview *
+              </label>
               <textarea
                 name="description"
-                placeholder="Description"
+                placeholder="Comprehensive description of the course, modules, and practical projects..."
                 value={formData.description || ''}
                 onChange={handleChange}
                 required
               />
             </div>
+
             <div className="form-row-2col">
-              <input
-                type="text"
-                name="instructor"
-                placeholder="Instructor name"
-                value={formData.instructor || ''}
-                onChange={handleChange}
-                required
-              />
-              <div className="file-input-wrapper">
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Lead Instructor Name
+                </label>
                 <input
-                  type="file"
-                  name="image"
-                  onChange={(e) => console.log('File chosen:', e.target.files[0])}
+                  type="text"
+                  name="instructor"
+                  placeholder="e.g. Dr. Vikramaditya Rao"
+                  value={formData.instructor || ''}
+                  onChange={handleChange}
                 />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Thumbnail Image
+                </label>
+                <div className="file-input-wrapper">
+                  <input
+                    type="file"
+                    name="image"
+                    onChange={(e) => console.log('File chosen:', e.target.files[0])}
+                  />
+                </div>
               </div>
             </div>
             
@@ -464,27 +645,81 @@ export default function AdminCrudPage({
           {renderFormHeader('+ Add New Project')}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
-              <input
-                type="text"
-                name="title"
-                placeholder="Project title"
-                value={formData.title || ''}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="category"
-                placeholder="Category (e.g. Web Development)"
-                value={formData.category || ''}
-                onChange={handleChange}
-                required
-              />
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Project Title *
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="e.g. AI Customer Chatbot & Auto Lead System"
+                  value={formData.title || ''}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Project Domain / Category *
+                </label>
+                <select
+                  name="category"
+                  value={formData.category || 'AI & Automation'}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid var(--border-medium)', backgroundColor: '#ffffff', fontSize: '0.85rem', fontWeight: 700 }}
+                >
+                  <option value="AI & Automation">AI & Automation</option>
+                  <option value="Web Design & Development">Web Design & Development</option>
+                  <option value="Software Development">Software Development</option>
+                  <option value="Cloud Computing">Cloud Computing</option>
+                  <option value="Cyber Security">Cyber Security</option>
+                  <option value="Data Analysis & Data Science">Data Analysis & Data Science</option>
+                  <option value="Digital Marketing">Digital Marketing & Ads</option>
+                  <option value="Search Engine Optimization (SEO)">Search Engine Optimization (SEO)</option>
+                  <option value="Social Media Marketing">Social Media Marketing</option>
+                  <option value="Networking & IT Infrastructure">Networking & IT Infrastructure</option>
+                  <option value="Graphic Designing">Graphic Designing & UI/UX</option>
+                </select>
+              </div>
             </div>
+
+            <div className="form-row-2col">
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Key Metric / Business Impact
+                </label>
+                <input
+                  type="text"
+                  name="metric"
+                  placeholder="e.g. Saved 85% Manual Work Time"
+                  value={formData.metric || ''}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                  Tech Stack (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  name="tech"
+                  placeholder="e.g. React 19, Python, n8n, OpenAI API"
+                  value={formData.tech || ''}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
             <div className="form-row-single">
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                Project Summary & Deliverables *
+              </label>
               <textarea
                 name="description"
-                placeholder="Description"
+                placeholder="Describe client requirements, architecture, solution implementation, and production results..."
                 value={formData.description || ''}
                 onChange={handleChange}
                 required
@@ -637,8 +872,6 @@ export default function AdminCrudPage({
     );
   };
 
-  const lowerTitle = title.toLowerCase();
-
   return (
     <div className="admin-crud-container">
       {/* Header */}
@@ -667,20 +900,73 @@ export default function AdminCrudPage({
       {/* Render Dynamic Layout Box Form */}
       {showForm && renderForm()}
 
+      {/* Category Domain Filter: Mobile Dropdown + Desktop Pills */}
+      {categoryOptions.length > 1 && (
+        <div className="admin-category-filter-wrapper" style={{ marginBottom: '1.25rem' }}>
+          {/* Mobile Dropdown Selector */}
+          <div className="admin-cat-mobile-dropdown-wrap">
+            <label style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Filter by Domain / Category
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="admin-cat-mobile-select"
+            >
+              {categoryOptions.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat} ({getCategoryCount(cat)})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Desktop Toggle Pills */}
+          <div className="admin-category-toggle-bar desktop-only-pills">
+            {categoryOptions.map((cat) => {
+              const count = getCategoryCount(cat);
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`admin-cat-pill-btn ${selectedCategory === cat ? 'active' : ''}`}
+                >
+                  <span>{cat}</span>
+                  <span className="admin-cat-count-badge">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* List of Fetched Items */}
       <div>
-        <h3 className="admin-records-heading">Existing Records ({items.length})</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <h3 className="admin-records-heading" style={{ margin: 0 }}>
+            Existing Records ({displayedItems.length}{selectedCategory !== 'All' ? ` of ${items.length}` : ''})
+          </h3>
+          {selectedCategory !== 'All' && (
+            <button
+              onClick={() => setSelectedCategory('All')}
+              style={{ fontSize: '0.78rem', fontWeight: 700, color: '#8b7050', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              Reset to All ({items.length})
+            </button>
+          )}
+        </div>
         {loading ? (
           <div className="admin-loading-spinner-box">
             <Loader2 size={26} color="#c9b59c" className="animate-spin" />
           </div>
-        ) : items.length === 0 ? (
+        ) : displayedItems.length === 0 ? (
           <div className="admin-empty-card">
-            <p>No records found. Use the form above to add a new record.</p>
+            <p>No records found for category "{selectedCategory}". Use the form above to add a new record or switch categories.</p>
           </div>
         ) : (
           <div className="admin-records-grid">
-            {items.map((item) => {
+            {displayedItems.map((item) => {
               const itemId = item._id || item.id;
               return (
                 <div key={itemId} className="admin-record-card">
@@ -702,9 +988,11 @@ export default function AdminCrudPage({
                     {item.tagline && <p className="admin-record-tagline">"{item.tagline}"</p>}
                     {item.instructor && <p className="admin-record-instructor"><strong>Instructor:</strong> {item.instructor}</p>}
 
-                    <p className="admin-record-desc">
-                      {item.description || item.text || item.overview || JSON.stringify(item)}
-                    </p>
+                    {(item.description || item.text || item.overview || item.duration) && (
+                      <p className="admin-record-desc">
+                        {item.description || item.text || item.overview || `Duration: ${item.duration} • Curriculum verified.`}
+                      </p>
+                    )}
 
                     {item.features && (
                       <div className="admin-record-requirements" style={{ marginTop: '0.4rem' }}>

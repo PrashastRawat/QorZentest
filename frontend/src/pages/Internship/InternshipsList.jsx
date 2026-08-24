@@ -64,9 +64,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Construct generative AI applications, prompt engineering pipelines, agentic AI workflows, and LLM integrations.',
     tools: ['OpenAI API', 'LangChain', 'Python', 'Pinecone', 'HuggingFace'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'machine-learning',
@@ -79,9 +79,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Train supervised/unsupervised machine learning models, neural networks, and model deployment pipelines.',
     tools: ['Python', 'Scikit-Learn', 'TensorFlow', 'PyTorch', 'Jupyter'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'cyber-security',
@@ -94,9 +94,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Perform web application penetration testing, vulnerability assessments, security log analysis, and ethical hacking.',
     tools: ['Kali Linux', 'Burp Suite', 'Wireshark', 'Nmap', 'Metasploit'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'mern-stack-development',
@@ -109,9 +109,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Architect modern full-stack web applications with React frontend, Node/Express backend, and MongoDB database.',
     tools: ['React.js', 'Node.js', 'Express', 'MongoDB', 'JWT Auth'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'full-stack-development',
@@ -124,9 +124,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Master complete web application lifecycle from frontend UI creation to backend REST APIs and database design.',
     tools: ['JavaScript', 'React.js', 'Node.js', 'SQL/NoSQL', 'Git'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'data-analytics',
@@ -139,9 +139,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Extract business insights from complex datasets using SQL queries, Tableau dashboards, and Python analytics.',
     tools: ['SQL', 'Tableau', 'Excel', 'Python', 'Statistics'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'cisco-ccna-200-301',
@@ -154,9 +154,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Prepare for official Cisco CCNA 200-301 certification while configuring real-world network lab topologies.',
     tools: ['Cisco 200-301', 'Packet Tracer', 'IOS CLI', 'OSPF/EIGRP', 'EtherChannel'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'social-media-marketing',
@@ -169,9 +169,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Create viral campaign strategies, influencer collaborations, organic reach growth, and paid ad boosts.',
     tools: ['Meta Ads', 'TikTok Studio', 'Canva', 'Copywriting', 'SEO'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ui-ux-design',
@@ -184,9 +184,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Construct interactive Figma wireframes, mobile app UI designs, component design systems, and user research personas.',
     tools: ['Figma', 'Miro', 'Adobe XD', 'Prototyping', 'User Research'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'app-development',
@@ -199,9 +199,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Develop native and cross-platform mobile apps for Android & iOS using modern frameworks and cloud backends.',
     tools: ['Flutter', 'React Native', 'Android Studio', 'Firebase', 'Kotlin'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'data-science',
@@ -214,9 +214,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Apply statistical analysis, data cleaning, exploratory data analysis (EDA), and machine learning pipelines.',
     tools: ['Python', 'Pandas', 'NumPy', 'Scikit-Learn', 'Matplotlib'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'cloud-and-networking-pro',
@@ -229,9 +229,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Configure AWS VPC subnets, transit gateways, Direct Connect, Route 53, and cloud network security groups.',
     tools: ['AWS VPC', 'Route 53', 'Terraform', 'EC2', 'Cloud Security'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'digital-marketing',
@@ -244,9 +244,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Run conversion ad campaigns on Meta & Google Ads, optimize lead funnels, and analyze marketing ROI metrics.',
     tools: ['Meta Ads Manager', 'Google Ads', 'GA4', 'Semrush', 'Copywriting'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ethical-hacking',
@@ -259,9 +259,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Perform penetration testing, network vulnerability exploitation, wireless security audits, and defensive hardening.',
     tools: ['Kali Linux', 'Metasploit', 'Burp Suite', 'Wireshark', 'Nmap'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'project-management',
@@ -274,9 +274,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Coordinate project timelines, sprint planning, client requirements gathering, and cross-functional team management.',
     tools: ['Jira', 'Asana', 'Notion', 'Agile Scrum', 'MS Project'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'video-editing',
@@ -289,9 +289,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Edit professional promotional video reels, corporate tutorials, motion graphics, and social media media assets.',
     tools: ['Adobe Premiere Pro', 'After Effects', 'CapCut Pro', 'Color Grading'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'content-creation',
@@ -304,9 +304,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Produce high-converting video reels, carousel designs, scriptwriting, and promotional brand content.',
     tools: ['CapCut', 'Canva AI', 'ChatGPT', 'Scriptwriting', 'Photoshop'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'network-engineering',
@@ -319,9 +319,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Design enterprise local and wide area networks (LAN/WAN), load balancing topologies, and network monitoring.',
     tools: ['GNS3', 'EVE-NG', 'Cisco IOS', 'BGP', 'Wireshark'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ccna-automation',
@@ -334,9 +334,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Automate network router and switch configurations using Python script, Netmiko, Ansible, and Cisco DevNet APIs.',
     tools: ['Python', 'Netmiko', 'Ansible', 'Cisco IOS', 'REST APIs'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'network-security-firewall-expert',
@@ -349,9 +349,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Configure Palo Alto, Fortinet, and pfSense next-gen firewalls, IPsec VPN tunnels, NAT rules, and IPS monitoring.',
     tools: ['Palo Alto PAN-OS', 'FortiGate', 'pfSense', 'IPsec VPN', 'IDS/IPS'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'react-development',
@@ -364,9 +364,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Create fast, modern, responsive web user interfaces using React 19, Redux Toolkit, and dynamic CSS animations.',
     tools: ['React.js', 'JavaScript ES6+', 'Redux', 'HTML5/CSS3', 'Vite'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'frontend-development',
@@ -379,9 +379,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Craft pixel-perfect user interface layouts, dynamic component systems, and fluid web animations.',
     tools: ['React.js', 'HTML5', 'CSS Variables', 'JavaScript', 'Tailwind/Vanilla'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'backend-development',
@@ -394,9 +394,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Engineer high-throughput RESTful API endpoints, authentication security systems, and database optimization.',
     tools: ['Node.js', 'Express.js', 'MongoDB', 'PostgreSQL', 'Redis'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'data-engineering',
@@ -409,9 +409,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Build ETL pipelines, architect big data warehouses, and manage automated SQL/NoSQL database streams.',
     tools: ['Apache Spark', 'Python', 'SQL', 'PostgreSQL', 'Airflow'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'game-development',
@@ -424,9 +424,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Develop 2D/3D interactive games using Unity and Unreal Engine, writing game physics and logic scripts.',
     tools: ['Unity 3D', 'C#', 'Unreal Engine', 'Blender', 'Physics Engine'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'dot-net-development',
@@ -439,9 +439,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Build scalable enterprise Web APIs and microservices using C#, .NET Core, and Microsoft Azure.',
     tools: ['C#', '.NET Core', 'ASP.NET', 'MS SQL Server', 'Azure'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'business-analyst',
@@ -454,9 +454,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Analyze business workflows, gather technical product specifications, and build executive analytics dashboards.',
     tools: ['Excel', 'SQL', 'Power BI', 'Jira', 'Business Intelligence'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'software-testing',
@@ -469,9 +469,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Perform manual & automated testing suites, write test cases, execute regression runs, and track software bugs.',
     tools: ['Selenium', 'Jira', 'Postman', 'TestRail', 'JUnit'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'graphic-design',
@@ -484,9 +484,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Design corporate brand guidelines, marketing banners, social graphics, logos, and digital artwork assets.',
     tools: ['Adobe Photoshop', 'Illustrator', 'Canva Pro', 'Figma', 'InDesign'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'flutter-development',
@@ -499,9 +499,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Develop high-performance cross-platform iOS and Android apps using Dart, Flutter SDK, and Firebase.',
     tools: ['Flutter', 'Dart', 'Firebase', 'State Management', 'REST API'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'mean-stack-development',
@@ -514,9 +514,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Build full-stack web applications using MongoDB, Express.js, Angular, and Node.js with TypeScript.',
     tools: ['Angular', 'Node.js', 'Express', 'MongoDB', 'TypeScript'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'web-development',
@@ -529,9 +529,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Build modern responsive websites and interactive web applications using HTML5, CSS3, and JavaScript.',
     tools: ['HTML5', 'CSS3', 'JavaScript ES6+', 'Bootstrap', 'Git'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'wordpress-development',
@@ -544,9 +544,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Develop custom WordPress themes, Elementor page templates, WooCommerce stores, and PHP plugins.',
     tools: ['WordPress', 'Elementor Pro', 'PHP', 'WooCommerce', 'MySQL'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ms-sql',
@@ -559,9 +559,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Write complex T-SQL queries, stored procedures, database indexes, triggers, and query performance tuning.',
     tools: ['MS SQL Server', 'SSMS', 'T-SQL', 'Database Indexing', 'ETL'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'sales-executive',
@@ -574,9 +574,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Execute B2B corporate sales calls, client presentations, lead qualification, and CRM deal closing.',
     tools: ['HubSpot CRM', 'Cold Calling', 'Salesforce', 'Negotiation', 'CRM'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'social-media-handling',
@@ -589,9 +589,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Manage day-to-day social media accounts, community DM responses, content scheduling, and engagement.',
     tools: ['Instagram Studio', 'LinkedIn', 'Buffer', 'Hootsuite', 'Canva'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'social-media-management',
@@ -604,9 +604,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Develop monthly social media calendars, brand storytelling, analytics reporting, and audience growth.',
     tools: ['Meta Business Suite', 'Analytics', 'Content Calendar', 'Buffer'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'content-writing',
@@ -619,9 +619,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Write engaging blog posts, website copy, press releases, technical documentation, and social media captions.',
     tools: ['Grammarly', 'ChatGPT', 'WordPress', 'Google Docs', 'SEO Copywriting'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'email-marketing',
@@ -634,9 +634,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Design automated email drip sequences, newsletter broadcasts, list segmentation, and open rate tracking.',
     tools: ['Mailchimp', 'Brevo', 'Klaviyo', 'Copywriting', 'A/B Testing'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'tele-calling',
@@ -649,9 +649,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Conduct outbound lead calls, student counseling, course inquiries, and client follow-ups.',
     tools: ['CRM Dialer', 'Excel', 'Communication Skills', 'Lead Management'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'support-calling',
@@ -664,9 +664,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Provide customer support assistance, resolve student queries, track helpdesk tickets, and collect feedback.',
     tools: ['Zendesk', 'Freshdesk', 'CRM', 'Communication', 'Helpdesk'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ccna-ccna-security',
@@ -679,9 +679,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Master core Cisco routing & switching alongside Cisco ASA Firewall rules, IPsec VPNs, and AAA security authentication.',
     tools: ['Cisco ASA', 'Cisco IOS', 'IPsec VPN', 'Radius/TACACS+', 'Wireshark'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'computer-fundamentals',
@@ -694,9 +694,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Understand computer hardware architecture, OS installation, troubleshooting, BIOS setups, and basic networking.',
     tools: ['Windows Server', 'Linux OS', 'Hardware Diagnostics', 'Command Line'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'tcp-ip-masterclass',
@@ -709,9 +709,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Deep dive into OSI 7-layer architecture, TCP/UDP packet analysis, DNS routing, DHCP servers, and packet captures.',
     tools: ['Wireshark', 'TCP/IP Model', 'Packet Analysis', 'DNS/DHCP', 'Subnetting'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ccna-eccnp',
@@ -724,9 +724,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Master advanced routing protocols (BGP, OSPF), MPLS VPNs, enterprise switching, and high availability design.',
     tools: ['Cisco CCNP Enterprise', 'BGP Routing', 'MPLS', 'EVE-NG', 'OSPFv3'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'enterprise-networking-masterclass',
@@ -739,9 +739,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Architect enterprise data center network fabrics, SD-WAN topologies, network telemetry, and disaster recovery.',
     tools: ['Cisco SD-WAN', 'Data Center Networking', 'BGP', 'Python Scripting', 'Wireshark'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'java-full-stack',
@@ -754,9 +754,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Build end-to-end web applications with Java Spring Boot microservices on the backend and modern React on the frontend.',
     tools: ['Java', 'Spring Boot', 'Hibernate', 'React.js', 'MySQL'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'python-development',
@@ -769,9 +769,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Develop high-performance backend REST APIs, automation scripts, and data processing bots using Python.',
     tools: ['Python', 'Django', 'FastAPI', 'Flask', 'PostgreSQL'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'advance-excel',
@@ -784,9 +784,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Master advanced Excel formulas (VLOOKUP, XLOOKUP, INDEX/MATCH), automated VBA macros, and financial modeling.',
     tools: ['MS Excel', 'VBA Macros', 'Pivot Tables', 'Power Query', 'Data Analysis'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'data-visualization-powerbi',
@@ -799,9 +799,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Transform raw enterprise data into interactive Power BI dashboards, DAX queries, and executive reports.',
     tools: ['Power BI', 'DAX', 'Power Query', 'SQL', 'Data Modeling'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'python-full-stack',
@@ -814,9 +814,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Build full-stack web applications with Django/FastAPI backend API layers and React frontend components.',
     tools: ['Python', 'Django', 'React.js', 'PostgreSQL', 'Docker'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'seo-intern',
@@ -829,9 +829,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Perform technical SEO audits, keyword research, on-page optimization, backlink outreach, and Google Search Console analysis.',
     tools: ['Ahrefs', 'Semrush', 'Google Search Console', 'GA4', 'Screaming Frog'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'accounting-intern',
@@ -844,9 +844,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Assist in financial bookkeeping, invoice processing, GST documentation, and financial statement analysis.',
     tools: ['Tally Prime', 'Advance Excel', 'QuickBooks', 'GST Filing', 'Bookkeeping'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'bde-intern',
@@ -859,9 +859,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Identify new market opportunities, generate qualified leads, conduct client pitch meetings, and close partnerships.',
     tools: ['LinkedIn Sales Nav', 'Apollo.io', 'HubSpot', 'B2B Sales', 'Outreach'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'hr-intern',
@@ -874,9 +874,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Assist in talent sourcing, candidate interview coordination, employee onboarding, and HR operations.',
     tools: ['LinkedIn Recruiter', 'Keka HR', 'Workday', 'Excel', 'Google Workspace'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'meta-google-ads',
@@ -889,9 +889,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Configure high-converting Meta Pixel and Google Search ad campaigns, optimize bidding strategies, and track ROAS.',
     tools: ['Meta Ads Manager', 'Google Ads', 'GA4', 'A/B Testing', 'ROAS Tracking'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'bda-intern',
@@ -904,9 +904,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Drive corporate B2B sales outreach, client relationship building, product demos, and revenue conversion.',
     tools: ['Apollo.io', 'LinkedIn Sales Nav', 'HubSpot CRM', 'Cold Calling', 'Pitching'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   },
   {
     id: 'ccna-intern',
@@ -919,9 +919,9 @@ export const ALL_INTERNSHIPS = [
     stipend: 'Stipend + Certificate',
     description: 'Configure Cisco switches, routers, VLAN topologies, subnets, OSPF routing protocols, and CLI troubleshooting.',
     tools: ['Cisco Packet Tracer', 'GNS3', 'Wireshark', 'Cisco IOS', 'Putty'],
-    price1Month: 799,
-    price3Month: 1399,
-    price6Month: 2399
+    price1Month: 499,
+    price3Month: 999,
+    price6Month: 1499
   }
 ];
 
@@ -973,7 +973,8 @@ const InternshipsList = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-title"
           >
-            Accelerate Your Career with <span className="highlight-text">Practical Internships</span>
+            Accelerate Your Career with <br />
+            <span className="highlight-text">Practical Internships</span>
           </motion.h1>
 
           <motion.p
@@ -1059,18 +1060,6 @@ const InternshipsList = () => {
                       <div>
                         <h3 className="internship-title">{item.title}</h3>
                         <p className="internship-description">{item.description}</p>
-                      </div>
-                    </div>
-
-                    {/* Internship Specs */}
-                    <div className="internship-meta-row">
-                      <div className="meta-item">
-                        <Calendar size={14} className="meta-icon" />
-                        <span>Duration: <strong>{item.duration}</strong></span>
-                      </div>
-                      <div className="meta-item">
-                        <MapPin size={14} className="meta-icon" />
-                        <span>Access Mode: <strong>{item.mode || 'Online'}</strong></span>
                       </div>
                     </div>
 

@@ -103,7 +103,7 @@ export const authService = {
     // 2. Demo Student Account
     if (cleanEmail === 'student@qorzen.in' || cleanEmail === 'aarav.sharma@student.qorzen.in') {
       if (cleanPassword !== 'student123' && cleanPassword !== 'password123') {
-        throw new Error('Invalid password for demo student account. (Default: student123)');
+        throw new Error('Invalid email or password. Please check your credentials and try again.');
       }
 
       const studentPayload = { ...mockStudentUser };
@@ -122,13 +122,11 @@ export const authService = {
     const matchedUser = registeredUsers.find((u) => u.email.toLowerCase() === cleanEmail);
 
     if (!matchedUser) {
-      throw new Error(
-        'Account not found. Please verify your email or click "Sign Up Free" to create an account.'
-      );
+      throw new Error('Invalid email or password. Please verify your credentials or register for an account.');
     }
 
     if (matchedUser.password !== cleanPassword) {
-      throw new Error('Incorrect password. Please enter the valid password or reset it.');
+      throw new Error('Invalid email or password. Please check your credentials and try again.');
     }
 
     const { password: _, ...safeUserPayload } = matchedUser;

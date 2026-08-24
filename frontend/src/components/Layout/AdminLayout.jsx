@@ -4,6 +4,8 @@ import {
   LayoutDashboard,
   BriefcaseBusiness,
   GraduationCap,
+  BookOpen,
+  Layers,
   FileText,
   MessageSquareQuote,
   Inbox,
@@ -14,20 +16,26 @@ import {
   ShieldCheck,
   User,
   Globe,
-  ExternalLink
+  ExternalLink,
+  Activity,
+  Users,
+  CreditCard
 } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import '../StudentPortal/StudentLayout.css';
 
 const adminNavItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness },
-  { name: 'Portfolio', path: '/admin/portfolio', icon: LayoutDashboard },
+  { name: 'Manage Students', path: '/admin/students', icon: Users },
+  { name: 'Payments & Revenue', path: '/admin/payments', icon: CreditCard },
+  { name: 'Training', path: '/admin/training', icon: BookOpen },
   { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
+  { name: 'Internships', path: '/admin/internships', icon: Sparkles },
+  { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness },
+  { name: 'Portfolio', path: '/admin/portfolio', icon: Layers },
   { name: 'Blog', path: '/admin/blog', icon: FileText },
   { name: 'Testimonials', path: '/admin/testimonials', icon: MessageSquareQuote },
-  { name: 'Careers', path: '/admin/careers', icon: BriefcaseBusiness },
-  { name: 'Submissions', path: '/admin/submissions', icon: Inbox }
+  { name: 'Inquiries & Leads', path: '/admin/submissions', icon: Inbox }
 ];
 
 export default function AdminLayout() {
