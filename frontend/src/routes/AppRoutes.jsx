@@ -1,60 +1,64 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // Public Customer Layout & Pages
-import Layout from '../components/Layout/Layout';
-import Home from '../pages/Home/Home';
-import ServiceDetail from '../pages/Services/ServiceDetail';
-import AITools from '../pages/Training/AITools/AITools';
-import Technical from '../pages/Training/Technical/Technical';
-import NonTechnical from '../pages/Training/NonTechnical/NonTechnical';
-import Networking from '../pages/Training/Networking/Networking';
-import CorporateTraining from '../pages/Training/CorporateTraining/CorporateTraining';
-import OnlineBusiness from '../pages/Course/OnlineBusiness/OnlineBusiness';
-import InternshipsList from '../pages/Internship/InternshipsList';
-import InternshipDetails from '../pages/Internship/InternshipDetails';
-import AboutUs from '../pages/Resource/AboutUs/AboutUs';
-import Blog from '../pages/Resource/Blog/Blog';
-import News from '../pages/Resource/News/News';
-import Events from '../pages/Resource/Events/Events';
-import PrivacyPolicy from '../pages/Legal/DataProtectionPolicy';
-import TermsAndConditions from '../pages/Legal/TermsAndConditions';
+import Layout from "../components/Layout/Layout";
+import Home from "../pages/Home/Home";
+import ServicesList from "../pages/Services/ServicesList";
+import ServiceDetail from "../pages/Services/ServiceDetail";
+import CourseCategoryBrowser from "../components/CourseCategoryBrowser/CourseCategoryBrowser";
+import { getPublicCourses, getPublicTrainings } from "../api/courseCatalogApi";
+import { TRAINING_CATEGORIES } from "../constants/trainingCategories";
+import InternshipsList from "../pages/Internship/InternshipsList";
+import InternshipDetails from "../pages/Internship/InternshipDetails";
+import AboutUs from "../pages/Resource/AboutUs/AboutUs";
+import Blog from "../pages/Resource/Blog/Blog";
+import News from "../pages/Resource/News/News";
+import Events from "../pages/Resource/Events/Events";
+import PrivacyPolicy from "../pages/Legal/DataProtectionPolicy";
+import TermsAndConditions from "../pages/Legal/TermsAndConditions";
 
 // Unified Authentication Pages
-import SignIn from '../pages/Auth/SignIn/SignIn';
-import SignUp from '../pages/Auth/SignUp/SignUp';
+import SignIn from "../pages/Auth/SignIn/SignIn";
+import SignUp from "../pages/Auth/SignUp/SignUp";
 
 // Student Classroom Portal Setup (Mock Auth & Protected Routes)
-import StudentProtectedRoute from './StudentProtectedRoute';
-import StudentLayout from '../components/StudentPortal/StudentLayout';
-import StudentDashboard from '../pages/Student/Dashboard/StudentDashboard';
-import StudentCourses from '../pages/Student/Courses/StudentCourses';
-import StudentLearning from '../pages/Student/Learning/StudentLearning';
-import StudentAssignments from '../pages/Student/Assignments/StudentAssignments';
-import StudentLiveClasses from '../pages/Student/LiveClasses/StudentLiveClasses';
-import StudentProgress from '../pages/Student/Progress/StudentProgress';
-import StudentCertificates from '../pages/Student/Certificates/StudentCertificates';
-import StudentNotifications from '../pages/Student/Notifications/StudentNotifications';
-import StudentProfile from '../pages/Student/Profile/StudentProfile';
+import StudentProtectedRoute from "./StudentProtectedRoute";
+import StudentLayout from "../components/StudentPortal/StudentLayout";
+import StudentDashboard from "../pages/Student/Dashboard/StudentDashboard";
+import StudentCourses from "../pages/Student/Courses/StudentCourses";
+import StudentLearning from "../pages/Student/Learning/StudentLearning";
+import StudentAssignments from "../pages/Student/Assignments/StudentAssignments";
+import StudentLiveClasses from "../pages/Student/LiveClasses/StudentLiveClasses";
+import StudentProgress from "../pages/Student/Progress/StudentProgress";
+import StudentCertificates from "../pages/Student/Certificates/StudentCertificates";
+import StudentNotifications from "../pages/Student/Notifications/StudentNotifications";
+import StudentProfile from "../pages/Student/Profile/StudentProfile";
 // Protected Admin Control Panel Setup
-import ProtectedRoute from '../components/Layout/ProtectedRoute';
-import AdminLayout from '../components/Layout/AdminLayout';
-import AdminLogin from '../pages/Auth/AdminLogin/AdminLogin';
-import Dashboard from '../pages/admin/Dashboard';
-import AdminCrudPage from '../pages/admin/shared/AdminCrudPage';
-import AdminProfile from '../pages/admin/Profile/AdminProfile';
+import ProtectedRoute from "../components/Layout/ProtectedRoute";
+import AdminLayout from "../components/Layout/AdminLayout";
+import AdminLogin from "../pages/Auth/AdminLogin/AdminLogin";
+import Dashboard from "../pages/admin/Dashboard";
+import AdminCrudPage from "../pages/admin/shared/AdminCrudPage";
+import AdminProfile from "../pages/admin/Profile/AdminProfile";
+import AdminEnrollmentRequests from "../pages/admin/EnrollmentRequests/AdminEnrollmentRequests";
+import StudentTrainings from "../pages/Student/Trainings/StudentTrainings";
+
 /**
  * Centralized Application Routes Architecture with Automated Subdomain Routing
- * 
+ *
  * Subdomain Detection Flow:
  * - admin.qorzen-technologies.in -> Automatically opens Admin Login / Admin Dashboard
  * - classroom.qorzen-technologies.in -> Automatically opens Student Login / Classroom Dashboard
  * - qorzen-technologies.in / localhost -> Full multi-app routing
  */
 const AppRoutes = () => {
-  const hostname = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
-  const isAdminSubdomain = hostname.startsWith('admin.') || hostname === 'admin.localhost';
-  const isClassroomSubdomain = hostname.startsWith('classroom.') || hostname === 'classroom.localhost';
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+  const isAdminSubdomain =
+    hostname.startsWith("admin.") || hostname === "admin.localhost";
+  const isClassroomSubdomain =
+    hostname.startsWith("classroom.") || hostname === "classroom.localhost";
 
   return (
     <Routes>
@@ -84,6 +88,7 @@ const AppRoutes = () => {
       >
         <Route path="/dashboard" element={<StudentDashboard />} />
         <Route path="/courses" element={<StudentCourses />} />
+        <Route path="/trainings" element={<StudentTrainings />} />
         <Route path="/learning" element={<StudentLearning />} />
         <Route path="/assignments" element={<StudentAssignments />} />
         <Route path="/live-classes" element={<StudentLiveClasses />} />
@@ -92,8 +97,6 @@ const AppRoutes = () => {
         <Route path="/notifications" element={<StudentNotifications />} />
         <Route path="/profile" element={<StudentProfile />} />
       </Route>
-
-
 
       {/* ================= 3. STANDALONE ADMIN LOGIN ================= */}
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -115,7 +118,7 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Services"
-              fields={['title', 'categoryLabel', 'tagline', 'description']}
+              fields={["title", "categoryLabel", "tagline", "description"]}
             />
           }
         />
@@ -124,7 +127,7 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Portfolio Case Studies"
-              fields={['title', 'client', 'category', 'description']}
+              fields={["title", "client", "category", "description"]}
             />
           }
         />
@@ -133,7 +136,16 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Courses & Programs"
-              fields={['title', 'category', 'duration', 'description']}
+              fields={["title", "category", "duration", "description"]}
+            />
+          }
+        />
+        <Route
+          path="training"
+          element={
+            <AdminCrudPage
+              title="Training Programs"
+              fields={["title", "category", "duration", "description"]}
             />
           }
         />
@@ -142,7 +154,7 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Blog Articles"
-              fields={['title', 'author', 'category', 'description']}
+              fields={["title", "author", "category", "description"]}
             />
           }
         />
@@ -151,7 +163,7 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Client Testimonials"
-              fields={['name', 'role', 'text']}
+              fields={["name", "role", "text"]}
             />
           }
         />
@@ -160,7 +172,7 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Careers & Roles"
-              fields={['title', 'department', 'location', 'type']}
+              fields={["title", "department", "location", "type"]}
             />
           }
         />
@@ -169,9 +181,13 @@ const AppRoutes = () => {
           element={
             <AdminCrudPage
               title="Form Submissions"
-              fields={['name', 'email', 'service', 'message']}
+              fields={["name", "email", "service", "message"]}
             />
           }
+        />
+        <Route
+          path="enrollment-requests"
+          element={<AdminEnrollmentRequests />}
         />
         <Route path="profile" element={<AdminProfile />} />
       </Route>
@@ -179,15 +195,69 @@ const AppRoutes = () => {
       {/* ================= 5. PUBLIC CUSTOMER LAYOUT & WEBSITE ================= */}
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/services" element={<ServiceDetail />} />
+        <Route path="/services" element={<ServicesList />} />
         <Route path="/services/:serviceId" element={<ServiceDetail />} />
-        <Route path="/training/ai-tools" element={<AITools />} />
-        <Route path="/training/technical" element={<Technical />} />
-        <Route path="/training/non-technical" element={<NonTechnical />} />
-        <Route path="/training/networking" element={<Networking />} />
-        <Route path="/training/corporate-training" element={<CorporateTraining />} />
-        <Route path="/course/ai-tools" element={<AITools />} />
-        <Route path="/course/online-business" element={<OnlineBusiness />} />
+
+        {/* Training: one page, category tabs driven by real DB data */}
+        <Route
+          path="/training"
+          element={
+            <CourseCategoryBrowser
+              pageTitle="Training Programs"
+              pageSubtitle="Hands-on skill training across AI, technical, non-technical, networking, and corporate domains."
+              badgeText="QorZen Training"
+              allowedCategories={TRAINING_CATEGORIES}
+              fetchFn={getPublicTrainings}
+              itemType="training"
+            />
+          }
+        />
+        {/* Old per-category training URLs redirect to the unified page */}
+        <Route
+          path="/training/ai-tools"
+          element={<Navigate to="/training" replace />}
+        />
+        <Route
+          path="/training/technical"
+          element={<Navigate to="/training" replace />}
+        />
+        <Route
+          path="/training/non-technical"
+          element={<Navigate to="/training" replace />}
+        />
+        <Route
+          path="/training/networking"
+          element={<Navigate to="/training" replace />}
+        />
+        <Route
+          path="/training/corporate-training"
+          element={<Navigate to="/training" replace />}
+        />
+
+        {/* Courses: NOTE this is "/course" (singular) — "/courses" (plural) is
+            already used by the protected student portal above, so we can't
+            reuse that path here without a conflict. */}
+        <Route
+          path="/course"
+          element={
+            <CourseCategoryBrowser
+              pageTitle="All Courses"
+              pageSubtitle="Browse every course we offer, purchasable and trackable through your student portal."
+              badgeText="QorZen Courses"
+              fetchFn={getPublicCourses}
+            />
+          }
+        />
+        {/* Old per-category course URLs redirect to the unified page */}
+        <Route
+          path="/course/ai-tools"
+          element={<Navigate to="/course" replace />}
+        />
+        <Route
+          path="/course/online-business"
+          element={<Navigate to="/course" replace />}
+        />
+
         <Route path="/internship" element={<InternshipsList />} />
         <Route path="/internship/enroll" element={<InternshipDetails />} />
         <Route path="/internship/enroll/:id" element={<InternshipDetails />} />

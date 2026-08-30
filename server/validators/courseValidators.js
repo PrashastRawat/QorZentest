@@ -6,4 +6,6 @@ export const validateCreateCourse = [
   body("price").notEmpty().withMessage("Price is required")
     .isFloat({ min: 0 }).withMessage("Price must be a positive number"),
   body("instructor").trim().notEmpty().withMessage("Instructor name is required"),
+  body("category").optional().trim(),
+  body("duration").optional().trim(),
 ];

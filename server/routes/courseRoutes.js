@@ -20,7 +20,7 @@ router.get("/", getCourses);
 router.get("/my/purchased", protect, getMyCourses);
 router.get("/:id", optionalAuth, getCourseById);
 
-router.post("/", protect, authorize("admin"), upload.single("image"), validateCreateCourse, validateRequest, createCourse);
+router.post("/", protect, authorize("admin"), upload.single("thumbnail"), validateCreateCourse, validateRequest, createCourse);
 router.put("/:id", protect, authorize("admin"), updateCourse);
 router.delete("/:id", protect, authorize("admin"), deleteCourse);
 

@@ -1,5 +1,6 @@
 import api from './axiosInstance';
 
+export const createEnrollmentRequest = (data) => api.post('/enrollment-requests', data);
 export const getStudentDashboard = () => api.get('/student/dashboard');
 export const getEnrolledCourses = () => api.get('/student/courses');
 export const getCourseDetails = (courseId) => api.get(`/student/courses/${courseId}`);
@@ -13,3 +14,5 @@ export const getCertificates = () => api.get('/student/certificates');
 export const verifyCertificate = (credentialId) => api.get(`/student/certificates/verify/${credentialId}`);
 export const getNotifications = () => api.get('/student/notifications');
 export const markNotificationRead = (notificationId) => api.put(`/student/notifications/${notificationId}/read`, {});
+export const getEnrolledTrainings = () => api.get('/student/trainings');
+export const deleteNotification = (notificationId) => api.delete(`/student/notifications/${notificationId}`);

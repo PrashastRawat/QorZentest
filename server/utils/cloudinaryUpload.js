@@ -5,7 +5,7 @@ import cloudinary from "../config/cloudinary.js";
 export const uploadToCloudinary = (fileBuffer, folder = "qorzen") => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder },
+      { folder, resource_type: "auto" },   
       (error, result) => {
         if (error) return reject(error);
         resolve({

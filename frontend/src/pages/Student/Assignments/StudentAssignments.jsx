@@ -1,45 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FileCheck2,
   UploadCloud,
   CheckCircle2,
   Clock,
-  AlertCircle,
   X,
   FileText,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
-import { mockAssignments } from '../../../data/studentMockData';
+import { getAssignments, submitAssignment } from '../../../api/studentApi';
 
 const StudentAssignments = () => {
-  const [assignmentsList, setAssignmentsList] = useState(mockAssignments);
+  const [assignmentsList, setAssignmentsList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeSubmitModal, setActiveSubmitModal] = useState(null);
-  const [submissionLink, setSubmissionLink] = useState('');
-  const [submissionNotes, setSubmissionNotes] = useState('');
+  const [submissionFile, setSubmissionFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+
+  const fetchAssignments = async () => {
+    try {
+      setLoading(true);
+      const res = await getAssignments();
+      setAssignmentsList(res.data || []);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load assignments');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOpenSubmit = (asg) => {
     setActiveSubmitModal(asg);
-    setSubmissionLink('');
-    setSubmissionNotes('');
+    setSubmissionFile(null);
   };
 
-  const handleConfirmSubmit = (e) => {
+  const handleConfirmSubmit = async (e) => {
     e.preventDefault();
+    if (!submissionFile) {
+      alert('Please choose a file (PDF or ZIP) to submit.');
+      return;
+    }
     setSubmitting(true);
-    setTimeout(() => {
-      setAssignmentsList((prev) =>
-        prev.map((item) =>
-          item.id === activeSubmitModal.id
-            ? { ...item, status: 'Submitted', grade: 'Under Mentor Review' }
-            : item
-        )
-      );
-      setSubmitting(false);
+    try {
+      const fd = new FormData();
+      fd.append('file', submissionFile);
+      await submitAssignment(activeSubmitModal._id, fd);
       setActiveSubmitModal(null);
-    }, 600);
+      fetchAssignments(); // re-fetch so status reflects the real backend state
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to submit assignment');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#78716c' }}>Loading your assignments...</div>;
+  }
+
+  if (error) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#991b1b' }}>Something went wrong: {error}</div>;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -57,11 +84,17 @@ const StudentAssignments = () => {
         </p>
       </div>
 
+      {assignmentsList.length === 0 && (
+        <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
+          No assignments have been posted for your courses yet.
+        </p>
+      )}
+
       {/* Assignment List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {assignmentsList.map((asg) => (
           <div
-            key={asg.id}
+            key={asg._id}
             style={{
               backgroundColor: '#ffffff',
               border: '0.0625rem solid #d9cfc7',
@@ -90,14 +123,15 @@ const StudentAssignments = () => {
                     fontWeight: 700,
                     padding: '0.25rem 0.65rem',
                     borderRadius: '0.375rem',
-                    backgroundColor: asg.status === 'Submitted' ? '#dcfce7' : '#fee2e2',
-                    color: asg.status === 'Submitted' ? '#166534' : '#991b1b'
+                    backgroundColor: asg.status === 'pending' ? '#fee2e2' : '#dcfce7',
+                    color: asg.status === 'pending' ? '#991b1b' : '#166534',
+                    textTransform: 'capitalize'
                   }}
                 >
                   {asg.status}
                 </span>
                 <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#78716c' }}>
-                  {asg.marks}
+                  /{asg.maxMarks}
                 </span>
               </div>
             </div>
@@ -106,19 +140,31 @@ const StudentAssignments = () => {
               {asg.description}
             </p>
 
+            {asg.briefUrl && (
+              <a
+                href={asg.briefUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontSize: '0.8rem', color: '#1c1917', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', width: 'fit-content' }}
+              >
+                <FileText size={14} />
+                <span>View assignment brief</span>
+              </a>
+            )}
+
             {asg.feedback && (
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f0fdf4', border: '0.0625rem solid #bbf7d0', borderRadius: '0.5rem', fontSize: '0.78rem', color: '#166534' }}>
-                <strong>Mentor Feedback:</strong> {asg.feedback} (Score: {asg.grade})
+                <strong>Mentor Feedback:</strong> {asg.feedback} {asg.grade ? `(Score: ${asg.grade})` : ''}
               </div>
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '0.0625rem solid #efe9e3', flexWrap: 'wrap', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.75rem', color: '#78716c', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                 <Clock size={13} />
-                Due Date: <strong>{asg.dueDate}</strong>
+                Due Date: <strong>{asg.dueDate ? new Date(asg.dueDate).toLocaleDateString() : '—'}</strong>
               </span>
 
-              {asg.status === 'Pending' ? (
+              {asg.status === 'pending' ? (
                 <button
                   onClick={() => handleOpenSubmit(asg)}
                   style={{
@@ -141,7 +187,7 @@ const StudentAssignments = () => {
               ) : (
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#16a34a', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                   <CheckCircle2 size={15} />
-                  <span>Submitted Successfully</span>
+                  <span>{asg.status === 'graded' ? 'Graded' : 'Submitted — awaiting review'}</span>
                 </span>
               )}
             </div>
@@ -194,44 +240,27 @@ const StudentAssignments = () => {
               <form onSubmit={handleConfirmSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1c1917', display: 'block', marginBottom: '0.25rem' }}>
-                    GitHub Repository / Project Demo URL *
+                    Upload File (PDF or ZIP) *
                   </label>
                   <input
-                    type="url"
+                    type="file"
+                    accept=".pdf,.zip"
                     required
-                    placeholder="https://github.com/username/project-repo"
-                    value={submissionLink}
-                    onChange={(e) => setSubmissionLink(e.target.value)}
+                    onChange={(e) => setSubmissionFile(e.target.files[0] || null)}
                     style={{
                       width: '100%',
-                      padding: '0.65rem 0.85rem',
+                      padding: '0.5rem',
                       borderRadius: '0.5rem',
                       border: '0.0625rem solid #d9cfc7',
-                      fontSize: '0.85rem',
+                      fontSize: '0.82rem',
                       boxSizing: 'border-box'
                     }}
                   />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1c1917', display: 'block', marginBottom: '0.25rem' }}>
-                    Student Notes / Implementation Summary
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Provide any instructions or test credentials for the mentor reviewer..."
-                    value={submissionNotes}
-                    onChange={(e) => setSubmissionNotes(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.65rem 0.85rem',
-                      borderRadius: '0.5rem',
-                      border: '0.0625rem solid #d9cfc7',
-                      fontSize: '0.85rem',
-                      boxSizing: 'border-box',
-                      fontFamily: 'inherit'
-                    }}
-                  />
+                  {submissionFile && (
+                    <p style={{ fontSize: '0.75rem', color: '#78716c', marginTop: '0.35rem' }}>
+                      Selected: {submissionFile.name}
+                    </p>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -245,9 +274,10 @@ const StudentAssignments = () => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    style={{ padding: '0.55rem 1.15rem', borderRadius: '0.5rem', border: 'none', backgroundColor: '#1c1917', color: '#ffffff', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                    style={{ padding: '0.55rem 1.15rem', borderRadius: '0.5rem', border: 'none', backgroundColor: '#1c1917', color: '#ffffff', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
                   >
-                    {submitting ? 'Submitting Code...' : 'Confirm Submission'}
+                    {submitting ? <Loader2 size={14} className="animate-spin" /> : null}
+                    <span>{submitting ? 'Uploading...' : 'Confirm Submission'}</span>
                   </button>
                 </div>
               </form>

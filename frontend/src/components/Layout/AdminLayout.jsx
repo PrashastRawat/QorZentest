@@ -7,6 +7,7 @@ import {
   FileText,
   MessageSquareQuote,
   Inbox,
+  ClipboardCheck,
   LogOut,
   Menu,
   X,
@@ -14,7 +15,8 @@ import {
   ShieldCheck,
   User,
   Globe,
-  ExternalLink
+  ExternalLink,
+  Layers
 } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import '../StudentPortal/StudentLayout.css';
@@ -24,10 +26,12 @@ const adminNavItems = [
   { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness },
   { name: 'Portfolio', path: '/admin/portfolio', icon: LayoutDashboard },
   { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
+  { name: 'Training', path: '/admin/training', icon: Layers },
   { name: 'Blog', path: '/admin/blog', icon: FileText },
   { name: 'Testimonials', path: '/admin/testimonials', icon: MessageSquareQuote },
   { name: 'Careers', path: '/admin/careers', icon: BriefcaseBusiness },
-  { name: 'Submissions', path: '/admin/submissions', icon: Inbox }
+  { name: 'Submissions', path: '/admin/submissions', icon: Inbox },
+  { name: 'Enrollment Requests', path: '/admin/enrollment-requests', icon: ClipboardCheck }
 ];
 
 export default function AdminLayout() {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
@@ -10,80 +10,71 @@ import {
   User,
   Clock
 } from 'lucide-react';
+import { getBlogs } from '../../../api/adminApi';
 import './Blog.css';
 
-// Mock Sample Tech Insights Articles Array
-export const blogArticlesData = [
-  {
-    id: 'blog-ai-agents-2026',
-    title: 'The Rise of Agentic AI: How Multi-Agent Systems Are Replacing Manual Workflows',
-    category: 'AI & Future',
-    categoryGroup: 'ai',
-    date: 'Aug 14, 2026',
-    readTime: '5 min read',
-    author: 'Dr. Evelyn Vance',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
-    excerpt: 'Explore how modern n8n workflows, LangChain RAG pipelines, and autonomous AI agents are revolutionizing software development velocity and enterprise automation.'
-  },
-  {
-    id: 'blog-nextjs15-react19',
-    title: 'Mastering React 19 & Next.js 15: Server Actions, Compiler & Performance',
-    category: 'Web Engineering',
-    categoryGroup: 'engineering',
-    date: 'Aug 10, 2026',
-    readTime: '7 min read',
-    author: 'Alex Mercer',
-    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1000&auto=format&fit=crop',
-    excerpt: 'A deep dive into React 19’s automatic memoization, compiler optimizations, server components, and building ultra-fast web applications with 100 Lighthouse scores.'
-  },
-  {
-    id: 'blog-cloud-zero-trust',
-    title: 'Architecting Zero-Trust Cloud Security in AWS & Kubernetes Systems',
-    category: 'Cloud & Security',
-    categoryGroup: 'cloud',
-    date: 'Aug 05, 2026',
-    readTime: '6 min read',
-    author: 'Sarah Jenkins',
-    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1000&auto=format&fit=crop',
-    excerpt: 'How enterprise DevOps teams enforce IAM least privilege, container network policies, and automated vulnerability scanning across multi-region Kubernetes clusters.'
-  },
-  {
-    id: 'blog-b2b-performance-marketing',
-    title: 'Data-Driven Performance Marketing: Scaling SaaS ROAS Beyond 5x',
-    category: 'Digital Growth',
-    categoryGroup: 'growth',
-    date: 'Jul 28, 2026',
-    readTime: '4 min read',
-    author: 'David Chen',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop',
-    excerpt: 'Discover actionable strategies for Meta Pixel tracking, Google Search intent bidding, and conversion rate optimization (CRO) that consistently scale high-ticket B2B funnels.'
-  }
-];
+const formatDate = (isoString) => {
+  if (!isoString) return '';
+  return new Date(isoString).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
 
-const categories = [
-  { key: 'all', label: 'All Articles' },
-  { key: 'ai', label: 'AI & Automation' },
-  { key: 'engineering', label: 'Web & Tech' },
-  { key: 'cloud', label: 'Cloud & Security' },
-  { key: 'growth', label: 'Digital Growth' }
-];
+// Rough estimate since the model doesn't store a readTime field:
+// ~200 words per minute, minimum 1 minute.
+const estimateReadTime = (content) => {
+  if (!content) return '1 min read';
+  const words = content.trim().split(/\s+/).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  return `${minutes} min read`;
+};
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedArticleModal, setSelectedArticleModal] = useState(null);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchBlogs = async () => {
+      try {
+        const res = await getBlogs();
+        const data = res.data?.data || res.data || [];
+        if (isMounted) setArticles(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('[Blog] Failed to load blog posts:', err);
+        if (isMounted) setError('Unable to load articles right now. Please try again later.');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchBlogs();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Categories are derived from whatever's actually in the DB, since the
+  // old fixed 4-category list doesn't match real category values admins type in.
+  const categories = useMemo(() => {
+    const unique = [...new Set(articles.map((a) => a.category).filter(Boolean))];
+    return [{ key: 'all', label: 'All Articles' }, ...unique.map((c) => ({ key: c, label: c }))];
+  }, [articles]);
 
   const filteredArticles = useMemo(() => {
-    return blogArticlesData.filter((article) => {
-      const matchesCategory = activeCategory === 'all' || article.categoryGroup === activeCategory;
+    return articles.filter((article) => {
+      const matchesCategory = activeCategory === 'all' || article.category === activeCategory;
       const matchesSearch =
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.category.toLowerCase().includes(searchQuery.toLowerCase());
+        (article.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (article.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (article.category || '').toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [searchQuery, activeCategory]);
-
+  }, [articles, searchQuery, activeCategory]);
+  
   return (
     <div className="resource-blog-page">
       {/* Blog Hero Section */}
@@ -162,58 +153,66 @@ const Blog = () => {
 
           {filteredArticles.length > 0 ? (
             <div className="articles-cards-grid">
-              {filteredArticles.map((article, index) => (
-                <motion.article
-                  key={article.id}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.4, delay: index * 0.08 }}
-                  whileHover={{ y: -6 }}
-                  className="article-card"
-                >
-                  {/* Article Thumbnail */}
-                  <div className="article-image-wrap">
-                    <img src={article.image} alt={article.title} loading="lazy" />
-                    <span className="article-cat-tag">{article.category}</span>
-                  </div>
+              {filteredArticles.map((article, index) => {
+                const thumbnail = article.images?.[0]?.url;
+                const excerpt = article.content
+                  ? article.content.slice(0, 140).trim() + (article.content.length > 140 ? '...' : '')
+                  : '';
+                const authorName = article.author?.name || 'QorZen Team';
 
-                  {/* Article Meta Bar */}
-                  <div className="article-card-body">
-                    <div className="article-meta-row">
-                      <div className="meta-item">
-                        <Calendar size={13} className="meta-icon" />
-                        <span>{article.date}</span>
+                return (
+                  <motion.article
+                    key={article._id}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ duration: 0.4, delay: index * 0.08 }}
+                    whileHover={{ y: -6 }}
+                    className="article-card"
+                  >
+                    {/* Article Thumbnail */}
+                    <div className="article-image-wrap">
+                      {thumbnail && <img src={thumbnail} alt={article.title} loading="lazy" />}
+                      <span className="article-cat-tag">{article.category}</span>
+                    </div>
+
+                    {/* Article Meta Bar */}
+                    <div className="article-card-body">
+                      <div className="article-meta-row">
+                        <div className="meta-item">
+                          <Calendar size={13} className="meta-icon" />
+                          <span>{formatDate(article.createdAt)}</span>
+                        </div>
+                        <div className="meta-item">
+                          <Clock size={13} className="meta-icon" />
+                          <span>{estimateReadTime(article.content)}</span>
+                        </div>
                       </div>
-                      <div className="meta-item">
-                        <Clock size={13} className="meta-icon" />
-                        <span>{article.readTime}</span>
+
+                      <h3 className="article-card-title">{article.title}</h3>
+                      <p className="article-card-excerpt">{excerpt}</p>
+
+                      <div className="article-author-row">
+                        <div className="author-info">
+                          <User size={14} className="author-icon" />
+                          <span>{authorName}</span>
+                        </div>
                       </div>
                     </div>
 
-                    <h3 className="article-card-title">{article.title}</h3>
-                    <p className="article-card-excerpt">{article.excerpt}</p>
-
-                    <div className="article-author-row">
-                      <div className="author-info">
-                        <User size={14} className="author-icon" />
-                        <span>{article.author}</span>
-                      </div>
+                    {/* Article Card Footer CTA */}
+                    <div className="article-card-footer">
+                      <button
+                        className="article-read-btn"
+                        onClick={() => setSelectedArticleModal(article)}
+                      >
+                        <span>Read Article</span>
+                        <ArrowRight size={15} />
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Article Card Footer CTA */}
-                  <div className="article-card-footer">
-                    <button
-                      className="article-read-btn"
-                      onClick={() => setSelectedArticleModal(article)}
-                    >
-                      <span>Read Article</span>
-                      <ArrowRight size={15} />
-                    </button>
-                  </div>
-                </motion.article>
-              ))}
+                  </motion.article>
+                );
+              })}
             </div>
           ) : (
             <div className="no-results-box">
@@ -263,22 +262,21 @@ const Blog = () => {
               <h2 className="modal-article-title">{selectedArticleModal.title}</h2>
 
               <div className="modal-meta-bar">
-                <span>By {selectedArticleModal.author}</span>
+                <span>By {selectedArticleModal.author?.name || 'QorZen Team'}</span>
                 <span>•</span>
-                <span>{selectedArticleModal.date}</span>
+                <span>{formatDate(selectedArticleModal.createdAt)}</span>
                 <span>•</span>
-                <span>{selectedArticleModal.readTime}</span>
+                <span>{estimateReadTime(selectedArticleModal.content)}</span>
               </div>
 
-              <div className="modal-article-hero-img">
-                <img src={selectedArticleModal.image} alt={selectedArticleModal.title} />
-              </div>
+              {selectedArticleModal.images?.[0]?.url && (
+                <div className="modal-article-hero-img">
+                  <img src={selectedArticleModal.images[0].url} alt={selectedArticleModal.title} />
+                </div>
+              )}
 
               <div className="modal-article-text">
-                <p><strong>Abstract:</strong> {selectedArticleModal.excerpt}</p>
-                <p>
-                  At QorZen Technologies, we continuously evaluate production software patterns, AI multi-agent orchestration, and serverless cloud architectures to deliver state-of-the-art results for learners and corporate clients.
-                </p>
+                <p>{selectedArticleModal.content}</p>
               </div>
 
               <div className="modal-actions">

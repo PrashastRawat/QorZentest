@@ -11,6 +11,13 @@ import testimonialRoutes from "./routes/testimonialRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import careerRoutes from "./routes/careerRoutes.js";
+import internshipRoutes from "./routes/internshipRoutes.js"
+import studentRoutes from './routes/studentRoutes.js';
+import trainingRoutes from "./routes/trainingRoutes.js";
+import enrollmentRequestRoutes from "./routes/enrollmentRequestRoutes.js";
+import assignmentRoutes from "./routes/assignmentRoutes.js";
+import liveClassRoutes from "./routes/liveClassRoutes.js";
+
 
 const app = express();
 
@@ -43,6 +50,12 @@ app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/careers", careerRoutes);
+app.use("/api/internships", internshipRoutes);
+app.use('/api/student', studentRoutes);
+app.use("/api/trainings", trainingRoutes);
+app.use("/api/enrollment-requests", enrollmentRequestRoutes);
+app.use("/api/assignments", assignmentRoutes);
+app.use("/api/live-classes", liveClassRoutes);
 
 app.use(errorMiddleware);
 

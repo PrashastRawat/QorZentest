@@ -12,10 +12,12 @@
 const BASE_URL = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Har request me JWT Token auto-inject karne ke liye helper
-const getHeaders = (customHeaders = {}) => {
+// isFormData = true means the body is FormData (file upload) — skip Content-Type
+// so the browser can set 'multipart/form-data; boundary=...' itself
+const getHeaders = (customHeaders = {}, isFormData = false) => {
   const token = localStorage.getItem('qorzen_token');
   return {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...customHeaders
   };
@@ -40,19 +42,23 @@ const api = {
       headers: getHeaders(config.headers)
     }).then(handleResponse),
 
-  post: (url, body = {}, config = {}) =>
-    fetch(`${BASE_URL}${url}`, {
+  post: (url, body = {}, config = {}) => {
+    const isFormData = body instanceof FormData;
+    return fetch(`${BASE_URL}${url}`, {
       method: 'POST',
-      headers: getHeaders(config.headers),
-      body: JSON.stringify(body)
-    }).then(handleResponse),
+      headers: getHeaders(config.headers, isFormData),
+      body: isFormData ? body : JSON.stringify(body)
+    }).then(handleResponse);
+  },
 
-  put: (url, body = {}, config = {}) =>
-    fetch(`${BASE_URL}${url}`, {
+  put: (url, body = {}, config = {}) => {
+    const isFormData = body instanceof FormData;
+    return fetch(`${BASE_URL}${url}`, {
       method: 'PUT',
-      headers: getHeaders(config.headers),
-      body: JSON.stringify(body)
-    }).then(handleResponse),
+      headers: getHeaders(config.headers, isFormData),
+      body: isFormData ? body : JSON.stringify(body)
+    }).then(handleResponse);
+  },
 
   delete: (url, config = {}) =>
     fetch(`${BASE_URL}${url}`, {

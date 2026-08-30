@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import {
   PlayCircle,
   CheckCircle2,
@@ -11,36 +11,129 @@ import {
   Layers,
   ChevronDown
 } from 'lucide-react';
-import { mockCurriculumLessons } from '../../../data/studentMockData';
+import { getEnrolledCourses, getCourseLessons, markLessonCompleted } from '../../../api/studentApi';
 import './StudentLearning.css';
 
 const StudentLearning = () => {
+  const [searchParams] = useSearchParams();
+  const courseIdFromUrl = searchParams.get('courseId');
+
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [activeCourse, setActiveCourse] = useState(null); // the Course object we're learning
+  const [lessons, setLessons] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [completedLessons, setCompletedLessons] = useState(new Set(['les-102']));
-  const [mobileCurriculumOpen, setMobileCurriculumOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [marking, setMarking] = useState(false);
 
-  const currentLesson = mockCurriculumLessons[currentIndex] || mockCurriculumLessons[0];
+  // Step 1: figure out which course to load (from URL, or default to first enrolled course)
+  useEffect(() => {
+    const resolveCourse = async () => {
+      try {
+        setLoading(true);
+        const res = await getEnrolledCourses();
+        setEnrolledCourses(res.data);
 
-  const toggleComplete = (id) => {
-    setCompletedLessons((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+        let courseId = courseIdFromUrl;
+        let course = null;
+
+        if (courseId) {
+          const match = res.data.find((e) => e.courseId?._id === courseId);
+          course = match?.courseId || null;
+        }
+
+        if (!course && res.data.length > 0) {
+          course = res.data[0].courseId;
+        }
+
+        if (!course) {
+          setError('You are not enrolled in any courses yet.');
+          setLoading(false);
+          return;
+        }
+
+        setActiveCourse(course);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load your courses');
+        setLoading(false);
+      }
+    };
+
+    resolveCourse();
+  }, [courseIdFromUrl]);
+
+  // Step 2: once we know the course, fetch its lessons (with completion status merged in)
+  useEffect(() => {
+    if (!activeCourse) return;
+
+    const fetchLessons = async () => {
+      try {
+        setLoading(true);
+        const res = await getCourseLessons(activeCourse._id);
+        setLessons(res.data);
+        setCurrentIndex(0);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load lessons');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, [activeCourse]);
+
+  const currentLesson = lessons[currentIndex];
+
+  const handleMarkComplete = async () => {
+    if (!currentLesson || currentLesson.isCompleted || marking) return;
+
+    try {
+      setMarking(true);
+      await markLessonCompleted(currentLesson._id);
+
+      // Update local state so the UI reflects completion immediately,
+      // instead of re-fetching the whole lesson list again
+      setLessons((prev) =>
+        prev.map((l, idx) => (idx === currentIndex ? { ...l, isCompleted: true } : l))
+      );
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to mark lesson complete');
+    } finally {
+      setMarking(false);
+    }
   };
 
   const handleNext = () => {
-    if (currentIndex < mockCurriculumLessons.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
+    if (currentIndex < lessons.length - 1) setCurrentIndex(currentIndex + 1);
   };
 
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   };
+
+  if (loading) {
+    return <div className="learning-classroom-shell">Loading your lessons...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="learning-classroom-shell">
+        <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
+          {error} <Link to="/courses">Browse your courses</Link>
+        </p>
+      </div>
+    );
+  }
+
+  if (!currentLesson) {
+    return (
+      <div className="learning-classroom-shell">
+        <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
+          This course doesn't have any lessons yet.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="learning-classroom-shell">
@@ -48,7 +141,7 @@ const StudentLearning = () => {
       <div className="learning-top-header">
         <div>
           <span className="learning-course-tag">
-            Course: AI Agentic Workflows & LangChain Architecture
+            Course: {activeCourse?.title}
           </span>
           <h1 className="learning-lesson-title">
             {currentLesson.title}
@@ -56,24 +149,26 @@ const StudentLearning = () => {
         </div>
 
         <button
-          onClick={() => toggleComplete(currentLesson.id)}
+          onClick={handleMarkComplete}
+          disabled={currentLesson.isCompleted || marking}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.4rem',
             padding: '0.55rem 1.15rem',
-            backgroundColor: completedLessons.has(currentLesson.id) ? '#dcfce7' : '#1c1917',
-            color: completedLessons.has(currentLesson.id) ? '#166534' : '#ffffff',
+            backgroundColor: currentLesson.isCompleted ? '#dcfce7' : '#1c1917',
+            color: currentLesson.isCompleted ? '#166534' : '#ffffff',
             border: 'none',
             borderRadius: '0.5rem',
             fontSize: '0.82rem',
             fontWeight: 800,
-            cursor: 'pointer',
+            cursor: currentLesson.isCompleted ? 'default' : 'pointer',
+            opacity: marking ? 0.6 : 1,
             transition: 'all 0.2s ease'
           }}
         >
           <CheckCircle2 size={16} />
-          <span>{completedLessons.has(currentLesson.id) ? 'Completed' : 'Mark as Completed'}</span>
+          <span>{currentLesson.isCompleted ? 'Completed' : marking ? 'Saving...' : 'Mark as Completed'}</span>
         </button>
       </div>
 
@@ -86,7 +181,6 @@ const StudentLearning = () => {
             <video
               controls
               src={currentLesson.videoUrl}
-              poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop"
               className="learning-video-element"
             />
           </div>
@@ -97,37 +191,8 @@ const StudentLearning = () => {
               Lesson Overview
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#44403c', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-              {currentLesson.summary || 'In this session, explore real-world vector database querying, query reformulation with LLMs, and cosine similarity matching algorithms.'}
+              Duration: {currentLesson.duration || 'N/A'}
             </p>
-
-            <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Downloadable Lesson Assets:
-            </h4>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {currentLesson.resources?.map((file, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  onClick={(e) => { e.preventDefault(); alert(`Downloading asset: ${file}`); }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    padding: '0.45rem 0.85rem',
-                    backgroundColor: '#efe9e3',
-                    border: '0.0625rem solid #d9cfc7',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    color: '#1c1917',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <FileDown size={14} color="#8b7050" />
-                  <span>{file}</span>
-                </a>
-              )) || <span style={{ fontSize: '0.75rem', color: '#78716c' }}>No additional downloads for this lesson.</span>}
-            </div>
 
             {/* Next / Previous Lesson Controls */}
             <div className="learning-nav-controls">
@@ -141,12 +206,12 @@ const StudentLearning = () => {
               </button>
 
               <span style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600 }}>
-                Lesson {currentIndex + 1} of {mockCurriculumLessons.length}
+                Lesson {currentIndex + 1} of {lessons.length}
               </span>
 
               <button
                 onClick={handleNext}
-                disabled={currentIndex === mockCurriculumLessons.length - 1}
+                disabled={currentIndex === lessons.length - 1}
                 className="btn-lesson-nav"
               >
                 <span>Next Lesson</span>
@@ -160,18 +225,18 @@ const StudentLearning = () => {
         <div className="curriculum-sidebar-card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>
-              Module Curriculum ({mockCurriculumLessons.length})
+              Module Curriculum ({lessons.length})
             </h3>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {mockCurriculumLessons.map((les, idx) => {
+            {lessons.map((les, idx) => {
               const isSelected = currentIndex === idx;
-              const isDone = completedLessons.has(les.id);
+              const isDone = les.isCompleted;
 
               return (
                 <div
-                  key={les.id}
+                  key={les._id}
                   onClick={() => setCurrentIndex(idx)}
                   style={{
                     padding: '0.75rem 0.85rem',

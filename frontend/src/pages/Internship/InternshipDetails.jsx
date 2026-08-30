@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useLocation, useParams, useSearchParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Briefcase,
   Check,
   CheckCircle2,
   Award,
@@ -14,13 +13,15 @@ import {
   Zap,
   ChevronRight,
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
+  User,
+  Mail,
+  Phone,
+  FileUp
 } from 'lucide-react';
-import { useEnquiryModal } from '../../context/EnquiryModalContext';
-import { ALL_INTERNSHIPS } from './InternshipsList';
+import { getInternshipById, applyToInternship } from '../../api/internshipApi';
 import './InternshipDetails.css';
 
-// 7 Step Internship Journey Timeline Data
 const journeyTimelineSteps = [
   { step: '01', title: 'Enrollment Process', desc: 'Select your preferred duration tier (1, 3, or 6 Months) and submit your registration details.' },
   { step: '02', title: 'Offer Letter', desc: 'Receive your official QorZen Internship Offer Letter within 24 hours of verification.' },
@@ -31,7 +32,6 @@ const journeyTimelineSteps = [
   { step: '07', title: 'Career Growth', desc: 'Access PPO (Pre-Placement Offer) conversion tracks, resume reviews, and corporate referrals.' }
 ];
 
-// Benefits Grid Data
 const performanceBenefits = [
   { icon: DollarSign, title: 'Stipend & Rewards', desc: 'Performance-based monthly stipend incentives for top-performing interns.' },
   { icon: UserCheck, title: 'Job Opportunity & PPO', desc: 'Direct placement pathways and full-time hiring opportunities with QorZen network partners.' },
@@ -44,31 +44,75 @@ const learningBenefits = [
   { icon: CheckCircle2, title: 'Official LOR', desc: 'Customized Letter of Recommendation for university credits and job applications.' }
 ];
 
-const InternshipDetails = ({ propsInternship }) => {
-  const { openModal } = useEnquiryModal();
-  const location = useLocation();
+const WHATSAPP_NUMBER = '918126542874'; // TEMP: personal testing number, swap before launch
+
+const InternshipDetails = () => {
   const params = useParams();
   const [searchParams] = useSearchParams();
+  const internshipId = params.id || searchParams.get('id');
 
-  // Bulletproof lookup: Priority 1: prop, Priority 2: location.state, Priority 3: query ?id=..., Priority 4: params.id, Priority 5: fallback to ALL_INTERNSHIPS[0]
-  const targetId = searchParams.get('id') || params.id;
-  const foundFromId = targetId ? ALL_INTERNSHIPS.find((item) => item.id === targetId) : null;
-
-  const passedInternship = propsInternship || location.state?.internship || foundFromId || ALL_INTERNSHIPS[0];
-
-  const title = passedInternship?.title || 'Cyber Security Intern';
-  const category = passedInternship?.category || 'Technical';
-  const tag = passedInternship?.tag || 'Security';
-  const description =
-    passedInternship?.description ||
-    'Master real-world practical skills with live project assignments, expert 1-on-1 mentorship, and guaranteed internship credentials.';
-
-  const price1Month = passedInternship?.price1Month || 799;
-  const price3Month = passedInternship?.price3Month || 1399;
-  const price6Month = passedInternship?.price6Month || 2399;
-  const tools = passedInternship?.tools || ['React.js', 'Node.js', 'Express', 'MongoDB', 'Python'];
+  const [internship, setInternship] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const [selectedPlanModal, setSelectedPlanModal] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [cvFile, setCvFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submittedApplication, setSubmittedApplication] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchInternship = async () => {
+      if (!internshipId) {
+        setFetchError('No internship specified.');
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        setFetchError(null);
+        const res = await getInternshipById(internshipId);
+        if (!cancelled) setInternship(res.data.data);
+      } catch (err) {
+        if (!cancelled) {
+          setFetchError(
+            err.response?.status === 404
+              ? 'This internship could not be found. It may have been removed.'
+              : 'Could not load this internship. Please try again shortly.'
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchInternship();
+    return () => { cancelled = true; };
+  }, [internshipId]);
+
+  if (loading) {
+    return (
+      <div className="internship-details-page">
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <p>Loading internship...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError || !internship) {
+    return (
+      <div className="internship-details-page">
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <h2>{fetchError || 'Internship not found'}</h2>
+          <Link to="/internship">Back to all internships</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const { title, category, tag, description, price1Month, price3Month, price6Month, tools = [] } = internship;
 
   const durationCards = [
     {
@@ -99,6 +143,57 @@ const InternshipDetails = ({ propsInternship }) => {
       popular: false
     }
   ];
+
+  const openApplyModal = (plan) => {
+    setSubmitError(null);
+    setSubmittedApplication(null);
+    setFormData({ name: '', email: '', phone: '' });
+    setCvFile(null);
+    setSelectedPlanModal(plan);
+  };
+
+  const closeApplyModal = () => {
+    setSelectedPlanModal(null);
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitApplication = async (e) => {
+    e.preventDefault();
+    setSubmitError(null);
+
+    if (!cvFile) {
+      setSubmitError('Please attach your CV to apply.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('email', formData.email);
+      data.append('phone', formData.phone);
+      data.append('selectedDuration', selectedPlanModal.duration);
+      data.append('cv', cvFile);
+
+      const res = await applyToInternship(internship._id, data);
+      setSubmittedApplication(res.data.data);
+    } catch (err) {
+      setSubmitError(err.response?.data?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const buildWhatsAppUrl = () => {
+    const message =
+      `Hi QorZen! I just applied for the ${title} (${selectedPlanModal?.duration}).\n` +
+      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  };
 
   return (
     <div className="internship-details-page">
@@ -155,7 +250,7 @@ const InternshipDetails = ({ propsInternship }) => {
         </div>
       </section>
 
-      {/* Section 2: Duration Pricing Grid (3 Cards) */}
+      {/* Section 2: Duration Pricing Grid */}
       <section className="pricing-grid-section">
         <div className="container">
           <div className="section-header center">
@@ -197,7 +292,7 @@ const InternshipDetails = ({ propsInternship }) => {
                   </div>
                   <div className="duration-feature-item">
                     <Check size={16} className="check-icon" />
-                    <span>Live mentor Q&A & code reviews</span>
+                    <span>Live mentor Q&amp;A &amp; code reviews</span>
                   </div>
                   <div className="duration-feature-item">
                     <Check size={16} className="check-icon" />
@@ -213,7 +308,7 @@ const InternshipDetails = ({ propsInternship }) => {
 
                 <button
                   className="btn-enroll-card"
-                  onClick={() => setSelectedPlanModal(plan)}
+                  onClick={() => openApplyModal(plan)}
                 >
                   <span>ENROLL NOW</span>
                   <ArrowRight size={16} />
@@ -224,7 +319,7 @@ const InternshipDetails = ({ propsInternship }) => {
         </div>
       </section>
 
-      {/* Section 3: Your Internship Journey (Vertical Timeline) */}
+      {/* Section 3: Journey Timeline */}
       <section className="timeline-journey-section">
         <div className="container">
           <div className="section-header center">
@@ -254,7 +349,7 @@ const InternshipDetails = ({ propsInternship }) => {
         </div>
       </section>
 
-      {/* Section 4: What You'll Get (Benefits) */}
+      {/* Section 4: Benefits */}
       <section className="benefits-section">
         <div className="container">
           <div className="section-header center">
@@ -309,7 +404,7 @@ const InternshipDetails = ({ propsInternship }) => {
         </div>
       </section>
 
-      {/* Enrollment Modal */}
+      {/* Application Modal — talks directly to /api/internships, not EnrollmentModal */}
       <AnimatePresence>
         {selectedPlanModal && (
           <motion.div
@@ -317,7 +412,7 @@ const InternshipDetails = ({ propsInternship }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="modal-backdrop"
-            onClick={() => setSelectedPlanModal(null)}
+            onClick={closeApplyModal}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -326,68 +421,183 @@ const InternshipDetails = ({ propsInternship }) => {
               className="modal-content enroll-modal"
               onClick={(e) => e.stopPropagation()}
             >
-              <button className="modal-close-btn" onClick={() => setSelectedPlanModal(null)}>
+              <button className="modal-close-btn" onClick={closeApplyModal}>
                 <X size={20} />
               </button>
 
-              <div className="modal-header-badge">
-                <Zap size={14} className="modal-badge-icon" />
-                <span>Internship Enrollment</span>
-              </div>
+              {!submittedApplication ? (
+                <>
+                  <div className="modal-header-badge">
+                    <Zap size={14} className="modal-badge-icon" />
+                    <span>Internship Application</span>
+                  </div>
 
-              <h2 className="modal-title">Enroll in {title}</h2>
-              <p className="modal-subtitle">
-                Selected Plan: <strong>{selectedPlanModal.duration} Duration</strong> at{' '}
-                <strong className="modal-highlight-price">{selectedPlanModal.discountPrice}</strong> ({selectedPlanModal.badge})
-              </p>
+                  <h2 className="modal-title">Apply for {title}</h2>
+                  <p className="modal-subtitle">
+                    Selected Plan: <strong>{selectedPlanModal.duration} Duration</strong> at{' '}
+                    <strong className="modal-highlight-price">{selectedPlanModal.discountPrice}</strong> ({selectedPlanModal.badge})
+                  </p>
 
-              <div className="enroll-summary-box">
-                <div className="summary-row">
-                  <span>Program:</span>
-                  <strong>{title}</strong>
-                </div>
-                <div className="summary-row">
-                  <span>Duration:</span>
-                  <strong>{selectedPlanModal.duration}</strong>
-                </div>
-                <div className="summary-row">
-                  <span>Access Mode:</span>
-                  <strong>Online</strong>
-                </div>
-                <div className="summary-row total">
-                  <span>Total Amount:</span>
-                  <strong className="modal-total-price">{selectedPlanModal.discountPrice}</strong>
-                </div>
-              </div>
+                  {submitError && (
+                    <div className="enrollment-error-banner" role="alert">
+                      <span>{submitError}</span>
+                    </div>
+                  )}
 
-              <div className="modal-actions">
-                <button
-                  className="btn-modal-primary"
-                  onClick={() => {
-                    const chosenPlan = selectedPlanModal;
-                    setSelectedPlanModal(null);
-                    openModal({
-                      title: `${title} (${chosenPlan.duration})`,
-                      duration: chosenPlan.duration,
-                      price: chosenPlan.discountPrice,
-                      category: 'Internship',
-                      mode: 'Online'
-                    });
-                  }}
-                >
-                  <span>Proceed with Application & Enrollment</span>
-                  <ArrowRight size={17} />
-                </button>
-                <a
-                  href="https://wa.me/919917529504?text=Hi%20QorZen%20Technologies,%20I%20want%20to%20enroll%20in%20the%20Internship%20Program"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-modal-secondary"
-                >
-                  <span>Contact Program Advisor</span>
-                  <ExternalLink size={15} />
-                </a>
-              </div>
+                  <div className="enroll-summary-box">
+                    <div className="summary-row">
+                      <span>Program:</span>
+                      <strong>{title}</strong>
+                    </div>
+                    <div className="summary-row">
+                      <span>Duration:</span>
+                      <strong>{selectedPlanModal.duration}</strong>
+                    </div>
+                    <div className="summary-row total">
+                      <span>Total Amount:</span>
+                      <strong className="modal-total-price">{selectedPlanModal.discountPrice}</strong>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleSubmitApplication} className="enrollment-entry-form">
+                    <div className="form-field-wrap">
+                      <label htmlFor="name">Full Name</label>
+                      <div className="input-with-icon">
+                        <User size={16} className="field-icon" />
+                        <input
+                          id="name"
+                          type="text"
+                          name="name"
+                          required
+                          placeholder="Enter your full name..."
+                          value={formData.name}
+                          onChange={handleFormChange}
+                          className="input"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-field-wrap">
+                      <label htmlFor="email">Email Address</label>
+                      <div className="input-with-icon">
+                        <Mail size={16} className="field-icon" />
+                        <input
+                          id="email"
+                          type="email"
+                          name="email"
+                          required
+                          placeholder="name@example.com"
+                          value={formData.email}
+                          onChange={handleFormChange}
+                          className="input"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-field-wrap">
+                      <label htmlFor="phone">Phone Number</label>
+                      <div className="input-with-icon">
+                        <Phone size={16} className="field-icon" />
+                        <input
+                          id="phone"
+                          type="tel"
+                          name="phone"
+                          required
+                          placeholder="+91 98765 43210"
+                          value={formData.phone}
+                          onChange={handleFormChange}
+                          className="input"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-field-wrap">
+                      <label htmlFor="cv">Upload CV (PDF/DOC) *</label>
+                      <div className="input-with-icon">
+                        <FileUp size={16} className="field-icon" />
+                        <input
+                          id="cv"
+                          type="file"
+                          name="cv"
+                          accept=".pdf,.doc,.docx,application/pdf"
+                          required
+                          onChange={(e) => setCvFile(e.target.files[0] || null)}
+                          className="input"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-modal-primary"
+                    >
+                      <span>{isSubmitting ? 'Submitting Application...' : 'Confirm & Submit Application'}</span>
+                      <ArrowRight size={17} />
+                    </button>
+                  </form>
+
+                  <a
+                    href="https://wa.me/919917529504?text=Hi%20QorZen%20Technologies,%20I%20want%20to%20enroll%20in%20the%20Internship%20Program"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-modal-secondary"
+                  >
+                    <span>Contact Program Advisor</span>
+                    <ExternalLink size={15} />
+                  </a>
+                </>
+              ) : (
+                <div className="enrollment-success-view">
+                  <div className="success-icon-badge">
+                    <CheckCircle2 size={42} className="check-svg" />
+                  </div>
+
+                  <h2 className="success-title">Application Submitted!</h2>
+                  <p className="success-subtitle">
+                    Thank you, <strong className="text-highlight">{formData.name}</strong>. Your application for{' '}
+                    <strong className="text-highlight">{title}</strong> ({selectedPlanModal.duration}) has been received.
+                  </p>
+
+                  <div className="order-summary-box">
+                    <div className="summary-item-row">
+                      <span>Selected Program:</span>
+                      <strong>{title}</strong>
+                    </div>
+                    <div className="summary-item-row">
+                      <span>Duration:</span>
+                      <strong>{selectedPlanModal.duration}</strong>
+                    </div>
+                    <div className="summary-item-row">
+                      <span>Fee:</span>
+                      <strong>{selectedPlanModal.discountPrice}</strong>
+                    </div>
+                    <div className="summary-item-row">
+                      <span>Contact Email:</span>
+                      <strong>{formData.email}</strong>
+                    </div>
+                  </div>
+
+                  <p className="next-steps-text">
+                    Our team will review your CV and reach out within 24 hours with your offer letter. Tap below to also notify us on WhatsApp.
+                  </p>
+
+                  <a
+                    href={buildWhatsAppUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-confirm-enrollment"
+                    style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
+                  >
+                    <span>Continue on WhatsApp</span>
+                    <ArrowRight size={16} />
+                  </a>
+
+                  <button onClick={closeApplyModal} className="btn-done-close">
+                    Return to Internships
+                  </button>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

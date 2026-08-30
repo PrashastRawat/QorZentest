@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import User from "../models/User.js"
+import Student from "../models/Student.js"
 
 export const signUp = async (req, res, next)=>{
     try {
@@ -17,6 +18,7 @@ export const signUp = async (req, res, next)=>{
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = await User.create({name, email, password: hashedPassword})
+        await Student.create({ userId: newUser._id })
 
         const token = jwt.sign({userId:newUser._id}, process.env.JWT_SECRET,{
             expiresIn: process.env.JWT_EXPIRES_IN,

@@ -1,29 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Clock, ArrowRight, Tag } from 'lucide-react';
-import { coursePricingData } from '../../data/courses';
+import { getPublicCourses } from '../../api/publicApi';
 import { useEnquiryModal } from '../../context/EnquiryModalContext';
 import './Courses.css';
 
-const categories = [
-  'All Courses',
-  'Networking',
-  'AI & Digital Skills',
-  'Technical Domains',
-  'Non-Technical Domains'
-];
-
-/**
- * Public Courses Page Component
- * High-Density 3-Column Compact Grid Layout with Dynamic Enrollment Popup.
- */
 const Courses = () => {
   const [activeCategory, setActiveCategory] = useState('All Courses');
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const { openModal } = useEnquiryModal();
 
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const response = await getPublicCourses();
+        setCourses(response.data?.data || []);
+      } catch (requestError) {
+        setError(requestError.message || 'Unable to load courses right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCourses();
+  }, []);
+
+  const categories = ['All Courses', ...new Set(courses.map((course) => course.category).filter(Boolean))];
   const filteredCourses = activeCategory === 'All Courses'
-    ? coursePricingData
-    : coursePricingData.filter((c) => c.category === activeCategory);
+    ? courses
+    : courses.filter((course) => course.category === activeCategory);
 
   return (
     <div className="courses-page-wrapper">
@@ -56,7 +62,12 @@ const Courses = () => {
         </div>
 
         {/* Compact 3-Column High-Density Grid Mapping */}
-        <div className="courses-grid-layout">
+        {loading && <p className="courses-status-message">Loading courses...</p>}
+        {!loading && error && <p className="courses-status-message courses-error-message">{error}</p>}
+        {!loading && !error && filteredCourses.length === 0 && (
+          <p className="courses-status-message">No courses are available in this category yet.</p>
+        )}
+        {!loading && !error && filteredCourses.length > 0 && <div className="courses-grid-layout">
           {filteredCourses.map((course, idx) => (
             <motion.div
               key={course.id || course.title + idx}
@@ -93,7 +104,7 @@ const Courses = () => {
                 <div>
                   <span className="fee-lbl">Enrollment Fee</span>
                   <span className="fee-val">
-                    ₹{course.price.toLocaleString('en-IN')}
+                    ₹{Number(course.price || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
 
@@ -108,7 +119,7 @@ const Courses = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+        </div>}
       </section>
     </div>
   );

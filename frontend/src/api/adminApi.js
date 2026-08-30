@@ -59,6 +59,7 @@ export const deleteProject = (id) => api.delete(`/projects/${id}`);
 // --- Courses & Internships ---
 export const getCourses = () => api.get('/courses');
 export const createCourse = (data) => api.post('/courses', data);
+export const updateCourse = (id, data) => api.put(`/courses/${id}`, data);
 export const deleteCourse = (id) => api.delete(`/courses/${id}`);
 
 // --- Blog & Insights ---
@@ -79,3 +80,28 @@ export const deleteJob = (id) => api.delete(`/jobs/${id}`);
 // --- Contact Form & Enrollment Submissions ---
 export const getSubmissions = () => api.get('/submissions');
 export const deleteSubmission = (id) => api.delete(`/submissions/${id}`);
+
+// --- Training Programs ---
+export const getTrainings = () => api.get('/trainings');
+export const createTraining = (data) => api.post('/trainings', data);
+export const updateTraining = (id, data) => api.put(`/trainings/${id}`, data);
+export const deleteTraining = (id) => api.delete(`/trainings/${id}`);
+
+// --- Enrollment Requests ---
+export const getEnrollmentRequests = (status) =>
+	api.get(status ? `/enrollment-requests?status=${status}` : '/enrollment-requests');
+export const confirmEnrollmentRequest = (id, data) => api.put(`/enrollment-requests/${id}/confirm`, data);
+export const rejectEnrollmentRequest = (id) => api.put(`/enrollment-requests/${id}/reject`);
+
+// --- Course Assignments (admin) ---
+export const getCourseAssignments = (courseId) => api.get(`/assignments/course/${courseId}`);
+export const createAssignment = (courseId, formData) => api.post(`/assignments/course/${courseId}`, formData);
+export const updateAssignment = (id, formData) => api.put(`/assignments/${id}`, formData);
+export const deleteAssignment = (id) => api.delete(`/assignments/${id}`);
+export const getAssignmentSubmissions = (assignmentId) => api.get(`/assignments/${assignmentId}/submissions`);
+export const gradeSubmission = (submissionId, data) => api.put(`/assignments/submissions/${submissionId}/grade`, data);
+
+export const getLiveClassesForItem = (itemType, itemId) => api.get(`/live-classes/item/${itemType}/${itemId}`);
+export const createLiveClass = (data) => api.post('/live-classes', data);
+export const deleteLiveClass = (id) => api.delete(`/live-classes/${id}`);
+export const getRevenueSummary = () => api.get('/enrollment-requests/stats/revenue');

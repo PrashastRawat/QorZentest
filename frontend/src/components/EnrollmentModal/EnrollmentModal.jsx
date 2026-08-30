@@ -14,7 +14,42 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useEnquiryModal } from '../../context/EnquiryModalContext';
+import { createEnrollmentRequest } from '../../api/studentApi';
 import './EnrollmentModal.css';
+
+// TEMP: personal testing number. Replace with QorZen's real WhatsApp Business number before launch.
+const WHATSAPP_NUMBER = '918126542874';
+
+// Visually hides the native radio input (no dot) while keeping it in the
+// DOM and tabbable — the label itself becomes the clickable "button".
+const hiddenRadioStyle = {
+  width: 0,
+  height: 0,
+  opacity: 0,
+  margin: 0,
+  padding: 0,
+  border: 'none'
+};
+
+// Shared "toggle button" look for both radio groups: solid background swap
+// on selection instead of a visible radio dot.
+const toggleCardStyle = (isSelected, disabled = false) => ({
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '0.4rem',
+  fontSize: '0.78rem',
+  fontWeight: 700,
+  padding: '0.55rem 0.75rem',
+  border: `0.0625rem solid ${isSelected ? '#1c1917' : '#d9cfc7'}`,
+  borderRadius: '0.5rem',
+  cursor: disabled ? 'not-allowed' : 'pointer',
+  backgroundColor: disabled ? '#f5f4f2' : isSelected ? '#1c1917' : '#ffffff',
+  color: disabled ? '#a8a29e' : isSelected ? '#ffffff' : '#1c1917',
+  transition: 'background-color 0.15s ease, border-color 0.15s ease',
+  textAlign: 'center'
+});
 
 /**
  * EnrollmentModal Component (src/components/EnrollmentModal/EnrollmentModal.jsx)
@@ -34,6 +69,8 @@ const EnrollmentModal = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
+  const [method, setMethod] = useState('whatsapp');
+  const [error, setError] = useState(null);
 
   if (!isOpen) return null;
 
@@ -42,41 +79,56 @@ const EnrollmentModal = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const buildWhatsAppUrl = (data) => {
+  const kind = data.program?.itemType === 'training' ? 'training' : 'course';
+  const message =
+    `Hi QorZen! I just registered for the ${kind}: ${data.program?.title || data.program?.name}.\n` +
+    `Batch: ${data.batchTiming}\n` +
+    `Reference: ${data.refCode || 'N/A'}\n\n` +
+    `Name: ${data.fullName}\nEmail: ${data.email}\nPhone: ${data.phone}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+};
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    if (!selectedProgram?._id) {
+      setError('No program selected. Please close this modal and try again.');
+      return;
+    }
+    if (!['course', 'training'].includes(selectedProgram?.itemType)) {
+      setError('This program type is not recognized. Please close this modal and try again.');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    /**
-     * ========================================================================
-     * BACKEND DEVELOPER NOTE (Hinglish Guide):
-     * ========================================================================
-     * 1. LEAD CAPTURE:
-     *    Lead database me save karne ke liye:
-     *    await api.post('/submissions', {
-     *      type: 'enrollment',
-     *      fullName: formData.fullName,
-     *      email: formData.email,
-     *      phone: formData.phone,
-     *      batchTiming: formData.batchTiming,
-     *      programTitle,
-     *      price: rawPrice
-     *    });
-     * 
-     * 2. PAYMENT GATEWAY (Razorpay / Stripe):
-     *    Backend endpoint: POST /api/v1/payment/create-order
-     *    Order ID milne ke baad `window.Razorpay` checkout modal open karein.
-     * ========================================================================
-     */
+    try {
+      const response = await createEnrollmentRequest({
+        itemType: selectedProgram.itemType,
+        itemId: selectedProgram._id,
+        method,
+        batchTiming: formData.batchTiming
+      });
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      const refCode = `QOR-${Math.floor(100000 + Math.random() * 900000)}`;
+      const requestCode = response?.data?.data?.requestCode;
+
       setSubmittedData({
-        refCode,
+        refCode: requestCode,
+        method,
         ...formData,
         program: selectedProgram
       });
-    }, 800);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError('AUTH_REQUIRED');
+      } else {
+        setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -129,6 +181,21 @@ const EnrollmentModal = () => {
               <p className="modal-sub-heading">
                 Fill in your details below to reserve your seat in the upcoming batch.
               </p>
+
+              {error && (
+                <div className="enrollment-error-banner" role="alert">
+                  {error === 'AUTH_REQUIRED' ? (
+                    <span>
+                      Please sign in to your student account to enroll.{' '}
+                      <a href="/signin" className="enrollment-error-link">
+                        Sign In
+                      </a>
+                    </span>
+                  ) : (
+                    <span>{error}</span>
+                  )}
+                </div>
+              )}
 
               {/* Selected Program Summary */}
               <div className="selected-program-summary-card">
@@ -237,36 +304,28 @@ const EnrollmentModal = () => {
                   </div>
                 </div>
 
-                {/* Mandatory Radio Options for Batch Timing */}
-                <div className="batch-radio-group-wrap" style={{ marginTop: '0.25rem' }}>
-                  <span className="form-field-wrap label" style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1c1917', marginBottom: '0.35rem', display: 'block' }}>
-                    Preferred Batch Mode *
+                {/* How to proceed — solid toggle buttons, no visible radio dot */}
+                <div className="method-selector-wrap" style={{ marginTop: '0.25rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1c1917', marginBottom: '0.35rem', display: 'block' }}>
+                    How would you like to proceed? *
                   </span>
-                  <div className="radio-options-flex-row" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                    <label htmlFor="batchTimingWeekdays" className="radio-option-card" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 600, padding: '0.4rem 0.75rem', border: '0.0625rem solid #d9cfc7', borderRadius: '0.5rem', cursor: 'pointer', backgroundColor: formData.batchTiming.includes('Weekdays') ? '#efe9e3' : '#ffffff' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <label htmlFor="methodWhatsapp" style={toggleCardStyle(method === 'whatsapp')}>
                       <input
                         type="radio"
-                        id="batchTimingWeekdays"
-                        name="batchTimingRadio"
-                        autoComplete="off"
-                        value="Weekdays (Mon, Tue, Wed, Thur)"
-                        checked={formData.batchTiming === 'Weekdays (Mon, Tue, Wed, Thur)'}
-                        onChange={(e) => setFormData(prev => ({ ...prev, batchTiming: e.target.value }))}
+                        id="methodWhatsapp"
+                        name="method"
+                        value="whatsapp"
+                        checked={method === 'whatsapp'}
+                        onChange={() => setMethod('whatsapp')}
+                        style={hiddenRadioStyle}
                       />
-                      <span>Option A: Weekdays (Mon-Thu)</span>
+                      <span>Continue on WhatsApp</span>
                     </label>
 
-                    <label htmlFor="batchTimingWeekends" className="radio-option-card" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 600, padding: '0.4rem 0.75rem', border: '0.0625rem solid #d9cfc7', borderRadius: '0.5rem', cursor: 'pointer', backgroundColor: formData.batchTiming.includes('Weekends') ? '#efe9e3' : '#ffffff' }}>
-                      <input
-                        type="radio"
-                        id="batchTimingWeekends"
-                        name="batchTimingRadio"
-                        autoComplete="off"
-                        value="Weekends (Fri, Sat, Sun)"
-                        checked={formData.batchTiming === 'Weekends (Fri, Sat, Sun)'}
-                        onChange={(e) => setFormData(prev => ({ ...prev, batchTiming: e.target.value }))}
-                      />
-                      <span>Option B: Weekends (Fri-Sun)</span>
+                    <label htmlFor="methodRazorpay" style={toggleCardStyle(false, true)}>
+                      <input type="radio" id="methodRazorpay" name="method" value="razorpay" disabled style={hiddenRadioStyle} />
+                      <span>Pay Online (Coming Soon)</span>
                     </label>
                   </div>
                 </div>
@@ -322,9 +381,28 @@ const EnrollmentModal = () => {
                 </div>
               </div>
 
-              <p className="next-steps-text">
-                Our academic advisor will reach out to you at <strong>{submittedData.phone}</strong> within 2 hours with syllabus access & payment confirmation.
-              </p>
+              {submittedData.method === 'whatsapp' ? (
+                <>
+                  <p className="next-steps-text">
+                    Tap below to send your enrollment details on WhatsApp — our team will confirm your batch and payment there.
+                  </p>
+
+                  <a
+                    href={buildWhatsAppUrl(submittedData)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-confirm-enrollment"
+                    style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
+                  >
+                    <span>Continue on WhatsApp</span>
+                    <ArrowRight size={16} />
+                  </a>
+                </>
+              ) : (
+                <p className="next-steps-text">
+                  Our academic advisor will reach out to you at <strong>{submittedData.phone}</strong> within 2 hours with syllabus access & payment confirmation.
+                </p>
+              )}
 
               <button onClick={handleClose} className="btn-done-close">
                 Return to Courses

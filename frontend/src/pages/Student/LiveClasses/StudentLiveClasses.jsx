@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Video,
@@ -6,15 +6,48 @@ import {
   Clock,
   ExternalLink,
   PlayCircle,
-  Users,
   Sparkles
 } from 'lucide-react';
-import { mockLiveClasses } from '../../../data/studentMockData';
+import { getLiveClasses } from '../../../api/studentApi';
+
+const statusStyles = {
+  Live: { bg: '#fee2e2', color: '#dc2626' },
+  Upcoming: { bg: '#efe9e3', color: '#44403c' },
+  Ended: { bg: '#efe9e3', color: '#78716c' },
+  Recorded: { bg: '#efe9e3', color: '#44403c' },
+};
 
 const StudentLiveClasses = () => {
+  const [liveClasses, setLiveClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchLiveClasses = async () => {
+      try {
+        setLoading(true);
+        const res = await getLiveClasses();
+        setLiveClasses(res.data || []);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load live classes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLiveClasses();
+  }, []);
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#78716c' }}>Loading live classes...</div>;
+  }
+
+  if (error) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#991b1b' }}>Something went wrong: {error}</div>;
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
       <div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.65rem', backgroundColor: '#efe9e3', border: '0.0625rem solid #d9cfc7', borderRadius: '624.9375rem', fontSize: '0.75rem', fontWeight: 700 }}>
           <Sparkles size={13} color="#8b7050" />
@@ -24,18 +57,25 @@ const StudentLiveClasses = () => {
           Live Classes & Recordings
         </h1>
         <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
-          Join real-time instructor-led masterclasses, live doubt sessions, and access past class archives.
+          Join real-time instructor-led sessions for the courses and trainings you're enrolled in.
         </p>
       </div>
 
-      {/* Grid of Live Sessions */}
+      {liveClasses.length === 0 && (
+        <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
+          No live classes have been scheduled yet for your courses or trainings.
+        </p>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 18rem), 1fr))', gap: '1.25rem' }}>
-        {mockLiveClasses.map((item, idx) => {
-          const isRecorded = item.status === 'Recorded';
+        {liveClasses.map((item, idx) => {
+          const style = statusStyles[item.status] || statusStyles.Upcoming;
+          const canJoin = item.status === 'Live' || item.status === 'Upcoming';
+          const scheduled = new Date(item.scheduledAt);
 
           return (
             <motion.div
-              key={item.id}
+              key={item._id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: idx * 0.05 }}
@@ -59,15 +99,15 @@ const StudentLiveClasses = () => {
                       fontWeight: 800,
                       padding: '0.2rem 0.5rem',
                       borderRadius: '0.25rem',
-                      backgroundColor: isRecorded ? '#efe9e3' : '#fee2e2',
-                      color: isRecorded ? '#44403c' : '#dc2626'
+                      backgroundColor: style.bg,
+                      color: style.color
                     }}
                   >
                     {item.status}
                   </span>
                   <span style={{ fontSize: '0.75rem', color: '#78716c', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     <Clock size={13} />
-                    {item.duration}
+                    {item.durationMinutes} min
                   </span>
                 </div>
 
@@ -75,17 +115,17 @@ const StudentLiveClasses = () => {
                   {item.title}
                 </h3>
                 <p style={{ fontSize: '0.78rem', color: '#78716c', margin: 0 }}>
-                  Instructor: <strong>{item.instructor}</strong> • {item.batch}
+                  {item.itemType === 'course' ? 'Course' : 'Training'}: <strong>{item.itemTitle}</strong>
                 </p>
               </div>
 
               <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f9f8f6', borderRadius: '0.5rem', border: '0.0625rem solid #efe9e3', fontSize: '0.75rem', color: '#44403c', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Calendar size={14} color="#8b7050" />
-                <span>{item.date}</span>
+                <span>{scheduled.toLocaleString()}</span>
               </div>
 
               <div style={{ paddingTop: '0.5rem', borderTop: '0.0625rem solid #efe9e3' }}>
-                {!isRecorded ? (
+                {canJoin ? (
                   <a
                     href={item.meetingLink}
                     target="_blank"
@@ -107,12 +147,14 @@ const StudentLiveClasses = () => {
                     }}
                   >
                     <Video size={15} />
-                    <span>Join Live Session</span>
+                    <span>{item.status === 'Live' ? 'Join Live Session' : 'Join When Live'}</span>
                     <ExternalLink size={13} />
                   </a>
-                ) : (
-                  <button
-                    onClick={() => alert('Opening recorded classroom session player...')}
+                ) : item.recordingUrl ? (
+                  <a
+                    href={item.recordingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     style={{
                       width: '100%',
                       padding: '0.6rem',
@@ -126,12 +168,17 @@ const StudentLiveClasses = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '0.4rem',
-                      cursor: 'pointer'
+                      textDecoration: 'none',
+                      boxSizing: 'border-box'
                     }}
                   >
                     <PlayCircle size={15} color="#8b7050" />
                     <span>Watch Recording</span>
-                  </button>
+                  </a>
+                ) : (
+                  <p style={{ fontSize: '0.78rem', color: '#a8a29e', textAlign: 'center', margin: 0 }}>
+                    Session ended — no recording available
+                  </p>
                 )}
               </div>
             </motion.div>

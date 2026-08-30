@@ -25,6 +25,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
+import { getPublicCourses } from '../../api/courseCatalogApi';
+import { getPublicServices } from '../../api/serviceApi';
 import { navigateToDashboard } from '../../utils/navigation';
 import './Navbar.css';
 
@@ -54,21 +56,14 @@ const navItems = [
     label: 'Training',
     path: '/training',
     dropdown: [
-      { name: 'AI tools',          path: '/training/ai-tools',          icon: Sparkles,      desc: 'Master 14+ categories of modern AI tools', highlighted: true },
-      { name: 'Technical',         path: '/training/technical',         icon: Code,          desc: 'Hands-on software & tech engineering' },
-      { name: 'Non-technical',     path: '/training/non-technical',     icon: Briefcase,     desc: 'Essential business & soft skills' },
-      { name: 'Networking',        path: '/training/networking',        icon: Cpu,           desc: 'Cisco, CCNA & system administration' },
-      { name: 'Corporate training',path: '/training/corporate-training',icon: GraduationCap, desc: 'Tailored upskilling for enterprises' },
+      { name: 'Networking',           path: '/training?category=Networking',                 icon: Cpu,         desc: 'Cisco, security, and enterprise networking programs' },
+      { name: 'AI & Digital Skills',  path: '/training?category=AI%20%26%20Digital%20Skills', icon: Sparkles,    desc: 'AI tools, automation, and digital skill-building' },
+      { name: 'Technical Domains',    path: '/training?category=Technical%20Domains',         icon: Code,        desc: 'Full stack, cloud, data, and core tech training' },
+      { name: 'Non-Technical Domains', path: '/training?category=Non-Technical%20Domains',    icon: Briefcase,   desc: 'Sales, HR, marketing, and business skills' },
+      { name: 'Corporate Training',   path: '/training?category=Corporate%20Training',        icon: GraduationCap, desc: 'Department-level corporate upskilling programs' },
     ],
   },
-  {
-    label: 'Course',
-    path: '/course',
-    dropdown: [
-      { name: 'AI tools',         path: '/course/ai-tools',      icon: Sparkles, desc: 'Self-paced AI mastery programs' },
-      { name: 'Online business',  path: '/course/online-business',icon: Briefcase, desc: 'Build & scale profitable online ventures' },
-    ],
-  },
+  { label: 'Courses', path: '/course' },
   { label: 'Internship', path: '/internship' },
   {
     label: 'Resource',
@@ -95,6 +90,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled]               = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen]        = useState(false);
   const [mobileExpanded, setMobileExpanded]        = useState(null);
+  const [courseCategories, setCourseCategories]   = useState([]);
+  const [serviceDropdownItems, setServiceDropdownItems] = useState([]);
   const profileMenuRef = useRef(null);
 
   /* scroll effect */
@@ -102,6 +99,58 @@ const Navbar = () => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCourseCategories = async () => {
+      try {
+        const res = await getPublicCourses();
+        const data = res.data?.data || [];
+        const uniqueCategories = [...new Set(data.map((c) => c.category).filter(Boolean))].sort();
+        const dropdownItems = uniqueCategories.map((cat) => ({
+          name: cat,
+          path: `/course?category=${encodeURIComponent(cat)}`,
+          icon: BookOpen,
+          desc: `Browse ${cat} courses`,
+        }));
+        if (isMounted) setCourseCategories(dropdownItems);
+      } catch (err) {
+        console.error('[Navbar] Failed to load course categories:', err);
+      }
+    };
+    fetchCourseCategories();
+    return () => { isMounted = false; };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchServiceDropdown = async () => {
+      try {
+        const res = await getPublicServices();
+        const data = res.data?.data || res.data || [];
+
+        const existingSlugs = new Set(
+          navItems
+            .find((item) => item.label === 'Services')
+            ?.dropdown.map((dropdownItem) => dropdownItem.path.split('/').pop()) || []
+        );
+
+        const newItems = data
+          .filter((service) => !existingSlugs.has(service.slug))
+          .map((service) => ({
+            name: service.title,
+            path: `/services/${service.slug || service._id}`,
+            icon: Sparkles,
+          }));
+
+        if (isMounted) setServiceDropdownItems(newItems);
+      } catch (err) {
+        console.error('[Navbar] Failed to load service dropdown:', err);
+      }
+    };
+    fetchServiceDropdown();
+    return () => { isMounted = false; };
   }, []);
 
   /* close everything on route change */
@@ -140,6 +189,14 @@ const Navbar = () => {
   const displayName = user?.name    || 'My Account';
   const displayAvatar = user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop';
 
+  const computedNavItems = navItems.map((item) => {
+    if (item.label === 'Courses') return { ...item, dropdown: courseCategories };
+    if (item.label === 'Services') {
+      return { ...item, dropdown: [...item.dropdown, ...serviceDropdownItems] };
+    }
+    return item;
+  });
+
   /* ---------------------------------------------------------------- */
   return (
     <header className={`navbar-header${isScrolled ? ' scrolled' : ''}`}>
@@ -156,7 +213,7 @@ const Navbar = () => {
 
         {/* ── Desktop nav ── */}
         <nav className="navbar-menu-desktop">
-          {navItems.map((item, index) => {
+          {computedNavItems.map((item, index) => {
             const hasDropdown = item.dropdown?.length > 0;
             const isOpen   = activeDropdown === index;
             const isActive = location.pathname === item.path ||
@@ -213,7 +270,7 @@ const Navbar = () => {
                                     <span className="hot-pill">Popular</span>
                                   )}
                                 </span>
-                                <p className="dropdown-card-desc">{sub.desc}</p>
+                                {sub.desc && <p className="dropdown-card-desc">{sub.desc}</p>}
                               </div>
                             </Link>
                           );
@@ -346,7 +403,7 @@ const Navbar = () => {
                 </div>
               )}
 
-              {navItems.map((item, index) => {
+              {computedNavItems.map((item, index) => {
                 const hasDropdown = item.dropdown?.length > 0;
                 const isExpanded  = mobileExpanded === index;
 

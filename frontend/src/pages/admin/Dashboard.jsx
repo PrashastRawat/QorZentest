@@ -6,16 +6,17 @@ import {
   BriefcaseBusiness,
   GraduationCap,
   Inbox,
-  ArrowRight,
   ShieldCheck,
   Server,
-  Layers
+  Layers,
+  IndianRupee
 } from 'lucide-react';
 import {
   getServices,
   getProjects,
   getCourses,
-  getSubmissions
+  getSubmissions,
+  getRevenueSummary
 } from '../../api/adminApi';
 import '../../pages/Student/Dashboard/StudentDashboard.css';
 
@@ -24,7 +25,9 @@ export default function Dashboard() {
     services: 0,
     projects: 0,
     courses: 0,
-    submissions: 0
+    submissions: 0,
+    revenue: 0,
+    confirmedCount: 0
   });
   const [loading, setLoading] = useState(true);
   const [recentSubmissions, setRecentSubmissions] = useState([]);
@@ -36,23 +39,27 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [sRes, pRes, cRes, subRes] = await Promise.all([
+      const [sRes, pRes, cRes, subRes, revRes] = await Promise.all([
         getServices().catch(() => ({ data: [] })),
         getProjects().catch(() => ({ data: [] })),
         getCourses().catch(() => ({ data: [] })),
-        getSubmissions().catch(() => ({ data: [] }))
+        getSubmissions().catch(() => ({ data: [] })),
+        getRevenueSummary().catch(() => ({ data: { data: { totalRevenue: 0, confirmedCount: 0 } } }))
       ]);
 
       const sData = sRes.data?.data || sRes.data || [];
       const pData = pRes.data?.data || pRes.data || [];
       const cData = cRes.data?.data || cRes.data || [];
       const subData = subRes.data?.data || subRes.data || [];
+      const revData = revRes.data?.data || { totalRevenue: 0, confirmedCount: 0 };
 
       setMetrics({
         services: Array.isArray(sData) ? sData.length : 0,
         projects: Array.isArray(pData) ? pData.length : 0,
         courses: Array.isArray(cData) ? cData.length : 0,
-        submissions: Array.isArray(subData) ? subData.length : 0
+        submissions: Array.isArray(subData) ? subData.length : 0,
+        revenue: revData.totalRevenue || 0,
+        confirmedCount: revData.confirmedCount || 0
       });
 
       setRecentSubmissions(Array.isArray(subData) ? subData.slice(0, 3) : []);
@@ -88,7 +95,7 @@ export default function Dashboard() {
             Welcome back, Admin Manager! 👋
           </h1>
           <p className="welcome-sub">
-            All services are operational. You have <strong>{metrics.submissions} submissions</strong> pending review, and <strong>{metrics.courses} courses</strong> currently published.
+            All services are operational. You have <strong>{metrics.submissions} submissions</strong> pending review, <strong>{metrics.courses} courses</strong> currently published, and <strong>₹{metrics.revenue.toLocaleString('en-IN')}</strong> in confirmed enrollment revenue.
           </p>
         </div>
 
@@ -102,6 +109,16 @@ export default function Dashboard() {
 
       {/* Quick Metrics Row */}
       <div className="stats-metric-grid">
+        <div className="stat-metric-card">
+          <div className="stat-icon-wrap" style={{ backgroundColor: '#16a34a15', color: '#16a34a' }}>
+            <IndianRupee size={20} />
+          </div>
+          <div className="stat-data-col">
+            <span className="stat-val">₹{metrics.revenue.toLocaleString('en-IN')}</span>
+            <span className="stat-lbl">Revenue ({metrics.confirmedCount} confirmed)</span>
+          </div>
+        </div>
+
         <div className="stat-metric-card">
           <div className="stat-icon-wrap">
             <BriefcaseBusiness size={20} />
@@ -181,6 +198,26 @@ export default function Dashboard() {
                   </Link>
                 );
               })}
+
+              <Link
+                to="/admin/enrollment-requests"
+                className="stat-metric-card"
+                style={{
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease',
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}
+              >
+                <div className="stat-icon-wrap" style={{ backgroundColor: '#16a34a15', color: '#16a34a' }}>
+                  <IndianRupee size={20} />
+                </div>
+                <div className="stat-data-col" style={{ marginLeft: '0.5rem' }}>
+                  <span className="stat-val" style={{ fontSize: '1.05rem', display: 'block' }}>Enrollment Requests</span>
+                  <span className="stat-lbl" style={{ margin: 0 }}>{metrics.confirmedCount} confirmed</span>
+                </div>
+              </Link>
             </div>
           </div>
         </div>

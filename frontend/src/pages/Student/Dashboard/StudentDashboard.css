@@ -432,3 +432,15 @@
 .btn-join-live:hover {
   background-color: #38332e;
 }
+
+
+.dash-empty-text {
+  font-size: 0.85rem;
+  color: var(--text-muted, #78716c);
+  margin: 0;
+}
+
+.dash-status-badge.graded {
+  background-color: #dbeafe;
+  color: #1e40af;
+}

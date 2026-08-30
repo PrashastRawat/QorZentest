@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
 
 const lessonSchema = new mongoose.Schema(
-    {
-        title:{
-            type: String,
-            required: [true, "Lesson title is required"],
-            trim: true,
-        },
-        videoUrl:{
-            type: String,
-            required: [true, "Lesson video URL is required"],
-        },
-        duration:{
-            type: String,
-        },
+  {
+    title: {
+      type: String,
+      required: [true, "Lesson title is required"],
+      trim: true,
     },
-    { _id: true}
+    videoUrl: {
+      type: String,
+      required: [true, "Lesson video URL is required"],
+    },
+    duration: {
+      type: String,
+    },
+  },
+  { _id: true },
 );
 
 const courseSchema = new mongoose.Schema(
@@ -57,8 +57,27 @@ const courseSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+        category: {
+      type: String,
+      trim: true,
+    },
+    duration: {
+      type: String, // e.g. "6 Months" — free text, matches your Internship model's pattern
+    },
+    tag: {
+      type: String,
+      trim: true,
+    },
+    iconName: {
+      type: String,
+      trim: true, // matches a lucide-react export name, e.g. "ShieldCheck"
+    },
+    tools: {
+      type: [String],
+      default: [],
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Course = mongoose.model("Course", courseSchema);

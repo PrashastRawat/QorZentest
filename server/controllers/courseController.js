@@ -8,12 +8,26 @@ import crypto from "crypto";
 // @route  POST /api/courses
 export const createCourse = async (req, res, next) => {
   try {
-    const { title, description, price, instructor, lessons } = req.body;
+    const { title, description, price, instructor, lessons, category, duration } = req.body;
 
     if (!req.file) {
       const error = new Error("Thumbnail is required");
       error.statusCode = 400;
       throw error;
+    }
+
+    // lessons arrives as a JSON string when sent via multipart/form-data
+    // (FormData can't hold real arrays/objects), so parse it back before
+    // handing it to Mongoose. Default to an empty array if missing/invalid.
+    let parsedLessons = [];
+    if (lessons) {
+      try {
+        parsedLessons = JSON.parse(lessons);
+      } catch (parseError) {
+        const error = new Error("Lessons must be valid JSON");
+        error.statusCode = 400;
+        throw error;
+      }
     }
 
     const thumbnail = await uploadToCloudinary(req.file.buffer, "qorzen/courses");
@@ -24,7 +38,9 @@ export const createCourse = async (req, res, next) => {
       thumbnail,
       price,
       instructor,
-      lessons,
+      lessons: parsedLessons,
+      category,
+      duration
     });
 
     res.status(201).json({
@@ -95,7 +111,7 @@ export const getCourseById = async (req, res, next) => {
 export const updateCourse = async (req, res, next) => {
   try {
     const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-      returnDocument: "after",
+      new: true,
       runValidators: true,
     });
 

@@ -351,6 +351,22 @@
   transition: all 0.2s ease;
 }
 
+.btn-admin-edit {
+  margin-right: 0.5rem;
+  color: var(--text-primary, #1c1917);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-xs, 0.375rem);
+  background-color: var(--surface-card, #fff);
+  cursor: pointer;
+}
+
+.btn-admin-edit:hover {
+  background-color: var(--secondary-light, #efe9e3);
+}
+
 .btn-admin-delete:hover {
   background-color: #fee2e2;
   border-color: #fca5a5;

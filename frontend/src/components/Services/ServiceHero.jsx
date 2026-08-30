@@ -26,7 +26,7 @@ const ServiceHero = ({ service }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <Link to="/#services" className="back-services-link">
+          <Link to="/services" className="back-services-link">
             <ArrowLeft size={16} />
             <span>Back to Core Services</span>
           </Link>

@@ -1,20 +1,37 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import {
-  Award,
-  Download,
-  ExternalLink,
-  ShieldCheck,
-  CheckCircle2,
-  Calendar,
-  Sparkles
-} from 'lucide-react';
-import { mockCertificates } from '../../../data/studentMockData';
+import React, { useEffect, useState } from 'react';
+import { ShieldCheck, Sparkles } from 'lucide-react';
+import { getCertificates } from '../../../api/studentApi';
 
 const StudentCertificates = () => {
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        setLoading(true);
+        const res = await getCertificates();
+        setCertificates(res.data || []);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load certificates');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCertificates();
+  }, []);
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#78716c' }}>Loading your certificates...</div>;
+  }
+
+  if (error) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#991b1b' }}>Something went wrong: {error}</div>;
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
       <div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.65rem', backgroundColor: '#efe9e3', border: '0.0625rem solid #d9cfc7', borderRadius: '624.9375rem', fontSize: '0.75rem', fontWeight: 700 }}>
           <Sparkles size={13} color="#8b7050" />
@@ -24,15 +41,20 @@ const StudentCertificates = () => {
           Earned Certifications
         </h1>
         <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
-          Industry-recognized certificates of completion with cryptographic credential verification identifiers.
+          Certificates of completion issued to you, with verification identifiers.
         </p>
       </div>
 
-      {/* Grid of Certificates */}
+      {certificates.length === 0 && (
+        <p style={{ fontSize: '0.85rem', color: '#78716c' }}>
+          No certificates have been issued to you yet. They'll appear here once one is issued for a completed course.
+        </p>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 18rem), 1fr))', gap: '1.25rem' }}>
-        {mockCertificates.map((cert) => (
+        {certificates.map((cert, idx) => (
           <div
-            key={cert.id}
+            key={cert.credentialId || idx}
             style={{
               backgroundColor: '#ffffff',
               border: '0.0625rem solid #d9cfc7',
@@ -42,11 +64,9 @@ const StudentCertificates = () => {
               flexDirection: 'column',
               justifyContent: 'space-between',
               gap: '1.25rem',
-              boxShadow: '0 0.125rem 0.5rem rgba(28, 25, 23, 0.05)',
-              position: 'relative'
+              boxShadow: '0 0.125rem 0.5rem rgba(28, 25, 23, 0.05)'
             }}
           >
-            {/* Top Verified Ribbon */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
                 style={{
@@ -66,21 +86,14 @@ const StudentCertificates = () => {
               </span>
 
               <span style={{ fontSize: '0.75rem', color: '#78716c' }}>
-                {cert.issueDate}
+                {cert.issuedAt ? new Date(cert.issuedAt).toLocaleDateString() : '—'}
               </span>
             </div>
 
-            {/* Title & Info */}
-            <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1c1917', lineHeight: 1.3, marginBottom: '0.5rem' }}>
-                {cert.title}
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: '#78716c', margin: 0 }}>
-                Issued by: <strong>{cert.issuer}</strong> • Standing: <strong>{cert.grade}</strong>
-              </p>
-            </div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1c1917', lineHeight: 1.3, margin: 0 }}>
+              {cert.courseId?.title || 'Course Certificate'}
+            </h3>
 
-            {/* Credential Code Box */}
             <div style={{ padding: '0.75rem', backgroundColor: '#f9f8f6', borderRadius: '0.5rem', border: '0.0625rem solid #efe9e3', fontSize: '0.75rem' }}>
               <span style={{ color: '#78716c', display: 'block', fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Credential ID
@@ -88,52 +101,6 @@ const StudentCertificates = () => {
               <code style={{ fontSize: '0.82rem', fontWeight: 800, color: '#1c1917' }}>
                 {cert.credentialId}
               </code>
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '0.5rem', paddingTop: '0.5rem', borderTop: '0.0625rem solid #efe9e3' }}>
-              <button
-                onClick={() => alert(`Downloading certificate PDF for ${cert.credentialId}...`)}
-                style={{
-                  flex: 1,
-                  padding: '0.55rem',
-                  backgroundColor: '#1c1917',
-                  color: '#ffffff',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.35rem',
-                  cursor: 'pointer'
-                }}
-              >
-                <Download size={14} />
-                <span>Download PDF</span>
-              </button>
-
-              <button
-                onClick={() => alert(`Verification link copied to clipboard: https://verify.qorzen.in/cert/${cert.credentialId}`)}
-                style={{
-                  padding: '0.55rem 0.85rem',
-                  backgroundColor: '#efe9e3',
-                  color: '#1c1917',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  border: '0.0625rem solid #d9cfc7',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.35rem',
-                  cursor: 'pointer'
-                }}
-              >
-                <ExternalLink size={14} />
-                <span>Verify</span>
-              </button>
             </div>
           </div>
         ))}

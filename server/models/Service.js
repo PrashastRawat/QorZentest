@@ -14,13 +14,51 @@ const serviceSchema = new mongoose.Schema(
     image: {
       url: {
         type: String,
-        required: [true, "Image is required"],
       },
       publicId: {
         type: String,
-        required: true,
       },
-    },  
+    },
+    categoryLabel: {
+      type: String,
+      trim: true,
+    },
+    tagline: {
+      type: String,
+      trim: true,
+    },
+    slug: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true,
+      sparse: true,
+    },
+    iconName: {
+      type: String,
+    },
+    approach: {
+      type: String,
+    },
+    methodology: {
+      type: [
+        {
+          step: String,
+          title: String,
+          desc: String,
+        },
+      ],
+      default: [],
+    },
+    techniques: {
+      type: [
+        {
+          title: String,
+          desc: String,
+        },
+      ],
+      default: [],
+    },
     features: {
       type: [String],
       default: [],
@@ -35,7 +73,6 @@ const serviceSchema = new mongoose.Schema(
     },
     priceStartingFrom: {
       type: Number,
-      required: [true, "Starting price is required"],
     },
     isActive: {
       type: Boolean,
