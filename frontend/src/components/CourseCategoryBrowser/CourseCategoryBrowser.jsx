@@ -307,7 +307,19 @@ const CourseCategoryBrowser = ({
                       </div>
                     )}
                     <div className="ccb-card-footer">
-                      <span className="ccb-card-price">₹{course.price}</span>
+                      <div className="ccb-card-price-wrap">
+                        <div className="ccb-card-price-row">
+                          <span className="ccb-card-price-original">
+                            ₹{(course.price * 2).toLocaleString("en-IN")}
+                          </span>
+                          <span className="ccb-card-discount-badge">
+                            50% OFF
+                          </span>
+                        </div>
+                        <span className="ccb-card-price">
+                          ₹{course.price.toLocaleString("en-IN")}
+                        </span>
+                      </div>
                       <span className="ccb-card-duration">
                         {course.duration}
                       </span>
@@ -315,7 +327,9 @@ const CourseCategoryBrowser = ({
                     <div className="ccb-card-actions">
                       <button
                         className="ccb-btn-details"
-                        onClick={() => openDetailsModal({ ...course, itemType })}
+                        onClick={() =>
+                          openDetailsModal({ ...course, itemType })
+                        }
                       >
                         <Eye size={14} />
                         <span>View Details</span>

@@ -262,6 +262,31 @@ export default function AdminCrudPage({
           price: formData.price || "",
           mode: formData.mode || "Online",
         });
+      } else if (
+        lowerTitleNow.includes("career") ||
+        lowerTitleNow.includes("role") ||
+        lowerTitleNow.includes("job")
+      ) {
+        // Careers is backed by the Internship model/endpoint (see adminApi.js),
+        // so the payload must match Internship's schema, not a job-posting shape.
+        const parsedTools = formData.tools
+          ? formData.tools
+              .split(",")
+              .map((tool) => tool.trim())
+              .filter(Boolean)
+          : [];
+        await apiHelpers.create({
+          title: formData.title || "",
+          category: formData.category || "Technical",
+          tag: formData.tag || "",
+          iconName: formData.iconName || "",
+          description: formData.description || "",
+          tools: parsedTools,
+          mode: formData.mode || "Online",
+          price1Month: Number(formData.price1Month) || 0,
+          price3Month: Number(formData.price3Month) || 0,
+          price6Month: Number(formData.price6Month) || 0,
+        });
       } else {
         await apiHelpers.create(formData);
       }
@@ -376,7 +401,11 @@ export default function AdminCrudPage({
       return null;
     }
 
-    // 1. Careers & Job Listings (Reference Image 5)
+    // 1. Careers / Internship Programs
+    // NOTE: Careers is backed by the Internship model (see adminApi.js — getJobs/
+    // createJob/deleteJob all hit /internships). Fields below match Internship's
+    // actual schema (category enum, iconName, tools[], mode, three tiered prices),
+    // not a job-posting shape.
     if (
       lowerTitle.includes("career") ||
       lowerTitle.includes("role") ||
@@ -384,51 +413,60 @@ export default function AdminCrudPage({
     ) {
       return (
         <div className="admin-form-container">
-          {renderFormHeader("New Job Listing")}
+          {renderFormHeader("+ Add New Internship")}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
               <input
                 type="text"
                 name="title"
-                placeholder="Job title"
+                placeholder="Internship title"
                 value={formData.title || ""}
                 onChange={handleChange}
                 required
               />
-              <input
-                type="text"
-                name="department"
-                placeholder="Department (e.g. Engineering)"
-                value={formData.department || ""}
+              <select
+                name="category"
+                value={formData.category || "Technical"}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="Technical">Technical</option>
+                <option value="Non-Technical">Non-Technical</option>
+                <option value="Networking">Networking</option>
+              </select>
             </div>
             <div className="form-row-2col">
               <input
                 type="text"
-                name="location"
-                placeholder="Location (e.g. Remote, Dehradun)"
-                value={formData.location || ""}
+                name="tag"
+                placeholder="Tag (short label, e.g. Popular)"
+                value={formData.tag || ""}
+                onChange={handleChange}
+              />
+              <input
+                type="text"
+                name="iconName"
+                placeholder="Icon name (e.g. Cpu, Shield, Code)"
+                value={formData.iconName || ""}
                 onChange={handleChange}
                 required
               />
+            </div>
+            <div className="form-row-single">
               <select
-                name="type"
-                value={formData.type || "Full-time"}
+                name="mode"
+                value={formData.mode || "Online"}
                 onChange={handleChange}
-                required
               >
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
+                <option value="Online">Online</option>
+                <option value="Offline">Offline</option>
+                <option value="Hybrid">Hybrid</option>
               </select>
             </div>
             <div className="form-row-single">
               <textarea
                 name="description"
-                placeholder="Job description"
+                placeholder="Description"
                 value={formData.description || ""}
                 onChange={handleChange}
                 required
@@ -437,10 +475,36 @@ export default function AdminCrudPage({
             <div className="form-row-single">
               <input
                 type="text"
-                name="requirements"
-                placeholder="Requirements, comma separated (e.g. 2+ years React, Strong CSS)"
-                value={formData.requirements || ""}
+                name="tools"
+                placeholder="Tools, comma separated (e.g. Python, Git, Figma)"
+                value={formData.tools || ""}
                 onChange={handleChange}
+              />
+            </div>
+            <div className="form-row-3col">
+              <input
+                type="number"
+                name="price1Month"
+                placeholder="1-Month price (₹)"
+                value={formData.price1Month || ""}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="number"
+                name="price3Month"
+                placeholder="3-Month price (₹)"
+                value={formData.price3Month || ""}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="number"
+                name="price6Month"
+                placeholder="6-Month price (₹)"
+                value={formData.price6Month || ""}
+                onChange={handleChange}
+                required
               />
             </div>
             <div
@@ -455,7 +519,7 @@ export default function AdminCrudPage({
                 {submitting ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : null}
-                <span>Post Job</span>
+                <span>Add Internship</span>
               </button>
             </div>
           </form>
@@ -1263,9 +1327,19 @@ export default function AdminCrudPage({
                           {item.type}
                         </span>
                       )}
+                      {item.mode && (
+                        <span className="admin-record-chip type">
+                          {item.mode}
+                        </span>
+                      )}
                       {item.price && (
                         <span className="admin-record-chip price">
                           ₹{item.price}
+                        </span>
+                      )}
+                      {(item.price1Month || item.price3Month || item.price6Month) && (
+                        <span className="admin-record-chip price">
+                          ₹{item.price1Month}/1mo · ₹{item.price3Month}/3mo · ₹{item.price6Month}/6mo
                         </span>
                       )}
                     </div>
@@ -1316,6 +1390,19 @@ export default function AdminCrudPage({
                         {(Array.isArray(item.technologies)
                           ? item.technologies
                           : String(item.technologies).split(",")
+                        ).map((t, i) => (
+                          <span key={i} className="admin-tag-label">
+                            #{String(t).trim()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {item.tools && (
+                      <div className="admin-record-tags-row">
+                        {(Array.isArray(item.tools)
+                          ? item.tools
+                          : String(item.tools).split(",")
                         ).map((t, i) => (
                           <span key={i} className="admin-tag-label">
                             #{String(t).trim()}

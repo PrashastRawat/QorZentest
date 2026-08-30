@@ -195,10 +195,39 @@
   align-items: center;
 }
 
+.ccb-card-price-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ccb-card-price-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ccb-card-price-original {
+  font-size: 0.78rem;
+  color: #a8a29e;
+  text-decoration: line-through;
+  font-weight: 600;
+}
+
+.ccb-card-discount-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #16a34a;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .ccb-card-price {
   font-weight: 800;
   font-size: 1.05rem;
-  color: var(--deep-accent, #2a2a2a);
+  color: #000000;
 }
 
 .ccb-card-duration {
@@ -261,15 +290,16 @@
   gap: 0.35rem;
   padding: 0.55rem 0.8rem;
   border-radius: var(--radius-full, 999px);
-  border: none;
-  background: var(--deep-accent, #2a2a2a);
-  color: #fff;
+  border: 1px solid #000000;
+  background: #000000;
+  color: #ffffff;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 .ccb-btn-enroll:hover {
-  opacity: 0.88;
+  background-color: #1a1a1a;
+  border-color: #1a1a1a;
 }
