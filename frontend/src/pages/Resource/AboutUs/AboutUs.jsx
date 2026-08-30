@@ -1,30 +1,30 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Target, Compass, Award, Code, Cpu, GraduationCap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Sparkles, Target, Compass, Code, Cpu, ShieldCheck, Cloud, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './AboutUs.css';
 
-// 4 Value Proposition Pillars
+// 4 Enterprise Service Pillars
 const whyUsPillars = [
   {
-    icon: Code,
-    title: 'Production-Grade Code',
-    description: 'We eliminate dummy tutorials. Students & clients work directly on real, scalable enterprise codebases.'
-  },
-  {
     icon: Cpu,
-    title: 'AI-First Curriculum',
-    description: 'Every program embeds modern AI tools, agentic workflows, and LLM automation to maximize output.'
+    title: 'AI & Intelligent Automation',
+    description: 'We engineer autonomous AI agents, enterprise LLM workflows, predictive models, and robotic process automations that scale business efficiency.'
   },
   {
-    icon: GraduationCap,
-    title: 'Architect Mentorship',
-    description: 'Learn alongside senior engineers and software architects actively building production systems.'
+    icon: Code,
+    title: 'Custom Software Engineering',
+    description: 'End-to-end architecture and deployment of high-throughput web applications, mobile platforms, and resilient cloud-native microservices.'
   },
   {
     icon: ShieldCheck,
-    title: 'Guaranteed Internships',
-    description: 'Practical hands-on internship pathways that transition learners directly into industry roles.'
+    title: 'Cyber Security & Defense',
+    description: 'Zero-trust architecture, enterprise penetration testing, web app vulnerability scanning, compliance audits, and proactive threat mitigation.'
+  },
+  {
+    icon: Cloud,
+    title: 'Cloud Infrastructure & Data',
+    description: 'Modernizing legacy architectures through multi-cloud migrations, serverless pipelines, scalable data lakes, and real-time BI analytics.'
   }
 ];
 
@@ -50,7 +50,7 @@ const AboutUs = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-title"
           >
-            Empowering the Next Generation of <span className="highlight-text">Engineers & Creators</span>
+            Architecting Next-Gen Enterprise <span className="highlight-text">Technology & AI Solutions</span>
           </motion.h1>
 
           <motion.p
@@ -59,7 +59,7 @@ const AboutUs = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="hero-description"
           >
-            QorZen Technologies is a premier platform delivering production-level technical training, practical internships, specialized courses, and enterprise engineering solutions.
+            QorZen Technologies is a full-cycle IT consulting and enterprise software engineering partner. We deliver production-grade AI automation, custom digital platforms, resilient cloud architectures, and proactive cyber security solutions.
           </motion.p>
         </div>
       </section>
@@ -80,7 +80,7 @@ const AboutUs = () => {
               </div>
               <h2 className="mv-title">Our Mission</h2>
               <p className="mv-text">
-                To bridge the gap between academia and production software engineering by equipping individuals and enterprises with practical AI tools, modern frameworks, and guaranteed internship pathways.
+                To accelerate business growth and digital transformation by delivering robust, secure, and scalable technology solutions that empower enterprises to innovate with confidence.
               </p>
             </motion.div>
 
@@ -96,7 +96,7 @@ const AboutUs = () => {
               </div>
               <h2 className="mv-title">Our Vision</h2>
               <p className="mv-text">
-                To become the global benchmark for AI-driven technical upskilling, fostering a thriving ecosystem of high-velocity developers, digital leaders, and scalable software solutions.
+                To be the global benchmark for enterprise technology innovation, trusted by high-growth startups and global enterprises for bespoke software engineering and AI-driven automation.
               </p>
             </motion.div>
           </div>
@@ -107,9 +107,9 @@ const AboutUs = () => {
       <section className="why-qorzen-section">
         <div className="container">
           <div className="section-header center">
-            <span className="section-subtitle">Our Value Proposition</span>
-            <h2 className="section-title">Why QorZen Technologies?</h2>
-            <p className="section-desc">Built on principles of technical rigor, modern tools, and career impact.</p>
+            <span className="section-subtitle">Enterprise Capabilities</span>
+            <h2 className="section-title">Our Core Service Domains</h2>
+            <p className="section-desc">Delivering engineering excellence, robust security, and measurable ROI for global clients.</p>
           </div>
 
           <div className="why-us-grid">
@@ -135,12 +135,12 @@ const AboutUs = () => {
           </div>
 
           <div className="about-cta-wrapper">
-            <Link to="/training/ai-tools" className="btn-about-primary">
-              <span>Explore AI Tools Training (₹10,000)</span>
+            <Link to="/services/ai-automation" className="btn-about-primary">
+              <span>Explore Enterprise Services</span>
               <ArrowRight size={16} />
             </Link>
-            <Link to="/auth/signup" className="btn-about-secondary">
-              <span>Join QorZen Today</span>
+            <Link to="/services/web-design" className="btn-about-secondary">
+              <span>View Technology Stack</span>
             </Link>
           </div>
         </div>

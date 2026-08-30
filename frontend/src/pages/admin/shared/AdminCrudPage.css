@@ -388,3 +388,105 @@
   border: 0.0625rem solid var(--border-medium, #d9cfc7);
   border-radius: var(--radius-md, 1rem);
 }
+
+/* Mobile Category Dropdown Selector vs Desktop Pills */
+.admin-cat-mobile-dropdown-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.admin-cat-mobile-select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.desktop-only-pills {
+  display: none !important;
+}
+
+@media (min-width: 64em) {
+  .admin-cat-mobile-dropdown-wrap {
+    display: none !important;
+  }
+  .desktop-only-pills {
+    display: flex !important;
+  }
+}
+
+.admin-category-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+  white-space: nowrap;
+}
+
+.admin-cat-pill-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  padding: 0.55rem 1rem !important;
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 999px;
+  font-size: 0.82rem !important;
+  font-weight: 700;
+  color: var(--text-secondary, #78716c);
+  cursor: pointer;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.admin-cat-pill-btn span {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  min-width: max-content !important;
+}
+
+.admin-cat-pill-btn:hover {
+  background-color: var(--secondary-light, #efe9e3);
+  color: var(--text-primary, #1c1917);
+  border-color: var(--text-primary, #1c1917);
+}
+
+.admin-cat-pill-btn.active {
+  background-color: var(--text-primary, #1c1917);
+  color: #ffffff;
+  border-color: var(--text-primary, #1c1917);
+  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.18);
+}
+
+.admin-cat-count-badge {
+  font-size: 0.72rem !important;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem !important;
+  border-radius: 999px;
+  background-color: var(--secondary-light, #efe9e3);
+  color: var(--text-primary, #1c1917);
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+}
+
+.admin-cat-pill-btn.active .admin-cat-count-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}

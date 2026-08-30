@@ -189,7 +189,8 @@ const CorporateTraining = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-main-title"
           >
-            9 Enterprise <span className="text-highlight-gradient">Department Training Programs</span>
+            9 Enterprise <br />
+            <span className="text-highlight-gradient">Department Training Programs</span>
           </motion.h1>
 
           <motion.p

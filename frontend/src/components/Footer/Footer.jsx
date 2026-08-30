@@ -155,12 +155,12 @@ const Footer = () => {
                 <span>Ithum Towers, Block A, Industrial Area, Sector 62, Noida, Uttar Pradesh 201309</span>
               </li>
               <li>
-                <Mail size={16} className="contact-icon" />
-                <span>info@qorzen.in</span>
+                <Phone size={16} className="contact-icon" />
+                <a href="tel:+919917529504" style={{ color: 'inherit', textDecoration: 'none' }}>+91 9917529504</a>
               </li>
               <li>
-                <Phone size={16} className="contact-icon" />
-                <span>9917529504</span>
+                <Mail size={16} className="contact-icon" />
+                <a href="mailto:info@qorzen.in" style={{ color: 'inherit', textDecoration: 'none' }}>info@qorzen.in</a>
               </li>
             </ul>
           </div>

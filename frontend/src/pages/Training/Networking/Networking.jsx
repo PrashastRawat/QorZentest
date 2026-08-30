@@ -196,7 +196,8 @@ const Networking = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-main-title"
           >
-            12 Specialized <span className="text-highlight-gradient">Networking & Security Programs</span>
+            12 Specialized <br />
+            <span className="text-highlight-gradient">Networking & Security Programs</span>
           </motion.h1>
 
           <motion.p

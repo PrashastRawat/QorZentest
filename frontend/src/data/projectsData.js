@@ -8,7 +8,7 @@ export const flagshipProjects = [
     title: 'AI Customer Chatbot & Auto Lead System',
     serviceCategory: 'AI & Automation',
     categorySlug: 'ai-automation',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
+    image: '/assets/ai-automation.jpeg',
     metric: 'Saved 85% Manual Work Time',
     description: 'Built smart AI bots and automated lead processing that automatically sync customer inquiries and support tickets.',
     tech: ['n8n', 'Python', 'AI Chatbots', 'OpenAI API']
@@ -58,7 +58,7 @@ export const flagshipProjects = [
     title: 'Company Logo, Banners & Graphic Design Kit',
     serviceCategory: 'Graphic Designing',
     categorySlug: 'graphic-designing',
-    image: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=1000&auto=format&fit=crop',
+    image: '/assets/graphic-designing.jpeg',
     metric: 'Award Winning Graphics',
     description: 'Created professional company logos, business cards, social media banners, and app design UI graphics.',
     tech: ['Figma AI', 'Photoshop', 'Illustrator', 'Branding']
@@ -68,7 +68,7 @@ export const flagshipProjects = [
     title: 'Google Search Ranking & Traffic Growth',
     serviceCategory: 'SEO Engine',
     categorySlug: 'seo',
-    image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=1000&auto=format&fit=crop',
+    image: '/assets/seo.jpeg',
     metric: '+450% Traffic Growth',
     description: 'Optimized website code and blog content to rank #1 on Google for high-intent business search keywords.',
     tech: ['Technical SEO', 'Ahrefs', 'Schema Markup', 'Content Strategy']
@@ -78,7 +78,7 @@ export const flagshipProjects = [
     title: 'Instagram Reels & Social Media Growth',
     serviceCategory: 'Social Media Marketing',
     categorySlug: 'social-media-marketing',
-    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop',
+    image: '/assets/social-media.jpeg',
     metric: '3.2M Online Views',
     description: 'Produced creative short video reels and daily social media posts that grew follower engagement on Instagram & LinkedIn.',
     tech: ['Short-Form Video', 'Meta Suite', 'LinkedIn', 'Analytics']

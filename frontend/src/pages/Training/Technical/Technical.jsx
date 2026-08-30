@@ -395,7 +395,8 @@ const Technical = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-title"
           >
-            31 Specialized <span className="highlight-text">Technical Training Programs</span>
+            31 Specialized <br />
+            <span className="highlight-text">Technical Training Programs</span>
           </motion.h1>
 
           <motion.p

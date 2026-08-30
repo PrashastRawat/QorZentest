@@ -128,7 +128,8 @@ const OnlineBusiness = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-title"
           >
-            Build & Scale Profitable <span className="highlight-text">Online Business</span> Ventures
+            Build & Scale Profitable <br />
+            <span className="highlight-text">Online Business</span> Ventures
           </motion.h1>
 
           <motion.p

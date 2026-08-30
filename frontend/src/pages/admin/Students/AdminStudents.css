@@ -1,0 +1,588 @@
+/* ==========================================================================
+   Admin Students Management Center - Warm Gold & Professional Theme
+   ========================================================================== */
+
+.admin-students-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 100%;
+}
+
+/* Header */
+.students-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.students-title-group h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  margin: 0.35rem 0 0 0;
+  letter-spacing: -0.02em;
+}
+
+.students-title-group p {
+  font-size: 0.88rem;
+  color: var(--text-secondary, #78716c);
+  margin: 0.25rem 0 0 0;
+}
+
+.students-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-export-students {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.15rem;
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-export-students:hover {
+  background-color: var(--secondary-light, #efe9e3);
+  border-color: var(--text-primary, #1c1917);
+}
+
+.btn-add-student {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  background-color: var(--text-primary, #1c1917);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(28, 25, 23, 0.15);
+}
+
+.btn-add-student:hover {
+  background-color: #38332e;
+  transform: translateY(-1px);
+}
+
+/* KPI Summary Cards */
+.students-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.15rem;
+}
+
+.student-kpi-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.85rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.04);
+}
+
+.student-kpi-icon-wrap {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.student-kpi-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-kpi-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  line-height: 1.1;
+}
+
+.student-kpi-lbl {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #78716c);
+  font-weight: 600;
+}
+
+/* Search & Stream Filter Bar */
+.students-filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 63.9375em) {
+  .students-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Mobile Student Filter Dropdown vs Desktop Domain Tabs */
+.students-mobile-filter-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.students-mobile-select {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.65rem 0.85rem;
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  outline: none;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+}
+
+.desktop-only-domain-tabs {
+  display: none !important;
+}
+
+@media (min-width: 64em) {
+  .students-mobile-filter-dropdown {
+    display: none !important;
+  }
+  .desktop-only-domain-tabs {
+    display: flex !important;
+  }
+}
+
+.students-domain-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: var(--secondary-light, #efe9e3);
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.student-tab-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  padding: 0.45rem 0.85rem !important;
+  border: none;
+  background: none;
+  border-radius: 0.35rem;
+  font-size: 0.8rem !important;
+  font-weight: 700;
+  color: var(--text-secondary, #78716c);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+}
+
+.student-tab-btn span {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  min-width: max-content !important;
+}
+
+.student-tab-btn.active {
+  background-color: #ffffff;
+  color: var(--text-primary, #1c1917);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.student-tab-badge {
+  font-size: 0.7rem !important;
+  font-weight: 800;
+  padding: 0.12rem 0.45rem !important;
+  border-radius: 999px;
+  background-color: var(--secondary-light, #efe9e3);
+  color: var(--text-primary, #1c1917);
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+}
+
+.student-tab-btn.active .student-tab-badge {
+  background-color: var(--text-primary, #1c1917);
+  color: #ffffff;
+}
+
+.students-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.student-search-input {
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 0.45rem;
+  font-size: 0.82rem;
+  width: 100%;
+  max-width: 320px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 48em) {
+  .student-search-input {
+    max-width: 100%;
+  }
+}
+
+.admin-students-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Master Student Directory Table */
+.students-table-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(28, 25, 23, 0.04);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mobile Stacked Student Cards Feed vs Desktop Master Table */
+.mobile-students-cards-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.mobile-student-card {
+  background-color: #faf8f5;
+  border: 1px solid #efe9e3;
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: all 0.2s ease;
+}
+
+.mobile-student-card:hover {
+  background-color: #ffffff;
+  border-color: #d9cfc7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-student-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-student-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  background-color: #f3efe9;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.45rem;
+}
+
+.mobile-student-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.65rem;
+  border-top: 1px dashed #e7ded7;
+}
+
+.desktop-only-table {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  .mobile-students-cards-feed {
+    display: none !important;
+  }
+  .desktop-only-table {
+    display: block !important;
+  }
+}
+
+.students-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+.admin-students-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.admin-students-table th {
+  background-color: #faf8f5;
+  padding: 0.85rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-secondary, #78716c);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-medium, #d9cfc7);
+  white-space: nowrap;
+}
+
+.admin-students-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0eae4;
+  color: var(--text-primary, #1c1917);
+  vertical-align: middle;
+}
+
+.admin-students-table tr:hover td {
+  background-color: #fdfbf9;
+}
+
+.student-profile-col {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-table-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-medium, #d9cfc7);
+}
+
+.student-name-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-table-name {
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+}
+
+.student-table-id {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #8b7050;
+}
+
+.student-domain-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.student-domain-pill.internship {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.student-domain-pill.training {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.student-domain-pill.course {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+/* Progress bar inside table */
+.progress-mini-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-mini-bar {
+  width: 60px;
+  height: 6px;
+  background-color: #e5e0da;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-mini-fill {
+  height: 100%;
+  background-color: #16a34a;
+  border-radius: 999px;
+}
+
+.progress-mini-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1c1917;
+}
+
+.cert-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.cert-status-pill.issued {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.cert-status-pill.review {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.cert-status-pill.eligible {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.btn-view-dossier {
+  padding: 0.45rem 0.85rem;
+  background-color: #faf8f5;
+  border: 1px solid #d9cfc7;
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary, #1c1917);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.btn-view-dossier:hover {
+  background-color: var(--text-primary, #1c1917);
+  color: #ffffff;
+}
+
+/* Dossier Modal */
+.dossier-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.dossier-modal-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-medium, #d9cfc7);
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem 1.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dossier-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light, #efe9e3);
+}
+
+.dossier-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+
+.dossier-info-box {
+  background-color: #faf8f5;
+  border: 1px solid #efe9e3;
+  border-radius: 0.5rem;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dossier-lbl {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary, #78716c);
+}
+
+.dossier-val {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+}

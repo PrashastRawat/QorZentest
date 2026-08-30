@@ -24,7 +24,7 @@ export const eventsData = [
     time: '2:00 PM - 5:00 PM IST',
     location: 'QorZen Campus / Hybrid',
     speaker: 'AI Engineering Lab',
-    image: 'https://images.unsplash.com/photo-1591453089816-0fbb971b454c?q=80&w=1000&auto=format&fit=crop',
+    image: '/assets/blog/agentic-ai.jpg',
     excerpt: 'Deep dive into building autonomous AI agents, multi-agent frameworks, and advanced prompting techniques for developer productivity.'
   },
   {

@@ -149,7 +149,7 @@ const StudentLogin = () => {
                   type="email"
                   required
                   autoComplete="email"
-                  placeholder="student@qorzen.in"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                   className="student-input-field"
@@ -169,7 +169,7 @@ const StudentLogin = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                   className="student-input-field"

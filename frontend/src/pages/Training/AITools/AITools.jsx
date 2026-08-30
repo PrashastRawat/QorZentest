@@ -214,7 +214,8 @@ const AITools = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hero-main-title"
           >
-            Master 14+ Specialized <span className="text-highlight-gradient">AI Tools & Skills</span>
+            Master 14+ Specialized <br />
+            <span className="text-highlight-gradient">AI Tools & Skills</span>
           </motion.h1>
 
           <motion.p

@@ -46,14 +46,20 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      await login({
+      const response = await login({
         email: formData.email,
         password: formData.password,
         rememberMe: formData.rememberMe
       });
+
+      if (response?.user?.role !== 'admin') {
+        setError('Access denied: Administrator privileges required.');
+        return;
+      }
+
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || 'Invalid administrator credentials.');
+      setError(err.message || 'Invalid administrator credentials. Please check your email and password.');
     } finally {
       setLoading(false);
     }
@@ -103,7 +109,7 @@ const AdminLogin = () => {
                   type="email"
                   required
                   autoComplete="email"
-                  placeholder="admin@qorzen-technologies.in"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                   className="student-input-field"
@@ -123,7 +129,7 @@ const AdminLogin = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                   className="student-input-field"

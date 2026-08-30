@@ -45,17 +45,29 @@
   font-size: clamp(1.85rem, 5.5vw, 3.1rem);
   font-weight: 800;
   color: var(--text-primary);
-  line-height: 1.15;
+  line-height: 1.18;
   letter-spacing: -0.02em;
   margin-bottom: 1.15rem;
-  word-break: break-word;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .hero-title-highlight {
   color: var(--text-primary);
-  text-decoration: underline;
-  text-decoration-color: var(--deep-accent);
-  text-underline-offset: 6px;
+  text-decoration: none;
+  
+  
+  display: inline-block;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .hero-title-highlight {
+    white-space: normal;
+  }
 }
 
 .hero-subheadline-desc {
@@ -139,6 +151,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .chip-trust-icon {
