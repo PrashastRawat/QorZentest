@@ -1,3 +1,7 @@
+// ⚠️ PROTOTYPE — NOT wired to any backend. Every value below (students, payments, inquiries) is hardcoded mock data.
+// Not linked into AppRoutes.jsx — cannot currently be navigated to in the live app.
+// Real, backend-wired equivalent for students: frontend/src/pages/admin/ManageStudents/AdminManageStudents.jsx
+// Before routing this in: replace the hardcoded arrays with real API calls, or port this UI onto the real page instead.
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {

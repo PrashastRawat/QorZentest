@@ -42,6 +42,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import AdminCrudPage from "../pages/admin/shared/AdminCrudPage";
 import AdminProfile from "../pages/admin/Profile/AdminProfile";
 import AdminEnrollmentRequests from "../pages/admin/EnrollmentRequests/AdminEnrollmentRequests";
+import AdminManageStudents from "../pages/admin/ManageStudents/AdminManageStudents";
 import StudentTrainings from "../pages/Student/Trainings/StudentTrainings";
 
 /**
@@ -113,6 +114,7 @@ const AppRoutes = () => {
       >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="manage-students" element={<AdminManageStudents />} />
         <Route
           path="services"
           element={
@@ -146,6 +148,15 @@ const AppRoutes = () => {
             <AdminCrudPage
               title="Training Programs"
               fields={["title", "category", "duration", "description"]}
+            />
+          }
+        />
+        <Route
+          path="internships"
+          element={
+            <AdminCrudPage
+              title="Internships"
+              fields={["title", "category", "description"]}
             />
           }
         />

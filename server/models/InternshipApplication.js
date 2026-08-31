@@ -46,7 +46,7 @@ const internshipApplicationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "contacted", "enrolled"],
+      enum: ["pending", "contacted", "enrolled", "rejected"],
       default: "pending",
     },
   },

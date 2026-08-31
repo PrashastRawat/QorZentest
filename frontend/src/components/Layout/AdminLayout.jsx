@@ -16,18 +16,22 @@ import {
   User,
   Globe,
   ExternalLink,
-  Layers
+  Layers,
+  Users,
+  Briefcase
 } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import '../StudentPortal/StudentLayout.css';
 
 const adminNavItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Manage Students', path: '/admin/manage-students', icon: Users },
   { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness },
   { name: 'Portfolio', path: '/admin/portfolio', icon: LayoutDashboard },
   { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
   { name: 'Training', path: '/admin/training', icon: Layers },
-  { name: 'Internship', path: '/admin/careers', icon: BriefcaseBusiness },
+  { name: 'Internships', path: '/admin/internships', icon: Briefcase },
+  { name: 'Careers', path: '/admin/careers', icon: BriefcaseBusiness },
   { name: 'Blog', path: '/admin/blog', icon: FileText },
   { name: 'Testimonials', path: '/admin/testimonials', icon: MessageSquareQuote },
   { name: 'Submissions', path: '/admin/submissions', icon: Inbox },

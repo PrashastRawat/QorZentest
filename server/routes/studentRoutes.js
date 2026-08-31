@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { protect } from '../middleware/auth.js'
+import { protect, authorize } from '../middleware/auth.js'
 import{
     getStudentDashboard,
     getEnrolledCourses,
@@ -17,6 +17,7 @@ import{
     getLiveClasses,
     deleteNotification,
 } from '../controllers/studentController.js'
+import { getManageStudentsDirectory } from '../controllers/adminStudentController.js'
 import uploadDocument from '../middleware/uploadDocument.js'
 
 const router = Router()
@@ -25,6 +26,12 @@ const router = Router()
 router.get('/certificates/verify/:credentialId', verifyCertificate)
 
 router.use(protect)
+
+// Admin-only — must come before any "/:something" style routes below would
+// otherwise be able to swallow it. Since none of the routes below use a
+// path-level param at this depth, order isn't actually load-bearing here,
+// but keeping it grouped up top makes the admin-only surface easy to spot.
+router.get('/admin/directory', authorize('admin'), getManageStudentsDirectory)
 router.get('/dashboard', getStudentDashboard)
 router.get('/courses', getEnrolledCourses)
 router.get('/courses/:courseId', getCourseDetails)

@@ -7,11 +7,16 @@ import {
   deleteInternship,
   applyToInternship,
   getInternshipApplications,
+  updateApplicationStatus,
 } from "../controllers/internshipController.js";
 import { protect, authorize, optionalAuth } from "../middleware/auth.js";
 import uploadDocument from "../middleware/uploadDocument.js";
 
 const router = Router();
+
+// NOTE: this must come before "/:id" — otherwise Express matches
+// "/applications" against the ":id" param route and this never gets hit.
+router.put("/applications/:appId/status", protect, authorize("admin"), updateApplicationStatus);
 
 router.get("/", getInternships);
 router.get("/:id", getInternshipById);

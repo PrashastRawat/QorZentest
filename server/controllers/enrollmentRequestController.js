@@ -156,6 +156,34 @@ export const confirmEnrollmentRequest = async (req, res, next) => {
       }
     }
 
+    // NOTE: this branch was previously missing entirely — confirming a
+    // Training enrollment request only ever updated User.purchasedTrainings,
+    // never Student.enrolledTrainings. That meant confirmed training
+    // students never showed up in any student-facing or admin view that
+    // reads from Student (the real source of truth — see project notes).
+    if (request.itemType === "training") {
+      const studentDoc = await Student.findOneAndUpdate(
+        { userId: request.student },
+        {
+          $setOnInsert: { userId: request.student },
+        },
+        { upsert: true, new: true }
+      );
+
+      const alreadyEnrolled = studentDoc.enrolledTrainings.some(
+        (e) => e.trainingId.toString() === request.itemId.toString()
+      );
+
+      if (!alreadyEnrolled) {
+        studentDoc.enrolledTrainings.push({
+          trainingId: request.itemId,
+          enrolledAt: new Date(),
+          progress: 0,
+        });
+        await studentDoc.save();
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: "Payment confirmed and access granted",

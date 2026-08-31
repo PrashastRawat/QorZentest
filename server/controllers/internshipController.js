@@ -146,3 +146,68 @@ export const getInternshipApplications = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc   Admin moves an application through pending -> contacted -> enrolled
+//         (or rejected). Mirrors confirmEnrollmentRequest's role for
+//         Course/Training: this is the one place that actually grants a
+//         student real internship access, so it's also the one place that
+//         syncs Student.enrolledInternships.
+// @route  PUT /api/internships/applications/:appId/status
+export const updateApplicationStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!["pending", "contacted", "enrolled", "rejected"].includes(status)) {
+      const error = new Error("status must be one of: pending, contacted, enrolled, rejected");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const application = await InternshipApplication.findById(req.params.appId);
+    if (!application) {
+      const error = new Error("Application not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    application.status = status;
+    await application.save();
+
+    // Only sync into Student when moving to "enrolled", and only when the
+    // application is actually tied to a logged-in student's account.
+    // Guest (not-logged-in) applicants have studentId: null — there's no
+    // account to attach enrollment to until they're linked to one, same
+    // open question as anonymous course/training enrollment.
+    let syncedToStudent = false;
+    if (status === "enrolled" && application.studentId) {
+      const studentDoc = await Student.findById(application.studentId);
+      if (studentDoc) {
+        const alreadyEnrolled = studentDoc.enrolledInternships.some(
+          (e) => e.applicationId && e.applicationId.toString() === application._id.toString()
+        );
+        if (!alreadyEnrolled) {
+          studentDoc.enrolledInternships.push({
+            internshipId: application.internshipId,
+            applicationId: application._id,
+            selectedDuration: application.selectedDuration,
+            enrolledAt: new Date(),
+            progress: 0,
+          });
+          await studentDoc.save();
+          syncedToStudent = true;
+        }
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message:
+        status === "enrolled" && !application.studentId
+          ? "Status updated to enrolled, but this application has no linked student account — nothing was added to any student record."
+          : "Application status updated",
+      data: application,
+      syncedToStudent,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

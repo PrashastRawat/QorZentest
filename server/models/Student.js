@@ -32,6 +32,15 @@ const studentSchema = new mongoose.Schema(
         progress: Number,
       },
     ],
+    enrolledInternships: [
+      {
+        internshipId: { type: mongoose.Schema.Types.ObjectId, ref: "Internship" },
+        applicationId: { type: mongoose.Schema.Types.ObjectId, ref: "InternshipApplication" },
+        selectedDuration: String, // "1 Month" / "3 Months" / "6 Months", snapshot from the application
+        enrolledAt: Date,
+        progress: Number,
+      },
+    ],
   },
   { timestamps: true },
 );

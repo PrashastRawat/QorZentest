@@ -75,12 +75,24 @@ export const deleteTestimonial = (id) => api.delete(`/testimonials/${id}`);
 // --- Internships & Programs ---
 export const getInternships = () => api.get('/internships');
 export const createInternship = (data) => api.post('/internships', data);
+export const updateInternship = (id, data) => api.put(`/internships/${id}`, data);
 export const deleteInternship = (id) => api.delete(`/internships/${id}`);
+export const getInternshipApplications = (internshipId) => api.get(`/internships/${internshipId}/applications`);
+export const updateInternshipApplicationStatus = (applicationId, data) =>
+	api.put(`/internships/applications/${applicationId}/status`, data);
 
-// --- Careers & Job Openings (Backward Compatibility) ---
-export const getJobs = () => api.get('/internships');
-export const createJob = (data) => api.post('/internships', data);
-export const deleteJob = (id) => api.delete(`/internships/${id}`);
+// --- Careers & Job Openings ---
+// NOTE: these used to be aliased to /internships ("backward compatibility"),
+// which was wrong — Career is its own model/endpoint. Fixed to point at the
+// real /careers endpoint. Kept the legacy getJobs/createJob/deleteJob names
+// too since AdminCrudPage.jsx already imports them.
+export const getCareers = () => api.get('/careers');
+export const createCareer = (data) => api.post('/careers', data);
+export const updateCareer = (id, data) => api.put(`/careers/${id}`, data);
+export const deleteCareer = (id) => api.delete(`/careers/${id}`);
+export const getJobs = getCareers;
+export const createJob = createCareer;
+export const deleteJob = deleteCareer;
 
 // --- Contact Form & Enrollment Submissions ---
 export const getSubmissions = () => api.get('/submissions');
@@ -109,4 +121,9 @@ export const gradeSubmission = (submissionId, data) => api.put(`/assignments/sub
 export const getLiveClassesForItem = (itemType, itemId) => api.get(`/live-classes/item/${itemType}/${itemId}`);
 export const createLiveClass = (data) => api.post('/live-classes', data);
 export const deleteLiveClass = (id) => api.delete(`/live-classes/${id}`);
+export const getLiveClassRoster = (liveClassId) => api.get(`/live-classes/${liveClassId}/roster`);
+export const markAttendance = (liveClassId, records) => api.put(`/live-classes/${liveClassId}/attendance`, { records });
 export const getRevenueSummary = () => api.get('/enrollment-requests/stats/revenue');
+
+// --- Manage Students Directory (admin) ---
+export const getManageStudentsDirectory = () => api.get('/student/admin/directory');

@@ -20,6 +20,10 @@ import {
   getJobs,
   createJob,
   deleteJob,
+  getInternships,
+  createInternship,
+  updateInternship,
+  deleteInternship,
   getSubmissions,
   deleteSubmission,
   getTrainings,
@@ -30,6 +34,7 @@ import {
 import api from "../../../api/axiosInstance";
 import AdminAssignmentsModal from "./AdminAssignmentsModal";
 import AdminLiveClassesModal from "./AdminLiveClassesModal";
+import AdminInternshipApplicationsModal from "./AdminInternshipApplicationsModal";
 import "./AdminCrudPage.css";
 
 /**
@@ -51,6 +56,7 @@ export default function AdminCrudPage({
   const [editingItem, setEditingItem] = useState(null);
   const [assignmentsModalCourse, setAssignmentsModalCourse] = useState(null);
   const [liveClassModalItem, setLiveClassModalItem] = useState(null);
+  const [applicationsModalInternship, setApplicationsModalInternship] = useState(null);
 
   // Course-specific state: real File object + real lessons array
   // (kept separate from formData because formData only ever holds plain strings)
@@ -104,6 +110,14 @@ export default function AdminCrudPage({
       lowerTitle.includes("job")
     ) {
       return { get: getJobs, create: createJob, delete: deleteJob };
+    }
+    if (lowerTitle.includes("internship")) {
+      return {
+        get: getInternships,
+        create: createInternship,
+        update: updateInternship,
+        delete: deleteInternship,
+      };
     }
     if (
       lowerTitle.includes("submission") ||
@@ -267,15 +281,26 @@ export default function AdminCrudPage({
         lowerTitleNow.includes("role") ||
         lowerTitleNow.includes("job")
       ) {
-        // Careers is backed by the Internship model/endpoint (see adminApi.js),
-        // so the payload must match Internship's schema, not a job-posting shape.
+        // Career is a plain job-posting record — no special parsing needed,
+        // formData maps straight onto the Career schema.
+        await apiHelpers.create({
+          title: formData.title || "",
+          department: formData.department || "",
+          location: formData.location || "",
+          type: formData.type || "Full-time",
+          description: formData.description || "",
+          requirements: formData.requirements || "",
+        });
+      } else if (lowerTitleNow.includes("internship")) {
+        // Internship is backed by its own model — tiered pricing, tools[],
+        // category enum. Not the same shape as a Career/Job posting.
         const parsedTools = formData.tools
           ? formData.tools
               .split(",")
               .map((tool) => tool.trim())
               .filter(Boolean)
           : [];
-        await apiHelpers.create({
+        const payload = {
           title: formData.title || "",
           category: formData.category || "Technical",
           tag: formData.tag || "",
@@ -286,7 +311,12 @@ export default function AdminCrudPage({
           price1Month: Number(formData.price1Month) || 0,
           price3Month: Number(formData.price3Month) || 0,
           price6Month: Number(formData.price6Month) || 0,
-        });
+        };
+        if (editingItem) {
+          await apiHelpers.update(editingItem._id || editingItem.id, payload);
+        } else {
+          await apiHelpers.create(payload);
+        }
       } else {
         await apiHelpers.create(formData);
       }
@@ -320,14 +350,30 @@ export default function AdminCrudPage({
 
   const handleEdit = (item) => {
     setEditingItem(item);
-    setFormData({
-      title: item.title || "",
-      description: item.description || "",
-      price: item.price ?? "",
-      instructor: item.instructor || "",
-      category: item.category || "",
-      duration: item.duration || "",
-    });
+    const lowerTitleNow = title.toLowerCase();
+    if (lowerTitleNow.includes("internship")) {
+      setFormData({
+        title: item.title || "",
+        category: item.category || "Technical",
+        tag: item.tag || "",
+        iconName: item.iconName || "",
+        description: item.description || "",
+        tools: Array.isArray(item.tools) ? item.tools.join(", ") : item.tools || "",
+        mode: item.mode || "Online",
+        price1Month: item.price1Month ?? "",
+        price3Month: item.price3Month ?? "",
+        price6Month: item.price6Month ?? "",
+      });
+    } else {
+      setFormData({
+        title: item.title || "",
+        description: item.description || "",
+        price: item.price ?? "",
+        instructor: item.instructor || "",
+        category: item.category || "",
+        duration: item.duration || "",
+      });
+    }
     setCourseThumbnail(null);
     setCourseLessons(item.lessons || []);
     setShowForm(true);
@@ -401,11 +447,7 @@ export default function AdminCrudPage({
       return null;
     }
 
-    // 1. Careers / Internship Programs
-    // NOTE: Careers is backed by the Internship model (see adminApi.js — getJobs/
-    // createJob/deleteJob all hit /internships). Fields below match Internship's
-    // actual schema (category enum, iconName, tools[], mode, three tiered prices),
-    // not a job-posting shape.
+    // 1. Careers & Job Listings
     if (
       lowerTitle.includes("career") ||
       lowerTitle.includes("role") ||
@@ -413,7 +455,90 @@ export default function AdminCrudPage({
     ) {
       return (
         <div className="admin-form-container">
-          {renderFormHeader("+ Add New Internship")}
+          {renderFormHeader("New Job Listing")}
+          <form onSubmit={handleSubmit} className="admin-crud-form">
+            <div className="form-row-2col">
+              <input
+                type="text"
+                name="title"
+                placeholder="Job title"
+                value={formData.title || ""}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="department"
+                placeholder="Department (e.g. Engineering)"
+                value={formData.department || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-row-2col">
+              <input
+                type="text"
+                name="location"
+                placeholder="Location (e.g. Remote, Dehradun)"
+                value={formData.location || ""}
+                onChange={handleChange}
+                required
+              />
+              <select
+                name="type"
+                value={formData.type || "Full-time"}
+                onChange={handleChange}
+                required
+              >
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
+              </select>
+            </div>
+            <div className="form-row-single">
+              <textarea
+                name="description"
+                placeholder="Job description"
+                value={formData.description || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-row-single">
+              <input
+                type="text"
+                name="requirements"
+                placeholder="Requirements, comma separated (e.g. 2+ years React, Strong CSS)"
+                value={formData.requirements || ""}
+                onChange={handleChange}
+              />
+            </div>
+            <div
+              className="admin-form-submit-row"
+              style={{ justifyContent: "flex-start" }}
+            >
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn-purple-gradient"
+              >
+                {submitting ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : null}
+                <span>Post Job</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    // 1b. Internship Programs (own model — tiered pricing, tools, category)
+    if (lowerTitle.includes("internship")) {
+      return (
+        <div className="admin-form-container">
+          {renderFormHeader(editingItem ? "Edit Internship" : "+ Add New Internship")}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
               <input
@@ -519,7 +644,7 @@ export default function AdminCrudPage({
                 {submitting ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : null}
-                <span>Add Internship</span>
+                <span>{editingItem ? "Save Internship" : "Add Internship"}</span>
               </button>
             </div>
           </form>
@@ -1450,6 +1575,24 @@ export default function AdminCrudPage({
                         </button>
                       </>
                     )}
+                    {lowerTitle.includes("internship") && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(item)}
+                          className="btn-admin-edit"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setApplicationsModalInternship(item)}
+                          className="btn-admin-edit"
+                        >
+                          Applications
+                        </button>
+                      </>
+                    )}
                     {(lowerTitle.includes("course") ||
                       lowerTitle.includes("training")) && (
                       <button
@@ -1492,6 +1635,12 @@ export default function AdminCrudPage({
           item={liveClassModalItem.item}
           itemType={liveClassModalItem.itemType}
           onClose={() => setLiveClassModalItem(null)}
+        />
+      )}
+      {applicationsModalInternship && (
+        <AdminInternshipApplicationsModal
+          internship={applicationsModalInternship}
+          onClose={() => setApplicationsModalInternship(null)}
         />
       )}
     </div>
