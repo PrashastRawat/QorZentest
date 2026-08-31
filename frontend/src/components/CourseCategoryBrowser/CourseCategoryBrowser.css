@@ -110,6 +110,25 @@
   border-color: var(--deep-accent, #2a2a2a);
 }
 
+.ccb-tab-btn.ccb-tab-trending {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ccb-tab-btn.ccb-tab-trending:not(.active) {
+  border-color: #f97316;
+  color: #c2410c;
+}
+
+.ccb-tab-trending-icon {
+  color: #f97316;
+}
+
+.ccb-tab-btn.ccb-tab-trending.active .ccb-tab-trending-icon {
+  color: #ffb37a;
+}
+
 .ccb-grid-section {
   padding: 3rem 0 4rem;
 }

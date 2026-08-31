@@ -45,8 +45,9 @@ import {
   Mail,
   Eye,
   ArrowUpRight,
+  Flame,
 } from "lucide-react";
-import { getPublicCourses } from "../../api/courseCatalogApi";
+import { getPublicCourses, getPublicCategories } from "../../api/courseCatalogApi";
 import { useEnquiryModal } from "../../context/EnquiryModalContext";
 import "./CourseCategoryBrowser.css";
 import { useSearchParams } from "react-router-dom";
@@ -105,21 +106,26 @@ const getIconComponent = (name) => ICON_MAP[name] || BookOpen;
  * - pageTitle: heading shown at the top
  * - pageSubtitle: description under the heading
  * - badgeText: small pill text above the heading
- * - allowedCategories: optional array of category strings to restrict this
- *   page to (e.g. the 5 Training categories). If omitted, every category
- *   present in the real data is shown automatically — including any new
- *   category an admin creates later.
+ * - itemType: "course" or "training" — also used as the `scope` when
+ *   fetching this page's admin-managed category order/trending list
+ *   from GET /api/categories?scope=...
+ *
+ * Category tabs (order + labels + trending badges) come from the
+ * Category collection the admin configures in AdminCategoryManager.
+ * If no categories are configured yet for this scope, falls back to
+ * every unique category actually present in the data, alphabetically,
+ * so the page never ends up with an empty tab bar.
  */
 const CourseCategoryBrowser = ({
   pageTitle = "Courses",
   pageSubtitle = "Browse our real, up-to-date course catalog.",
   badgeText = "QorZen Programs",
-  allowedCategories = null,
   fetchFn = getPublicCourses,
   itemType = "course",
 }) => {
   const { openModal, openDetailsModal } = useEnquiryModal();
   const [allCourses, setAllCourses] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -142,9 +148,22 @@ const CourseCategoryBrowser = ({
       try {
         setLoading(true);
         setError(null);
-        const res = await fetchFn();
-        const data = res.data?.data || [];
-        if (isMounted) setAllCourses(Array.isArray(data) ? data : []);
+        const [coursesRes, categoriesRes] = await Promise.all([
+          fetchFn(),
+          getPublicCategories(itemType).catch((err) => {
+            console.error(
+              "[CourseCategoryBrowser] Failed to load categories:",
+              err,
+            );
+            return { data: { data: [] } };
+          }),
+        ]);
+        const data = coursesRes.data?.data || [];
+        const cats = categoriesRes.data?.data || [];
+        if (isMounted) {
+          setAllCourses(Array.isArray(data) ? data : []);
+          setCategories(Array.isArray(cats) ? cats : []);
+        }
       } catch (err) {
         console.error("[CourseCategoryBrowser] Failed to load courses:", err);
         if (isMounted)
@@ -160,26 +179,34 @@ const CourseCategoryBrowser = ({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [itemType]);
 
-  // Courses this page is scoped to (before category-tab filtering)
-  const scopedCourses = useMemo(() => {
-    if (!allowedCategories) return allCourses;
-    return allCourses.filter((c) => allowedCategories.includes(c.category));
-  }, [allCourses, allowedCategories]);
+  // Quick lookup: raw category name -> its admin-configured record
+  // (label + trending), when one exists for this scope.
+  const categoryByName = useMemo(() => {
+    const map = {};
+    categories.forEach((c) => {
+      map[c.name] = c;
+    });
+    return map;
+  }, [categories]);
 
-  // Category tabs: either the fixed allowed list (in that order), or every
-  // unique category actually present in the data, alphabetically.
+  const getLabel = (name) => categoryByName[name]?.label || name;
+  const isTrending = (name) => Boolean(categoryByName[name]?.trending);
+
+  // Category tabs: admin-configured list for this scope, already sorted by
+  // order from the backend. Falls back to every unique category present in
+  // the data (alphabetically) if nothing's been configured yet.
   const categoryTabs = useMemo(() => {
-    if (allowedCategories) return allowedCategories;
+    if (categories.length > 0) return categories.map((c) => c.name);
     const unique = [
       ...new Set(allCourses.map((c) => c.category).filter(Boolean)),
     ];
     return unique.sort();
-  }, [allCourses, allowedCategories]);
+  }, [categories, allCourses]);
 
   const filteredCourses = useMemo(() => {
-    return scopedCourses.filter((course) => {
+    return allCourses.filter((course) => {
       const matchesCategory =
         activeCategory === "all" || course.category === activeCategory;
       const q = searchQuery.toLowerCase();
@@ -190,7 +217,7 @@ const CourseCategoryBrowser = ({
         (course.tools || []).some((t) => t.toLowerCase().includes(q));
       return matchesCategory && matchesSearch;
     });
-  }, [scopedCourses, activeCategory, searchQuery]);
+  }, [allCourses, activeCategory, searchQuery]);
 
   return (
     <div className="ccb-page">
@@ -238,10 +265,13 @@ const CourseCategoryBrowser = ({
             {categoryTabs.map((cat) => (
               <button
                 key={cat}
-                className={`ccb-tab-btn ${activeCategory === cat ? "active" : ""}`}
+                className={`ccb-tab-btn ${activeCategory === cat ? "active" : ""} ${isTrending(cat) ? "ccb-tab-trending" : ""}`}
                 onClick={() => setActiveCategory(cat)}
               >
-                {cat}
+                {isTrending(cat) && (
+                  <Flame size={13} className="ccb-tab-trending-icon" />
+                )}
+                {getLabel(cat)}
               </button>
             ))}
           </div>
@@ -289,9 +319,15 @@ const CourseCategoryBrowser = ({
                     </div>
                     <div className="ccb-card-meta">
                       <span className="ccb-card-category">
-                        {course.category}
+                        {getLabel(course.category)}
                       </span>
-                      {course.tag && (
+                      {isTrending(course.category) && (
+                        <span className="ccb-card-tag ccb-card-tag-trending">
+                          <Flame size={11} />
+                          Trending
+                        </span>
+                      )}
+                      {course.tag && !isTrending(course.category) && (
                         <span className="ccb-card-tag">{course.tag}</span>
                       )}
                     </div>

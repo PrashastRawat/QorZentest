@@ -8,7 +8,6 @@ import ServicesList from "../pages/Services/ServicesList";
 import ServiceDetail from "../pages/Services/ServiceDetail";
 import CourseCategoryBrowser from "../components/CourseCategoryBrowser/CourseCategoryBrowser";
 import { getPublicCourses, getPublicTrainings } from "../api/courseCatalogApi";
-import { TRAINING_CATEGORIES } from "../constants/trainingCategories";
 import InternshipsList from "../pages/Internship/InternshipsList";
 import InternshipDetails from "../pages/Internship/InternshipDetails";
 import AboutUs from "../pages/Resource/AboutUs/AboutUs";
@@ -40,6 +39,7 @@ import AdminLayout from "../components/Layout/AdminLayout";
 import AdminLogin from "../pages/Auth/AdminLogin/AdminLogin";
 import Dashboard from "../pages/admin/Dashboard";
 import AdminCrudPage from "../pages/admin/shared/AdminCrudPage";
+import AdminCategoryManager from "../pages/admin/shared/AdminCategoryManager";
 import AdminProfile from "../pages/admin/Profile/AdminProfile";
 import AdminEnrollmentRequests from "../pages/admin/EnrollmentRequests/AdminEnrollmentRequests";
 import AdminManageStudents from "../pages/admin/ManageStudents/AdminManageStudents";
@@ -136,19 +136,31 @@ const AppRoutes = () => {
         <Route
           path="courses"
           element={
-            <AdminCrudPage
-              title="Courses & Programs"
-              fields={["title", "category", "duration", "description"]}
-            />
+            <>
+              <AdminCategoryManager
+                scope="course"
+                title="Course Category Order & Trending"
+              />
+              <AdminCrudPage
+                title="Courses & Programs"
+                fields={["title", "category", "duration", "description"]}
+              />
+            </>
           }
         />
         <Route
           path="training"
           element={
-            <AdminCrudPage
-              title="Training Programs"
-              fields={["title", "category", "duration", "description"]}
-            />
+            <>
+              <AdminCategoryManager
+                scope="training"
+                title="Training Category Order & Trending"
+              />
+              <AdminCrudPage
+                title="Training Programs"
+                fields={["title", "category", "duration", "description"]}
+              />
+            </>
           }
         />
         <Route
@@ -209,7 +221,8 @@ const AppRoutes = () => {
         <Route path="/services" element={<ServicesList />} />
         <Route path="/services/:serviceId" element={<ServiceDetail />} />
 
-        {/* Training: one page, category tabs driven by real DB data */}
+        {/* Training: one page, category tabs + order/trending driven by
+            the admin-managed Category collection (scope="training") */}
         <Route
           path="/training"
           element={
@@ -217,7 +230,6 @@ const AppRoutes = () => {
               pageTitle="Training Programs"
               pageSubtitle="Hands-on skill training across AI, technical, non-technical, networking, and corporate domains."
               badgeText="QorZen Training"
-              allowedCategories={TRAINING_CATEGORIES}
               fetchFn={getPublicTrainings}
               itemType="training"
             />
