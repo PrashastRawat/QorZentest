@@ -6,7 +6,7 @@ import Student from "../models/Student.js"
 
 export const signUp = async (req, res, next)=>{
     try {
-        const {name, email, password} = req.body
+        const {fullName, email, password} = req.body
         const existingUser = await User.findOne({email})
         if(existingUser){
             const error = new Error("Email already exists");
@@ -17,7 +17,7 @@ export const signUp = async (req, res, next)=>{
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await User.create({name, email, password: hashedPassword})
+        const newUser = await User.create({name: fullName, email, password: hashedPassword})
         await Student.create({ userId: newUser._id })
 
         const token = jwt.sign({userId:newUser._id}, process.env.JWT_SECRET,{
