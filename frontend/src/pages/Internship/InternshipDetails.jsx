@@ -114,12 +114,20 @@ const InternshipDetails = () => {
 
   const { title, category, tag, description, price1Month, price3Month, price6Month, tools = [] } = internship;
 
+  // Real (charged) prices come straight from the DB fields above and are
+  // NEVER modified — same rule as Course/Training. The struck-through
+  // "original" price shown here is a pure marketing display: it's
+  // reverse-computed so that it always shows exactly 80% OFF against the
+  // real price (original = real ÷ 0.2 = real × 5), not a hardcoded number.
+  const formatINR = (amount) => `₹${Number(amount || 0).toLocaleString("en-IN")}`;
+  const originalFromReal = (realPrice) => formatINR(Math.round((realPrice || 0) * 5));
+
   const durationCards = [
     {
       duration: '1 Month',
       badge: '80% OFF',
-      originalPrice: '₹3,999',
-      discountPrice: `₹${price1Month}`,
+      originalPrice: originalFromReal(price1Month),
+      discountPrice: formatINR(price1Month),
       mode: 'Online',
       subtext: 'Perfect for quick skill development & baseline project experience.',
       popular: false
@@ -127,8 +135,8 @@ const InternshipDetails = () => {
     {
       duration: '3 Months',
       badge: '80% OFF',
-      originalPrice: '₹6,999',
-      discountPrice: `₹${price3Month}`,
+      originalPrice: originalFromReal(price3Month),
+      discountPrice: formatINR(price3Month),
       mode: 'Online',
       subtext: 'Ideal for in-depth learning, real client projects, and full certification.',
       popular: true
@@ -136,8 +144,8 @@ const InternshipDetails = () => {
     {
       duration: '6 Months',
       badge: '80% OFF',
-      originalPrice: '₹11,999',
-      discountPrice: `₹${price6Month}`,
+      originalPrice: originalFromReal(price6Month),
+      discountPrice: formatINR(price6Month),
       mode: 'Online',
       subtext: 'Complete professional experience with LOR, performance stipend & PPO track.',
       popular: false

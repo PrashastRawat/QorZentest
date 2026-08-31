@@ -1,5 +1,3 @@
-
-
 .internship-list-page {
   min-height: 100vh;
   background-color: var(--primary-light);
@@ -53,8 +51,6 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-decoration: none;
-  
-  
   display: inline-block;
   white-space: nowrap;
 }
@@ -279,7 +275,7 @@
 
 .meta-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.4rem;
   font-size: 0.82rem;
   color: var(--text-muted);
@@ -287,6 +283,8 @@
 
 .meta-icon {
   color: var(--deep-accent);
+  margin-top: 0.15rem;
+  flex-shrink: 0;
 }
 
 .card-tools-container {
@@ -458,11 +456,14 @@
   
   .meta-item {
     font-size: 0.72rem;
+    align-items: flex-start;
   }
   
   .meta-item svg {
     width: 0.82rem !important;
     height: 0.82rem !important;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
   }
   
   .card-tools-container {
@@ -544,11 +545,14 @@
   
   .meta-item {
     font-size: 0.78rem;
+    align-items: flex-start;
   }
   
   .meta-item svg {
     width: 0.88rem !important;
     height: 0.88rem !important;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
   }
   
   .card-tools-container {

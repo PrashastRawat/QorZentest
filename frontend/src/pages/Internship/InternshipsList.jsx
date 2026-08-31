@@ -223,7 +223,7 @@ const InternshipsList = () => {
                           </div>
                         </div>
 
-                        <div className="internship-meta-row">
+                        {/* <div className="internship-meta-row">
                           <div className="meta-item">
                             <Calendar size={14} className="meta-icon" />
                             <span>Duration: <strong>1, 3, 6 Months</strong></span>
@@ -232,7 +232,7 @@ const InternshipsList = () => {
                             <MapPin size={14} className="meta-icon" />
                             <span>Access Mode: <strong>{item.mode || 'Online'}</strong></span>
                           </div>
-                        </div>
+                        </div> */}
 
                         <div className="card-tools-container">
                           <span className="tools-list-label">Skills Covered:</span>
