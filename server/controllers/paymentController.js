@@ -1,5 +1,7 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import EnrollmentRequest from "../models/EnrollmentRequest.js";
+import { grantEnrollmentAccess } from "./enrollmentRequestController.js";
 
 // Lazily create the Razorpay instance only if keys exist,
 // so the server doesn't crash when they're not set yet.
@@ -18,13 +20,16 @@ const getRazorpayInstance = () => {
 export const getPaymentConfig = (req, res) => {
   const enabled = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
   res.json({
-    razorpayEnabled: enabled,
-    keyId: enabled ? process.env.RAZORPAY_KEY_ID : null, // Key ID is safe to expose, Key Secret never is
+    success: true,
+    data: {
+      razorpayEnabled: enabled,
+      keyId: enabled ? process.env.RAZORPAY_KEY_ID : null, // Key ID is safe to expose, Key Secret never is
+    },
   });
 };
 
 // POST /api/payments/create-order
-// Body: { amount: <rupees, number>, requestCode: <string> }
+// Body: { amount: <rupees, number>, enrollmentRequestId: <string> }
 export const createOrder = async (req, res) => {
   try {
     const razorpay = getRazorpayInstance();
@@ -32,15 +37,20 @@ export const createOrder = async (req, res) => {
       return res.status(503).json({ message: "Razorpay is not configured yet" });
     }
 
-    const { amount, requestCode } = req.body;
-    if (!amount || !requestCode) {
-      return res.status(400).json({ message: "amount and requestCode are required" });
+    const { amount, enrollmentRequestId } = req.body;
+    if (!amount || !enrollmentRequestId) {
+      return res.status(400).json({ message: "amount and enrollmentRequestId are required" });
+    }
+
+    const request = await EnrollmentRequest.findById(enrollmentRequestId);
+    if (!request) {
+      return res.status(404).json({ message: "Enrollment request not found" });
     }
 
     const order = await razorpay.orders.create({
       amount: Math.round(amount * 100), // rupees -> paise
       currency: "INR",
-      receipt: requestCode,
+      receipt: request.requestCode,
     });
 
     res.json(order);
@@ -74,10 +84,25 @@ export const verifyPayment = async (req, res) => {
       return res.status(400).json({ message: "Payment verification failed — signature mismatch" });
     }
 
-    // Signature is valid -> payment is real.
-    // TODO: call the same confirm logic used by confirmEnrollmentRequest,
-    // passing enrollmentRequestId, so Student.enrolledCourses/enrolledTrainings
-    // gets upserted exactly the same way as the WhatsApp/admin-confirm path.
+    // Signature is valid -> payment is real. Load the request and run it
+    // through the same grant/confirm path used by the admin/WhatsApp flow,
+    // so Student.enrolledCourses/enrolledTrainings stays consistent either way.
+    const request = await EnrollmentRequest.findById(enrollmentRequestId);
+    if (!request) {
+      return res.status(404).json({ message: "Enrollment request not found" });
+    }
+
+    // Payment already verified above — safe to no-op if this request was
+    // somehow already confirmed (e.g. a retried/duplicate webhook or client call).
+    if (request.status !== "confirmed") {
+      request.status = "confirmed";
+      request.confirmedAt = new Date();
+      request.razorpayOrderId = razorpay_order_id;
+      request.razorpayPaymentId = razorpay_payment_id;
+      await request.save();
+
+      await grantEnrollmentAccess(request);
+    }
 
     res.json({ verified: true });
   } catch (err) {
