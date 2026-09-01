@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -14,7 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useEnquiryModal } from "../../context/EnquiryModalContext";
-import { createEnrollmentRequest } from "../../api/studentApi";
+import { createEnrollmentRequest, getPaymentConfig, createRazorpayOrder, verifyRazorpayPayment } from "../../api/studentApi";
 import "./EnrollmentModal.css";
 
 // TEMP: personal testing number. Replace with QorZen's real WhatsApp Business number before launch.
@@ -71,6 +71,24 @@ const EnrollmentModal = () => {
   const [submittedData, setSubmittedData] = useState(null);
   const [method, setMethod] = useState("whatsapp");
   const [error, setError] = useState(null);
+  const [razorpayEnabled, setRazorpayEnabled] = useState(false);
+  const [paymentInProgress, setPaymentInProgress] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchPaymentConfig();
+    }
+  }, [isOpen]);
+
+  const fetchPaymentConfig = async () => {
+    try {
+      const response = await getPaymentConfig();
+      setRazorpayEnabled(response.data.data.razorpayEnabled);
+    } catch (err) {
+      console.error("Failed to fetch payment config:", err);
+      setRazorpayEnabled(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -107,21 +125,94 @@ const EnrollmentModal = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await createEnrollmentRequest({
-        itemType: selectedProgram.itemType,
-        itemId: selectedProgram._id,
-        method,
-        batchTiming: formData.batchTiming,
-      });
+      if (method === "razorpay" && razorpayEnabled) {
+        // Razorpay flow
+        setPaymentInProgress(true);
 
-      const requestCode = response?.data?.data?.requestCode;
+        // Step 1: Create enrollment request
+        const enrollmentResponse = await createEnrollmentRequest({
+          itemType: selectedProgram.itemType,
+          itemId: selectedProgram._id,
+          method,
+          batchTiming: formData.batchTiming,
+        });
 
-      setSubmittedData({
-        refCode: requestCode,
-        method,
-        ...formData,
-        program: selectedProgram,
-      });
+        const enrollmentRequestId = enrollmentResponse.data.data._id;
+        const requestCode = enrollmentResponse.data.data.requestCode;
+
+        // Step 2: Create Razorpay order
+        const orderResponse = await createRazorpayOrder({
+          amount: selectedProgram.price,
+          currency: "INR",
+          enrollmentRequestId,
+        });
+
+        const { orderId } = orderResponse.data.data;
+
+        // Step 3: Open Razorpay checkout
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || process.env.REACT_APP_RAZORPAY_KEY_ID,
+          order_id: orderId,
+          amount: selectedProgram.price * 100,
+          currency: "INR",
+          name: "QorZen",
+          description: `${selectedProgram.itemType} enrollment: ${selectedProgram.title || selectedProgram.name}`,
+          prefill: {
+            name: formData.fullName,
+            email: formData.email,
+            contact: formData.phone,
+          },
+          handler: async (response) => {
+            try {
+              // Step 4: Verify payment
+              await verifyRazorpayPayment({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                enrollmentRequestId,
+              });
+
+              setSubmittedData({
+                refCode: requestCode,
+                method,
+                ...formData,
+                program: selectedProgram,
+              });
+            } catch (verifyError) {
+              setError("Payment verification failed. Please contact support.");
+              console.error("Verification error:", verifyError);
+            } finally {
+              setPaymentInProgress(false);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setPaymentInProgress(false);
+              setError("Payment cancelled.");
+            },
+          },
+        };
+
+        const razorpayWindow = new window.Razorpay(options);
+        razorpayWindow.open();
+      } else {
+        // WhatsApp flow
+        const response = await createEnrollmentRequest({
+          itemType: selectedProgram.itemType,
+          itemId: selectedProgram._id,
+          method,
+          batchTiming: formData.batchTiming,
+        });
+
+        const requestCode = response?.data?.data?.requestCode;
+
+        setSubmittedData({
+          refCode: requestCode,
+          method,
+          ...formData,
+          program: selectedProgram,
+        });
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         setError("AUTH_REQUIRED");
@@ -157,9 +248,6 @@ const EnrollmentModal = () => {
   const programDuration = selectedProgram?.duration || "3 Months";
   const rawPrice = selectedProgram?.price;
   const isNumericPrice = typeof rawPrice === "number";
-  // rawPrice is the REAL amount the student pays — never modified, never halved.
-  // The "original" price is a marketing-only display figure (2x real price),
-  // purely visual, and is not sent anywhere or recorded.
   const formattedOriginalPrice = isNumericPrice
     ? `₹${(rawPrice * 2).toLocaleString("en-IN")}`
     : null;
@@ -266,6 +354,7 @@ const EnrollmentModal = () => {
                         value={formData.fullName}
                         onChange={handleChange}
                         className="input"
+                        disabled={isSubmitting || paymentInProgress}
                       />
                     </div>
                   </div>
@@ -284,6 +373,7 @@ const EnrollmentModal = () => {
                         value={formData.email}
                         onChange={handleChange}
                         className="input"
+                        disabled={isSubmitting || paymentInProgress}
                       />
                     </div>
                   </div>
@@ -304,6 +394,7 @@ const EnrollmentModal = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="input"
+                        disabled={isSubmitting || paymentInProgress}
                       />
                     </div>
                   </div>
@@ -320,6 +411,7 @@ const EnrollmentModal = () => {
                         value={formData.batchTiming}
                         onChange={handleChange}
                         className="input"
+                        disabled={isSubmitting || paymentInProgress}
                       >
                         <option value="Weekdays (Mon, Tue, Wed, Thur)">
                           Option A: Weekdays (Mon, Tue, Wed, Thur)
@@ -367,23 +459,26 @@ const EnrollmentModal = () => {
                         checked={method === "whatsapp"}
                         onChange={() => setMethod("whatsapp")}
                         style={hiddenRadioStyle}
+                        disabled={isSubmitting || paymentInProgress}
                       />
                       <span>Continue on WhatsApp</span>
                     </label>
 
                     <label
                       htmlFor="methodRazorpay"
-                      style={toggleCardStyle(false, true)}
+                      style={toggleCardStyle(method === "razorpay", !razorpayEnabled)}
                     >
                       <input
                         type="radio"
                         id="methodRazorpay"
                         name="method"
                         value="razorpay"
-                        disabled
+                        checked={method === "razorpay"}
+                        onChange={() => setMethod("razorpay")}
+                        disabled={!razorpayEnabled}
                         style={hiddenRadioStyle}
                       />
-                      <span>Pay Online (Coming Soon)</span>
+                      <span>{razorpayEnabled ? "Pay Online" : "Pay Online (Coming Soon)"}</span>
                     </label>
                   </div>
                 </div>
@@ -391,11 +486,11 @@ const EnrollmentModal = () => {
                 {/* Submit Action Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || paymentInProgress}
                   className="btn-confirm-enrollment"
                 >
                   <span>
-                    {isSubmitting
+                    {isSubmitting || paymentInProgress
                       ? "Processing Registration..."
                       : `Confirm & Enroll in ${programTitle}`}
                   </span>
@@ -471,9 +566,7 @@ const EnrollmentModal = () => {
                 </>
               ) : (
                 <p className="next-steps-text">
-                  Our academic advisor will reach out to you at{" "}
-                  <strong>{submittedData.phone}</strong> within 2 hours with
-                  syllabus access & payment confirmation.
+                  Payment successful! Your access has been granted. Check your email for course details.
                 </p>
               )}
 

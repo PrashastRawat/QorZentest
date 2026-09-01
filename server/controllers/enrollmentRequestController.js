@@ -18,6 +18,57 @@ const generateRequestCode = async () => {
   return code;
 };
 
+// Shared by confirmEnrollmentRequest (admin, WhatsApp path) and
+// paymentController.verifyPayment (auto-confirm, Razorpay path) —
+// keeping this in one place means both paths always stay in sync.
+export const grantEnrollmentAccess = async (request) => {
+  const student = await User.findById(request.student);
+  const field = request.itemType === "course" ? "purchasedCourses" : "purchasedTrainings";
+  const alreadyOwned = student[field].some((id) => id.toString() === request.itemId.toString());
+  if (!alreadyOwned) {
+    student[field].push(request.itemId);
+    await student.save();
+  }
+
+  if (request.itemType === "course") {
+    const studentDoc = await Student.findOneAndUpdate(
+      { userId: request.student },
+      { $setOnInsert: { userId: request.student } },
+      { upsert: true, new: true }
+    );
+    const alreadyEnrolled = studentDoc.enrolledCourses.some(
+      (e) => e.courseId.toString() === request.itemId.toString()
+    );
+    if (!alreadyEnrolled) {
+      studentDoc.enrolledCourses.push({
+        courseId: request.itemId,
+        enrolledAt: new Date(),
+        progress: 0,
+      });
+      await studentDoc.save();
+    }
+  }
+
+  if (request.itemType === "training") {
+    const studentDoc = await Student.findOneAndUpdate(
+      { userId: request.student },
+      { $setOnInsert: { userId: request.student } },
+      { upsert: true, new: true }
+    );
+    const alreadyEnrolled = studentDoc.enrolledTrainings.some(
+      (e) => e.trainingId.toString() === request.itemId.toString()
+    );
+    if (!alreadyEnrolled) {
+      studentDoc.enrolledTrainings.push({
+        trainingId: request.itemId,
+        enrolledAt: new Date(),
+        progress: 0,
+      });
+      await studentDoc.save();
+    }
+  }
+};
+
 // @desc   Student creates a new enrollment request (Course or Training)
 // @route  POST /api/enrollment-requests
 export const createEnrollmentRequest = async (req, res, next) => {
@@ -124,65 +175,7 @@ export const confirmEnrollmentRequest = async (req, res, next) => {
     request.confirmedAt = new Date();
     await request.save();
 
-    // Grant access: push the item into the student's purchased list
-    // if it isn't already there.
-    const student = await User.findById(request.student);
-    const field = request.itemType === "course" ? "purchasedCourses" : "purchasedTrainings";
-    const alreadyOwned = student[field].some((id) => id.toString() === request.itemId.toString());
-    if (!alreadyOwned) {
-      student[field].push(request.itemId);
-      await student.save();
-    }
-    if (request.itemType === "course") {
-      const studentDoc = await Student.findOneAndUpdate(
-        { userId: request.student },
-        {
-          $setOnInsert: { userId: request.student },
-        },
-        { upsert: true, new: true }
-      );
-
-      const alreadyEnrolled = studentDoc.enrolledCourses.some(
-        (e) => e.courseId.toString() === request.itemId.toString()
-      );
-
-      if (!alreadyEnrolled) {
-        studentDoc.enrolledCourses.push({
-          courseId: request.itemId,
-          enrolledAt: new Date(),
-          progress: 0,
-        });
-        await studentDoc.save();
-      }
-    }
-
-    // NOTE: this branch was previously missing entirely — confirming a
-    // Training enrollment request only ever updated User.purchasedTrainings,
-    // never Student.enrolledTrainings. That meant confirmed training
-    // students never showed up in any student-facing or admin view that
-    // reads from Student (the real source of truth — see project notes).
-    if (request.itemType === "training") {
-      const studentDoc = await Student.findOneAndUpdate(
-        { userId: request.student },
-        {
-          $setOnInsert: { userId: request.student },
-        },
-        { upsert: true, new: true }
-      );
-
-      const alreadyEnrolled = studentDoc.enrolledTrainings.some(
-        (e) => e.trainingId.toString() === request.itemId.toString()
-      );
-
-      if (!alreadyEnrolled) {
-        studentDoc.enrolledTrainings.push({
-          trainingId: request.itemId,
-          enrolledAt: new Date(),
-          progress: 0,
-        });
-        await studentDoc.save();
-      }
-    }
+    await grantEnrollmentAccess(request);
 
     res.status(200).json({
       success: true,

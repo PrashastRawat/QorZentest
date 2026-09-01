@@ -18,6 +18,7 @@ import enrollmentRequestRoutes from "./routes/enrollmentRequestRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import liveClassRoutes from "./routes/liveClassRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 
 const app = express();
@@ -58,6 +59,8 @@ app.use("/api/enrollment-requests", enrollmentRequestRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/live-classes", liveClassRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/enrollment-requests", enrollmentRequestRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use(errorMiddleware);
 

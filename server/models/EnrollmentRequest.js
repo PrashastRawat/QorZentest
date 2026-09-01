@@ -51,8 +51,14 @@ const enrollmentRequestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    confirmedAt: {
+        confirmedAt: {
       type: Date,
+    },
+    razorpayOrderId: {
+      type: String,
+    },
+    razorpayPaymentId: {
+      type: String,
     },
   },
   { timestamps: true },
