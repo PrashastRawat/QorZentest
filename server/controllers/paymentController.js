@@ -75,50 +75,48 @@ export const createOrder = async (req, res) => {
 
 // POST /api/payments/verify
 // Body: { razorpay_order_id, razorpay_payment_id, razorpay_signature, enrollmentRequestId }
+
 export const verifyPayment = async (req, res) => {
   try {
     const {
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
       enrollmentRequestId,
     } = req.body;
 
-    if (
-      !razorpay_order_id ||
-      !razorpay_payment_id ||
-      !razorpay_signature ||
-      !enrollmentRequestId
-    ) {
+    const orderId = razorpayOrderId ?? razorpay_order_id;
+    const paymentId = razorpayPaymentId ?? razorpay_payment_id;
+    const signature = razorpaySignature ?? razorpay_signature;
+
+    if (!orderId || !paymentId || !signature || !enrollmentRequestId) {
       return res.status(400).json({ message: "Missing verification fields" });
     }
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .update(`${orderId}|${paymentId}`)
       .digest("hex");
 
-    if (expectedSignature !== razorpay_signature) {
+    if (expectedSignature !== signature) {
       return res
         .status(400)
         .json({ message: "Payment verification failed — signature mismatch" });
     }
 
-    // Signature is valid -> payment is real. Load the request and run it
-    // through the same grant/confirm path used by the admin/WhatsApp flow,
-    // so Student.enrolledCourses/enrolledTrainings stays consistent either way.
     const request = await EnrollmentRequest.findById(enrollmentRequestId);
     if (!request) {
       return res.status(404).json({ message: "Enrollment request not found" });
     }
 
-    // Payment already verified above — safe to no-op if this request was
-    // somehow already confirmed (e.g. a retried/duplicate webhook or client call).
     if (request.status !== "confirmed") {
       request.status = "confirmed";
       request.confirmedAt = new Date();
-      request.razorpayOrderId = razorpay_order_id;
-      request.razorpayPaymentId = razorpay_payment_id;
+      request.razorpayOrderId = orderId;
+      request.razorpayPaymentId = paymentId;
       await request.save();
 
       await grantEnrollmentAccess(request);
@@ -130,3 +128,4 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ message: "Payment verification error" });
   }
 };
+
