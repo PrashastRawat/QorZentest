@@ -123,6 +123,7 @@ const EnrollmentModal = () => {
     }
 
     setIsSubmitting(true);
+    setPaymentInProgress(false);
 
     try {
       if (method === "razorpay" && razorpayEnabled) {
