@@ -18,7 +18,9 @@ const getRazorpayInstance = () => {
 // GET /api/payments/config
 // Public — tells the frontend whether to show the Razorpay option at all.
 export const getPaymentConfig = (req, res) => {
-  const enabled = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+  const enabled = Boolean(
+    process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET,
+  );
   res.json({
     success: true,
     data: {
@@ -34,12 +36,16 @@ export const createOrder = async (req, res) => {
   try {
     const razorpay = getRazorpayInstance();
     if (!razorpay) {
-      return res.status(503).json({ message: "Razorpay is not configured yet" });
+      return res
+        .status(503)
+        .json({ message: "Razorpay is not configured yet" });
     }
 
     const { amount, enrollmentRequestId } = req.body;
     if (!amount || !enrollmentRequestId) {
-      return res.status(400).json({ message: "amount and enrollmentRequestId are required" });
+      return res
+        .status(400)
+        .json({ message: "amount and enrollmentRequestId are required" });
     }
 
     const request = await EnrollmentRequest.findById(enrollmentRequestId);
@@ -53,7 +59,14 @@ export const createOrder = async (req, res) => {
       receipt: request.requestCode,
     });
 
-    res.json(order);
+    res.json({
+      success: true,
+      data: {
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+      },
+    });
   } catch (err) {
     console.error("createOrder error:", err);
     res.status(500).json({ message: "Failed to create Razorpay order" });
@@ -71,7 +84,12 @@ export const verifyPayment = async (req, res) => {
       enrollmentRequestId,
     } = req.body;
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !enrollmentRequestId) {
+    if (
+      !razorpay_order_id ||
+      !razorpay_payment_id ||
+      !razorpay_signature ||
+      !enrollmentRequestId
+    ) {
       return res.status(400).json({ message: "Missing verification fields" });
     }
 
@@ -81,7 +99,9 @@ export const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ message: "Payment verification failed — signature mismatch" });
+      return res
+        .status(400)
+        .json({ message: "Payment verification failed — signature mismatch" });
     }
 
     // Signature is valid -> payment is real. Load the request and run it
