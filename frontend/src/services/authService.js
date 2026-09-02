@@ -28,6 +28,7 @@ import { mockStudentUser } from "../data/studentMockData";
 import api from "../api/axiosInstance";
 import {
   login as apiLogin,
+  googleAuth as apiGoogleAuth,
   adminLogin as apiAdminLogin,
   signup as apiSignup,
 } from "../api/authApi";
@@ -92,6 +93,20 @@ export const authService = {
           "Login failed. Please check your credentials.",
       );
     }
+  },
+
+  loginWithGoogle: async (credential) => {
+    const res = await apiGoogleAuth(credential);
+    const token = res.data?.data?.token;
+    const user = res.data?.data?.user;
+
+    if (!token || !user) {
+      throw new Error("Google sign-in failed.");
+    }
+
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    return { success: true, token, user };
   },
 
   /**

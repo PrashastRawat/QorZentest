@@ -1,5 +1,5 @@
-import mongoose from "mongoose"
-import bycrypt from 'bcryptjs'
+import mongoose from "mongoose";
+import bycrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
@@ -17,9 +17,21 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       minlength: 8,
       select: false,
+      required: function () {
+        return this.authProvider === "local";
+      },
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // allows many users with no googleId
     },
     role: {
       type: String,
@@ -39,9 +51,9 @@ const userSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
 
 export default User;

@@ -41,6 +41,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (credential) => {
+    setLoading(true);
+    try {
+      const result = await authService.loginWithGoogle(credential);
+      setToken(result.token);
+      setUser(result.user);
+      return result;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /**
    * User Registration (New Student Sign Up)
    */
@@ -122,6 +134,7 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         isStudent,
         login,
+        loginWithGoogle,
         register,
         loginAdmin,
         logout,

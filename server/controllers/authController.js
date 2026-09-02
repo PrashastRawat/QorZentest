@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js"
 import Student from "../models/Student.js"
 
+import { OAuth2Client } from "google-auth-library";
+
 export const signUp = async (req, res, next)=>{
     try {
         const {fullName, email, password} = req.body
@@ -142,6 +144,49 @@ export const adminLogin = async (req, res, next) => {
       },
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleAuth = async (req, res, next) => {
+  try {
+    const { credential } = req.body; // the ID token from the frontend
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload(); // { email, name, sub, ... }
+
+    let user = await User.findOne({ email: payload.email });
+
+    if (!user) {
+      user = await User.create({
+        name: payload.name,
+        email: payload.email,
+        authProvider: "google",
+        googleId: payload.sub,
+      });
+      await Student.create({ userId: user._id });
+    } else if (!user.googleId) {
+      // existing email/password user signing in with Google for the first time
+      user.googleId = payload.sub;
+      await user.save();
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Signed in with Google",
+      data: { token, user: { id: user._id, name: user.name, email: user.email, role: user.role } },
+    });
+  } catch (error) {
+    error.statusCode = 401;
     next(error);
   }
 };

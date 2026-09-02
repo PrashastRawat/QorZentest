@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 import { Sparkles, Mail, Lock, User, Phone, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuthContext } from '../../../context/AuthContext';
 import './SignUp.css';
 const SignUp = () => {
   const navigate = useNavigate();
-  const { register } = useAuthContext();
+  const { register, loginWithGoogle } = useAuthContext();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -61,9 +62,17 @@ const SignUp = () => {
     }
   };
 
-  // Google OAuth Handler (Disabled / No-op)
-  const handleGoogleSignUp = (e) => {
-    e?.preventDefault();
+  const handleGoogleSignUp = async (credentialResponse) => {
+    setLoading(true);
+    setError('');
+    try {
+      await loginWithGoogle(credentialResponse.credential);
+      navigate('/', { replace: true });
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,6 +100,11 @@ const SignUp = () => {
         )}
 
         {/* Prominent Google OAuth Button */}
+        <GoogleLogin
+          onSuccess={handleGoogleSignUp}
+          onError={() => setError('Google sign-in failed.')}
+        />
+        {/* Legacy custom Google button retained for styling reference.
         <button type="button" className="btn-google-auth" onClick={handleGoogleSignUp}>
           <svg className="google-svg-logo" viewBox="0 0 24 24" width="20" height="20">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -99,7 +113,7 @@ const SignUp = () => {
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
           </svg>
           <span>Continue with Google</span>
-        </button>
+        </button> */}
 
         <div className="auth-divider">
           <span>or sign up with email</span>
