@@ -99,6 +99,12 @@ const ICON_MAP = {
 
 const getIconComponent = (name) => ICON_MAP[name] || BookOpen;
 
+const CATEGORY_ALIASES = {
+  "AI Tools": "AI & Digital Skills",
+  Technical: "Technical Domains",
+  "Non-Technical": "Non-Technical Domains",
+};
+
 /**
  * Reusable category-tabbed course browser.
  *
@@ -214,7 +220,9 @@ const CourseCategoryBrowser = ({
   const filteredCourses = useMemo(() => {
     return allCourses.filter((course) => {
       const matchesCategory =
-        activeCategory === "all" || course.category === activeCategory;
+        activeCategory === "all" ||
+        course.category === activeCategory ||
+        course.category === CATEGORY_ALIASES[activeCategory];
       const q = searchQuery.toLowerCase();
       const matchesSearch =
         !q ||

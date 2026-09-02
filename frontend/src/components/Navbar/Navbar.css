@@ -172,10 +172,6 @@
   background: #f5f0eb;
 }
 
-.dropdown-card.highlighted {
-  background: #f0ebe4;
-}
-
 .dropdown-card.highlighted:hover {
   background: #e9e1d8;
 }
