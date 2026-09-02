@@ -43,6 +43,7 @@ import AdminCategoryManager from "../pages/admin/shared/AdminCategoryManager";
 import AdminProfile from "../pages/admin/Profile/AdminProfile";
 import AdminEnrollmentRequests from "../pages/admin/EnrollmentRequests/AdminEnrollmentRequests";
 import AdminManageStudents from "../pages/admin/ManageStudents/AdminManageStudents";
+import AdminPayments from "../pages/admin/Payments/AdminPayments";
 import StudentTrainings from "../pages/Student/Trainings/StudentTrainings";
 
 /**
@@ -115,6 +116,7 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="manage-students" element={<AdminManageStudents />} />
+        <Route path="payments" element={<AdminPayments />} />
         <Route
           path="services"
           element={

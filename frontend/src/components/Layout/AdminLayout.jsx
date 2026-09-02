@@ -18,7 +18,8 @@ import {
   ExternalLink,
   Layers,
   Users,
-  Briefcase
+  Briefcase,
+  CreditCard
 } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import '../StudentPortal/StudentLayout.css';
@@ -26,6 +27,7 @@ import '../StudentPortal/StudentLayout.css';
 const adminNavItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Manage Students', path: '/admin/manage-students', icon: Users },
+  { name: 'Payments & Revenue', path: '/admin/payments', icon: CreditCard },
   { name: 'Services', path: '/admin/services', icon: BriefcaseBusiness },
   { name: 'Portfolio', path: '/admin/portfolio', icon: LayoutDashboard },
   { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
