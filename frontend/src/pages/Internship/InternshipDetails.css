@@ -1,5 +1,3 @@
-
-
 .internship-details-page {
   min-height: 100vh;
   background-color: var(--primary-light);
@@ -23,6 +21,26 @@
   margin-bottom: 1.5rem;
 }
 
+/* Every crumb (links + the final title span) must never split a word
+   mid-letter — only the global body overflow-wrap:break-word rule was
+   causing that on narrow screens. Wrapping at spaces is fine; breaking
+   inside a word is not. */
+.breadcrumb-nav a,
+.breadcrumb-nav > span {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* The earlier crumbs ("Internships", the category) truncate with an
+   ellipsis instead of wrapping onto a second line when space is tight. */
+.breadcrumb-nav a,
+.breadcrumb-nav > span:not(.current-crumb) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 6.5rem;
+}
+
 .breadcrumb-nav a {
   color: var(--text-secondary);
   text-decoration: none;
@@ -36,6 +54,10 @@
 .current-crumb {
   color: var(--text-primary);
   font-weight: 700;
+  /* The final (current page) crumb shows in full, wrapping at word
+     boundaries only — never truncated, never split mid-word. */
+  white-space: normal;
+  max-width: none;
 }
 
 .details-hero-title {
@@ -489,6 +511,16 @@
 }
 
 @media (max-width: 767px) {
+  .breadcrumb-nav {
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+
+  .breadcrumb-nav a,
+  .breadcrumb-nav > span:not(.current-crumb) {
+    max-width: 5rem;
+  }
+
   .details-hero {
     padding: 2.5rem 0 2rem 0;
   }
