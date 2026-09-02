@@ -20,7 +20,6 @@ import liveClassRoutes from "./routes/liveClassRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 
-
 const app = express();
 
 app.use(helmet());
@@ -28,23 +27,25 @@ app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:5173",
   credentials: true,
 }));
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: {
     success: false,
     error: "Too many requests, please try again later.",
   },
 });
 
-app.use(limiter);
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("QorZen API is running");
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", limiter, authRoutes);   // rate-limited (brute-force protection)
 app.use("/api/services", serviceRoutes)
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/blogs", blogRoutes);
@@ -59,7 +60,6 @@ app.use("/api/enrollment-requests", enrollmentRequestRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/live-classes", liveClassRoutes);
 app.use("/api/categories", categoryRoutes);
-app.use("/api/enrollment-requests", enrollmentRequestRoutes);
 app.use("/api/payments", paymentRoutes);
 
 app.use(errorMiddleware);
