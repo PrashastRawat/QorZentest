@@ -1,6 +1,8 @@
 import EnrollmentRequest from "../models/EnrollmentRequest.js";
 import Course from "../models/Course.js";
 import Training from "../models/Training.js";
+import Internship from "../models/Internship.js";
+import InternshipApplication from "../models/InternshipApplication.js";
 import User from "../models/User.js";
 import Student from "../models/Student.js"; 
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
@@ -22,6 +24,38 @@ const generateRequestCode = async () => {
 // paymentController.verifyPayment (auto-confirm, Razorpay path) —
 // keeping this in one place means both paths always stay in sync.
 export const grantEnrollmentAccess = async (request) => {
+  // Internship has its own record shape (an InternshipApplication, synced into
+  // Student.enrolledInternships) — it doesn't use User.purchasedCourses/Trainings
+  // at all, so it's handled entirely separately and returns early.
+  if (request.itemType === "internship") {
+    if (!request.applicationId) return;
+    const application = await InternshipApplication.findById(request.applicationId);
+    if (!application) return;
+
+    application.status = "enrolled";
+    await application.save();
+
+    const studentDoc = await Student.findOneAndUpdate(
+      { userId: request.student },
+      { $setOnInsert: { userId: request.student } },
+      { upsert: true, new: true }
+    );
+    const alreadyEnrolled = studentDoc.enrolledInternships.some(
+      (e) => e.applicationId && e.applicationId.toString() === application._id.toString()
+    );
+    if (!alreadyEnrolled) {
+      studentDoc.enrolledInternships.push({
+        internshipId: request.itemId,
+        applicationId: application._id,
+        selectedDuration: application.selectedDuration,
+        enrolledAt: new Date(),
+        progress: 0,
+      });
+      await studentDoc.save();
+    }
+    return;
+  }
+
   const student = await User.findById(request.student);
   const field = request.itemType === "course" ? "purchasedCourses" : "purchasedTrainings";
   const alreadyOwned = student[field].some((id) => id.toString() === request.itemId.toString());
@@ -73,10 +107,10 @@ export const grantEnrollmentAccess = async (request) => {
 // @route  POST /api/enrollment-requests
 export const createEnrollmentRequest = async (req, res, next) => {
   try {
-    const { itemType, itemId, method, batchTiming } = req.body;
+    const { itemType, itemId, method, batchTiming, applicationId, contactChannel } = req.body;
 
-    if (!["course", "training"].includes(itemType)) {
-      const error = new Error("itemType must be 'course' or 'training'");
+    if (!["course", "training", "internship"].includes(itemType)) {
+      const error = new Error("itemType must be 'course', 'training', or 'internship'");
       error.statusCode = 400;
       throw error;
     }
@@ -86,28 +120,74 @@ export const createEnrollmentRequest = async (req, res, next) => {
       throw error;
     }
 
-    // Look up the real item so we snapshot its current title/price —
-    // never trust title/price if sent from the frontend directly.
-    const Model = itemType === "course" ? Course : Training;
-    const item = await Model.findById(itemId);
-    if (!item) {
-      const error = new Error(`${itemType} not found`);
-      error.statusCode = 404;
-      throw error;
+    let enrollmentRequest;
+
+    if (itemType === "internship") {
+      if (!applicationId) {
+        const error = new Error("applicationId is required for internship enrollment requests");
+        error.statusCode = 400;
+        throw error;
+      }
+      const application = await InternshipApplication.findById(applicationId);
+      if (!application) {
+        const error = new Error("Internship application not found");
+        error.statusCode = 404;
+        throw error;
+      }
+      const internship = await Internship.findById(application.internshipId);
+      if (!internship) {
+        const error = new Error("Internship not found");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      // Late-link a guest application to the now-logged-in student's account,
+      // so grantEnrollmentAccess can sync it into Student.enrolledInternships.
+      if (!application.studentId) {
+        const studentDoc = await Student.findOneAndUpdate(
+          { userId: req.user._id },
+          { $setOnInsert: { userId: req.user._id } },
+          { upsert: true, new: true }
+        );
+        application.studentId = studentDoc._id;
+        await application.save();
+      }
+
+      const requestCode = await generateRequestCode();
+      enrollmentRequest = await EnrollmentRequest.create({
+        student: req.user._id,
+        itemType,
+        itemId: internship._id,
+        itemTitle: internship.title,
+        amount: application.selectedPrice,
+        method,
+        requestCode,
+        applicationId: application._id,
+        contactChannel,
+      });
+    } else {
+      // Look up the real item so we snapshot its current title/price —
+      // never trust title/price if sent from the frontend directly.
+      const Model = itemType === "course" ? Course : Training;
+      const item = await Model.findById(itemId);
+      if (!item) {
+        const error = new Error(`${itemType} not found`);
+        error.statusCode = 404;
+        throw error;
+      }
+
+      const requestCode = await generateRequestCode();
+      enrollmentRequest = await EnrollmentRequest.create({
+        student: req.user._id,
+        itemType,
+        itemId: item._id,
+        itemTitle: item.title,
+        amount: item.price ?? item.priceStartingFrom ?? 0,
+        method,
+        requestCode,
+        batchTiming,
+      });
     }
-
-    const requestCode = await generateRequestCode();
-
-    const enrollmentRequest = await EnrollmentRequest.create({
-      student: req.user._id,
-      itemType,
-      itemId: item._id,
-      itemTitle: item.title,
-      amount: item.price ?? item.priceStartingFrom ?? 0,
-      method,
-      requestCode,
-      batchTiming,
-    });
 
     res.status(201).json({
       success: true,
@@ -205,6 +285,25 @@ export const rejectEnrollmentRequest = async (req, res, next) => {
       success: true,
       message: "Enrollment request rejected",
       data: request,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc   Admin deletes an enrollment request (any status)
+// @route  DELETE /api/enrollment-requests/:id
+export const deleteEnrollmentRequest = async (req, res, next) => {
+  try {
+    const request = await EnrollmentRequest.findByIdAndDelete(req.params.id);
+    if (!request) {
+      const error = new Error("Enrollment request not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      success: true,
+      message: "Enrollment request deleted",
     });
   } catch (error) {
     next(error);

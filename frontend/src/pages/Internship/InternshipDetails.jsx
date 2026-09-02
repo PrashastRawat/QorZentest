@@ -20,7 +20,10 @@ import {
   FileUp
 } from 'lucide-react';
 import { getInternshipById, applyToInternship } from '../../api/internshipApi';
+import { createEnrollmentRequest, getPaymentConfig, createRazorpayOrder, verifyRazorpayPayment } from '../../api/studentApi';
 import './InternshipDetails.css';
+
+const ADMIN_EMAIL = 'prashastdev@gmail.com';
 
 const journeyTimelineSteps = [
   { step: '01', title: 'Enrollment Process', desc: 'Select your preferred duration tier (1, 3, or 6 Months) and submit your registration details.' },
@@ -61,6 +64,20 @@ const InternshipDetails = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submittedApplication, setSubmittedApplication] = useState(null);
+
+  // Post-application payment step: pick Razorpay (instant) or WhatsApp/Email (manual, admin confirms)
+  const [razorpayEnabled, setRazorpayEnabled] = useState(false);
+  const [paymentInProgress, setPaymentInProgress] = useState(false);
+  const [enrollError, setEnrollError] = useState(null);
+  const [enrollRequest, setEnrollRequest] = useState(null); // the created EnrollmentRequest, once made
+
+  useEffect(() => {
+    if (submittedApplication) {
+      getPaymentConfig()
+        .then((res) => setRazorpayEnabled(res.data?.data?.razorpayEnabled || false))
+        .catch(() => setRazorpayEnabled(false));
+    }
+  }, [submittedApplication]);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,6 +174,8 @@ const InternshipDetails = () => {
     setSubmittedApplication(null);
     setFormData({ name: '', email: '', phone: '' });
     setCvFile(null);
+    setEnrollError(null);
+    setEnrollRequest(null);
     setSelectedPlanModal(plan);
   };
 
@@ -201,6 +220,89 @@ const InternshipDetails = () => {
       `Hi QorZen! I just applied for the ${title} (${selectedPlanModal?.duration}).\n` +
       `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  };
+
+  const buildMailtoUrl = () => {
+    const subject = `Internship Enrollment: ${title} (${selectedPlanModal?.duration})`;
+    const body =
+      `Hi QorZen,\n\nI just applied for the ${title} (${selectedPlanModal?.duration}).\n` +
+      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}`;
+    return `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  // Manual path: logs an enrollment request (so admin sees & can confirm it),
+  // then opens WhatsApp or the mail client. Still opens the link even if the
+  // student isn't logged in (request just won't be tracked in that case).
+  const handleManualContact = async (channel) => {
+    setEnrollError(null);
+    try {
+      const res = await createEnrollmentRequest({
+        itemType: 'internship',
+        itemId: internship._id,
+        applicationId: submittedApplication._id,
+        method: 'whatsapp',
+        contactChannel: channel,
+      });
+      setEnrollRequest(res.data.data);
+    } catch (err) {
+      if (err.response?.status !== 401) console.error('Enrollment request failed:', err);
+    } finally {
+      window.open(channel === 'whatsapp' ? buildWhatsAppUrl() : buildMailtoUrl(), '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  // Razorpay path: create the enrollment request, open checkout, verify on success —
+  // access is granted automatically, no admin step needed (mirrors course/training flow).
+  const handlePayOnline = async () => {
+    setEnrollError(null);
+    setPaymentInProgress(true);
+    try {
+      const reqRes = await createEnrollmentRequest({
+        itemType: 'internship',
+        itemId: internship._id,
+        applicationId: submittedApplication._id,
+        method: 'razorpay',
+      });
+      const enrollmentRequestId = reqRes.data.data._id;
+      const amount = reqRes.data.data.amount;
+
+      const orderRes = await createRazorpayOrder({ amount, enrollmentRequestId });
+      const { orderId } = orderRes.data.data;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        order_id: orderId,
+        amount: amount * 100,
+        currency: 'INR',
+        name: 'QorZen',
+        description: `Internship enrollment: ${title}`,
+        prefill: { name: formData.name, email: formData.email, contact: formData.phone },
+        handler: async (response) => {
+          try {
+            await verifyRazorpayPayment({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              enrollmentRequestId,
+            });
+            setEnrollRequest({ ...reqRes.data.data, status: 'confirmed' });
+          } catch (verifyErr) {
+            setEnrollError('Payment verification failed. Please contact support.');
+          } finally {
+            setPaymentInProgress(false);
+          }
+        },
+        modal: { ondismiss: () => setPaymentInProgress(false) },
+      };
+      new window.Razorpay(options).open();
+    } catch (err) {
+      setEnrollError(
+        err.response?.status === 401
+          ? 'AUTH_REQUIRED'
+          : err.response?.data?.message || 'Something went wrong. Please try again.'
+      );
+      setPaymentInProgress(false);
+    }
   };
 
   return (
@@ -586,20 +688,61 @@ const InternshipDetails = () => {
                     </div>
                   </div>
 
-                  <p className="next-steps-text">
-                    Our team will review your CV and reach out within 24 hours with your offer letter. Tap below to also notify us on WhatsApp.
-                  </p>
+                  {enrollRequest?.status === 'confirmed' ? (
+                    <p className="next-steps-text">
+                      Payment successful! Your access has been granted — check your dashboard and email for onboarding details.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="next-steps-text">
+                        Pay online to enroll instantly, or reach out on WhatsApp / email and our team will confirm your payment and send your offer letter within 24 hours.
+                      </p>
 
-                  <a
-                    href={buildWhatsAppUrl()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-confirm-enrollment"
-                    style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
-                  >
-                    <span>Continue on WhatsApp</span>
-                    <ArrowRight size={16} />
-                  </a>
+                      {enrollError && (
+                        <div className="enrollment-error-banner" role="alert" style={{ marginBottom: '0.6rem' }}>
+                          {enrollError === 'AUTH_REQUIRED' ? (
+                            <span>
+                              Please sign in to pay online. <a href="/signin" className="enrollment-error-link">Sign In</a>
+                            </span>
+                          ) : (
+                            <span>{enrollError}</span>
+                          )}
+                        </div>
+                      )}
+
+                      {razorpayEnabled && (
+                        <button
+                          onClick={handlePayOnline}
+                          disabled={paymentInProgress}
+                          className="btn-confirm-enrollment"
+                          style={{ marginBottom: '0.6rem' }}
+                        >
+                          <span>{paymentInProgress ? 'Processing...' : 'Pay Online & Enroll Instantly'}</span>
+                          <ArrowRight size={16} />
+                        </button>
+                      )}
+
+                      <a
+                        href={buildWhatsAppUrl()}
+                        onClick={(e) => { e.preventDefault(); handleManualContact('whatsapp'); }}
+                        className="btn-confirm-enrollment"
+                        style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
+                      >
+                        <span>Continue on WhatsApp</span>
+                        <ArrowRight size={16} />
+                      </a>
+
+                      <a
+                        href={buildMailtoUrl()}
+                        onClick={(e) => { e.preventDefault(); handleManualContact('email'); }}
+                        className="btn-confirm-enrollment"
+                        style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
+                      >
+                        <span>Continue via Email</span>
+                        <ArrowRight size={16} />
+                      </a>
+                    </>
+                  )}
 
                   <button onClick={closeApplyModal} className="btn-done-close">
                     Return to Internships

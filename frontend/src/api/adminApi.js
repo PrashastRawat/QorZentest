@@ -109,6 +109,7 @@ export const getEnrollmentRequests = (status) =>
 	api.get(status ? `/enrollment-requests?status=${status}` : '/enrollment-requests');
 export const confirmEnrollmentRequest = (id, data) => api.put(`/enrollment-requests/${id}/confirm`, data);
 export const rejectEnrollmentRequest = (id) => api.put(`/enrollment-requests/${id}/reject`);
+export const deleteEnrollmentRequest = (id) => api.delete(`/enrollment-requests/${id}`);
 
 // --- Course Assignments (admin) ---
 export const getCourseAssignments = (courseId) => api.get(`/assignments/course/${courseId}`);

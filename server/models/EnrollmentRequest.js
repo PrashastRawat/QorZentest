@@ -9,13 +9,25 @@ const enrollmentRequestSchema = new mongoose.Schema(
     },
     itemType: {
       type: String,
-      enum: ["course", "training"],
+      enum: ["course", "training", "internship"],
       required: true,
     },
     itemId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       refPath: "itemType",
+    },
+    // Only set when itemType === "internship" — links back to the CV
+    // application (name/email/phone/CV/selectedDuration already live there).
+    applicationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "InternshipApplication",
+    },
+    // How the student chose to reach out on the manual ("whatsapp") path —
+    // purely informational for the admin, doesn't affect logic.
+    contactChannel: {
+      type: String,
+      enum: ["whatsapp", "email"],
     },
     itemTitle: {
       type: String,

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Loader2, CheckCircle2, XCircle, Clock, Upload, Sparkles } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, Clock, Upload, Sparkles, Trash2 } from 'lucide-react';
 import {
   getEnrollmentRequests,
   confirmEnrollmentRequest,
-  rejectEnrollmentRequest
+  rejectEnrollmentRequest,
+  deleteEnrollmentRequest
 } from '../../../api/adminApi';
 import '../shared/AdminCrudPage.css';
 
@@ -138,6 +139,19 @@ export default function AdminEnrollmentRequests() {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Permanently delete this enrollment request? This cannot be undone.')) return;
+    setSubmittingId(id);
+    try {
+      await deleteEnrollmentRequest(id);
+      fetchRequests();
+    } catch (err) {
+      alert(`Error deleting request: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setSubmittingId(null);
+    }
+  };
+
   const totalConfirmedAmount = requests
     .filter((r) => r.status === 'confirmed')
     .reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
@@ -256,18 +270,28 @@ export default function AdminEnrollmentRequests() {
                         )}
                       </td>
                       <td style={td}>
-                        {req.status === 'pending' ? (
+                        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          {req.status === 'pending' && (
+                            <button
+                              type="button"
+                              onClick={() => setExpandedRow(isExpanded ? null : req._id)}
+                              className="btn-admin-edit"
+                              style={{ whiteSpace: 'nowrap' }}
+                            >
+                              {isExpanded ? 'Close' : 'Review'}
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => setExpandedRow(isExpanded ? null : req._id)}
-                            className="btn-admin-edit"
+                            onClick={() => handleDelete(req._id)}
+                            disabled={isSubmitting}
+                            className="btn-admin-delete"
                             style={{ whiteSpace: 'nowrap' }}
+                            aria-label="Delete enrollment request"
                           >
-                            {isExpanded ? 'Close' : 'Review'}
+                            <Trash2 size={14} />
                           </button>
-                        ) : (
-                          <span style={{ color: 'var(--text-secondary, #78716c)' }}>—</span>
-                        )}
+                        </div>
                       </td>
                     </tr>
 
