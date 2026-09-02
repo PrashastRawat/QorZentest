@@ -57,8 +57,8 @@ const navItems = [
     path: '/training',
     dropdown: [
       { name: 'AI Tools',              path: '/training?category=AI%20%26%20Digital%20Skills', icon: Sparkles,    desc: 'AI tools, automation, and digital skill-building', highlighted: true, tag: 'Trending' },
-      { name: 'Technical Domains',    path: '/training?category=Technical%20Domains',         icon: Code,        desc: 'Full stack, cloud, data, and core tech training' },
-      { name: 'Non-Technical Domains', path: '/training?category=Non-Technical%20Domains',    icon: Briefcase,   desc: 'Sales, HR, marketing, and business skills' },
+      { name: 'Technical',    path: '/training?category=Technical%20Domains',         icon: Code,        desc: 'Full stack, cloud, data, and core tech training' },
+      { name: 'Non-Technical', path: '/training?category=Non-Technical%20Domains',    icon: Briefcase,   desc: 'Sales, HR, marketing, and business skills' },
       { name: 'Networking',           path: '/training?category=Networking',                 icon: Cpu,         desc: 'Cisco, security, and enterprise networking programs' },
       { name: 'Corporate Training',   path: '/training?category=Corporate%20Training',        icon: GraduationCap, desc: 'Department-level corporate upskilling programs' },
     ],

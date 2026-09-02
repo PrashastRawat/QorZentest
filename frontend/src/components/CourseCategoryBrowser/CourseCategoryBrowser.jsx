@@ -191,7 +191,13 @@ const CourseCategoryBrowser = ({
     return map;
   }, [categories]);
 
-  const getLabel = (name) => categoryByName[name]?.label || name;
+  const getLabel = (name) => {
+    const dbLabel = categoryByName[name]?.label;
+    if (dbLabel) return dbLabel;
+    // Fallback if this category has no admin-configured label yet:
+    // "Technical Domains" -> "Technical", "Non-Technical Domains" -> "Non-Technical"
+    return name?.replace(/\s+Domains$/i, "") || name;
+  };
   const isTrending = (name) => Boolean(categoryByName[name]?.trending);
 
   // Category tabs: admin-configured list for this scope, already sorted by
@@ -347,9 +353,6 @@ const CourseCategoryBrowser = ({
                         <div className="ccb-card-price-row">
                           <span className="ccb-card-price-original">
                             ₹{(course.price * 2).toLocaleString("en-IN")}
-                          </span>
-                          <span className="ccb-card-discount-badge">
-                            50% OFF
                           </span>
                         </div>
                         <span className="ccb-card-price">
