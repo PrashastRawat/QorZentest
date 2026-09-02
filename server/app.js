@@ -19,6 +19,7 @@ import assignmentRoutes from "./routes/assignmentRoutes.js";
 import liveClassRoutes from "./routes/liveClassRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import servicePaymentRoutes from "./routes/servicePaymentRoutes.js";
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/live-classes", liveClassRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/service-payments", servicePaymentRoutes);
 
 app.use(errorMiddleware);
 

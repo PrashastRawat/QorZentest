@@ -4,3 +4,4 @@ export * from './authApi';
 export * from './adminApi';
 export * from './studentApi';
 export * from './publicApi';
+export * from './servicePaymentApi';
