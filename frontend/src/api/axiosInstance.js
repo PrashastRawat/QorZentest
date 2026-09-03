@@ -21,6 +21,19 @@ const getHeaders = (customHeaders = {}, isFormData = false) => {
   };
 };
 
+// Turns an axios-style `{ params: { scope: 'course' } }` config into an
+// actual "?scope=course" query string. Skips null/undefined values so
+// callers can pass `{ params: { scope } }` even when scope is unset
+// without ending up with a literal "?scope=undefined" in the URL.
+const buildUrl = (url, params) => {
+  if (!params) return `${BASE_URL}${url}`;
+  const query = Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return query ? `${BASE_URL}${url}?${query}` : `${BASE_URL}${url}`;
+};
+
 // Response handle karo aur backend error message frontend UI ko pass karo
 const handleResponse = async (response) => {
   const data = await response.json().catch(() => ({}));
@@ -36,7 +49,7 @@ const handleResponse = async (response) => {
 // credentials: 'include' -> httpOnly auth cookie auto-attach hota hai har request pe
 const api = {
   get: (url, config = {}) =>
-    fetch(`${BASE_URL}${url}`, {
+    fetch(buildUrl(url, config.params), {
       method: 'GET',
       credentials: 'include',
       headers: getHeaders(config.headers)
@@ -44,7 +57,7 @@ const api = {
 
   post: (url, body = {}, config = {}) => {
     const isFormData = body instanceof FormData;
-    return fetch(`${BASE_URL}${url}`, {
+    return fetch(buildUrl(url, config.params), {
       method: 'POST',
       credentials: 'include',
       headers: getHeaders(config.headers, isFormData),
@@ -54,7 +67,7 @@ const api = {
 
   put: (url, body = {}, config = {}) => {
     const isFormData = body instanceof FormData;
-    return fetch(`${BASE_URL}${url}`, {
+    return fetch(buildUrl(url, config.params), {
       method: 'PUT',
       credentials: 'include',
       headers: getHeaders(config.headers, isFormData),
@@ -63,7 +76,7 @@ const api = {
   },
 
   delete: (url, config = {}) =>
-    fetch(`${BASE_URL}${url}`, {
+    fetch(buildUrl(url, config.params), {
       method: 'DELETE',
       credentials: 'include',
       headers: getHeaders(config.headers)
