@@ -383,7 +383,7 @@ export const deleteEnrollmentRequest = async (req, res, next) => {
 // @route  GET /api/enrollment-requests/stats/revenue
 export const getRevenueSummary = async (req, res, next) => {
   try {
-        const [enrollments, servicePayments, internshipApplications] = await Promise.all([
+        const [enrollments, servicePayments] = await Promise.all([
       EnrollmentRequest.find({ status: "confirmed" })
         .select("itemType amount confirmedAt createdAt itemTitle")
         .lean(),
@@ -406,11 +406,6 @@ export const getRevenueSummary = async (req, res, next) => {
         amount: s.amount || 0,
         date: new Date(s.paidAt),
         stream: "service",
-      })),
-      ...internshipApplications.map((a) => ({
-        amount: a.selectedPrice || 0,
-        date: new Date(a.updatedAt || a.createdAt),
-        stream: "internship",
       })),
     ];
 
