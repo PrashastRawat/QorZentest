@@ -47,7 +47,7 @@ const learningBenefits = [
   { icon: CheckCircle2, title: 'Official LOR', desc: 'Customized Letter of Recommendation for university credits and job applications.' }
 ];
 
-const WHATSAPP_NUMBER = '918126542874'; // TEMP: personal testing number, swap before launch
+const WHATSAPP_NUMBER = '919917529504';
 
 const InternshipDetails = () => {
   const params = useParams();

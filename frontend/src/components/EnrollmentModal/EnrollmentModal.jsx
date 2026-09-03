@@ -18,7 +18,7 @@ import { createEnrollmentRequest, getPaymentConfig, createRazorpayOrder, verifyR
 import "./EnrollmentModal.css";
 
 // TEMP: personal testing number. Replace with QorZen's real WhatsApp Business number before launch.
-const WHATSAPP_NUMBER = "918126542874";
+const WHATSAPP_NUMBER = "919917529504";
 
 // Visually hides the native radio input (no dot) while keeping it in the
 // DOM and tabbable — the label itself becomes the clickable "button".
