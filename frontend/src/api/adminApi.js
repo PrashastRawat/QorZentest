@@ -52,9 +52,9 @@ export const createService = (data) => api.post('/services', data);
 export const deleteService = (id) => api.delete(`/services/${id}`);
 
 // --- Portfolio Projects ---
-export const getProjects = () => api.get('/projects');
-export const createProject = (data) => api.post('/projects', data);
-export const deleteProject = (id) => api.delete(`/projects/${id}`);
+export const getProjects = () => api.get('/portfolio');
+export const createProject = (data) => api.post('/portfolio', data);
+export const deleteProject = (id) => api.delete(`/portfolio/${id}`);
 
 // --- Courses & Internships ---
 export const getCourses = () => api.get('/courses');
