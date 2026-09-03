@@ -53,6 +53,24 @@
   margin-bottom: 0.75rem;
   box-shadow: var(--shadow-sm);
 }
+.student-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.student-brand-row .student-logo-img {
+  margin-bottom: 0;
+}
+
+.student-brand-name {
+  font-size: 1.95rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  margin: 0;
+}
 
 .student-login-title {
   font-size: 1.45rem;

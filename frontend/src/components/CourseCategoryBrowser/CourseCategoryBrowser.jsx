@@ -327,13 +327,15 @@ const CourseCategoryBrowser = ({
                       <span className="ccb-card-category">
                         {getLabel(course.category)}
                       </span>
-                      {isTrending(course.category) && (
+                      {(course.isTrending || isTrending(course.category)) && (
                         <span className="ccb-card-tag ccb-card-tag-trending">
                           <Flame size={11} />
                           Trending
                         </span>
                       )}
-                      {course.tag && !isTrending(course.category) && (
+                      {course.tag &&
+                        !course.isTrending &&
+                        !isTrending(course.category) && (
                         <span className="ccb-card-tag">{course.tag}</span>
                       )}
                     </div>

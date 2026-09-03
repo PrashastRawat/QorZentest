@@ -221,6 +221,7 @@ export default function AdminCrudPage({
             instructor: formData.instructor || "",
             category: formData.category || "",
             duration: formData.duration || "",
+            isTrending: Boolean(formData.isTrending),
           });
         } else {
           // Courses need a real multipart/form-data submission (file + array),
@@ -234,6 +235,7 @@ export default function AdminCrudPage({
           fd.append("category", formData.category || "");
           fd.append("duration", formData.duration || "");
           fd.append("lessons", JSON.stringify(courseLessons));
+          fd.append("isTrending", String(Boolean(formData.isTrending)));
           if (courseThumbnail) {
             fd.append("thumbnail", courseThumbnail);
           }
@@ -265,7 +267,7 @@ export default function AdminCrudPage({
               .map((tool) => tool.trim())
               .filter(Boolean)
           : [];
-        await apiHelpers.create({
+        const trainingPayload = {
           title: formData.title || "",
           category: formData.category || "",
           tag: formData.tag || "",
@@ -275,7 +277,13 @@ export default function AdminCrudPage({
           duration: formData.duration || "",
           price: formData.price || "",
           mode: formData.mode || "Online",
-        });
+          isTrending: Boolean(formData.isTrending),
+        };
+        if (editingItem) {
+          await apiHelpers.update(editingItem._id || editingItem.id, trainingPayload);
+        } else {
+          await apiHelpers.create(trainingPayload);
+        }
       } else if (
         lowerTitleNow.includes("career") ||
         lowerTitleNow.includes("role") ||
@@ -364,6 +372,19 @@ export default function AdminCrudPage({
         price3Month: item.price3Month ?? "",
         price6Month: item.price6Month ?? "",
       });
+    } else if (lowerTitleNow.includes("training")) {
+      setFormData({
+        title: item.title || "",
+        category: item.category || "",
+        tag: item.tag || "",
+        iconName: item.iconName || "",
+        description: item.description || "",
+        tools: Array.isArray(item.tools) ? item.tools.join(", ") : item.tools || "",
+        duration: item.duration || "",
+        price: item.price ?? "",
+        mode: item.mode || "Online",
+        isTrending: Boolean(item.isTrending),
+      });
     } else {
       setFormData({
         title: item.title || "",
@@ -372,6 +393,7 @@ export default function AdminCrudPage({
         instructor: item.instructor || "",
         category: item.category || "",
         duration: item.duration || "",
+        isTrending: Boolean(item.isTrending),
       });
     }
     setCourseThumbnail(null);
@@ -953,6 +975,24 @@ export default function AdminCrudPage({
               </button>
             </div>
 
+            <label
+              className="form-row-single"
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <input
+                type="checkbox"
+                name="isTrending"
+                checked={Boolean(formData.isTrending)}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isTrending: e.target.checked,
+                  }))
+                }
+              />
+              <span>Mark as Trending (shows at top)</span>
+            </label>
+
             <div
               className="admin-form-submit-row"
               style={{ justifyContent: "flex-start" }}
@@ -1194,7 +1234,7 @@ export default function AdminCrudPage({
     if (lowerTitle.includes("training")) {
       return (
         <div className="admin-form-container">
-          {renderFormHeader("+ Add New Training")}
+          {renderFormHeader(editingItem ? "Edit Training" : "+ Add New Training")}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
               <input
@@ -1276,6 +1316,23 @@ export default function AdminCrudPage({
                 onChange={handleChange}
               />
             </div>
+            <label
+              className="form-row-single"
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <input
+                type="checkbox"
+                name="isTrending"
+                checked={Boolean(formData.isTrending)}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isTrending: e.target.checked,
+                  }))
+                }
+              />
+              <span>Mark as Trending (shows at top)</span>
+            </label>
             <div
               className="admin-form-submit-row"
               style={{ justifyContent: "flex-start" }}
@@ -1288,7 +1345,7 @@ export default function AdminCrudPage({
                 {submitting ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : null}
-                <span>Add Training</span>
+                <span>{editingItem ? "Save Training" : "Add Training"}</span>
               </button>
             </div>
           </form>
@@ -1592,6 +1649,15 @@ export default function AdminCrudPage({
                           Applications
                         </button>
                       </>
+                    )}
+                    {lowerTitle.includes("training") && (
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(item)}
+                        className="btn-admin-edit"
+                      >
+                        Edit
+                      </button>
                     )}
                     {(lowerTitle.includes("course") ||
                       lowerTitle.includes("training")) && (

@@ -57,7 +57,7 @@ const courseSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-        category: {
+    category: {
       type: String,
       trim: true,
     },
@@ -75,6 +75,10 @@ const courseSchema = new mongoose.Schema(
     tools: {
       type: [String],
       default: [],
+    },
+    isTrending: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

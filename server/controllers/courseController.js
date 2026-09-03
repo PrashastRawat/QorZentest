@@ -59,7 +59,7 @@ export const getCourses = async (req, res, next) => {
   try {
     const courses = await Course.find({ isActive: true })
       .select("-lessons") // strip lesson content from the list view entirely
-      .sort({ createdAt: -1 });
+      .sort({ isTrending: -1, createdAt: -1 });
 
     res.status(200).json({
       success: true,

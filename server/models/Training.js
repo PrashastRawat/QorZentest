@@ -44,6 +44,10 @@ const trainingSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isTrending: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

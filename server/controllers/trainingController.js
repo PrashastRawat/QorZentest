@@ -4,7 +4,7 @@ import Training from "../models/Training.js";
 // @route  GET /api/trainings
 export const getTrainings = async (req, res, next) => {
   try {
-    const trainings = await Training.find({ isActive: true }).sort({ createdAt: -1 });
+    const trainings = await Training.find({ isActive: true }).sort({ isTrending: -1, createdAt: -1 });
     res.status(200).json({
       success: true,
       count: trainings.length,

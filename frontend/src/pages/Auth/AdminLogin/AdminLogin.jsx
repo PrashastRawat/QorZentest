@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Mail,
   Lock,
@@ -9,57 +9,60 @@ import {
   EyeOff,
   Sparkles,
   AlertCircle,
-  Loader2
-} from 'lucide-react';
-import { useAuthContext } from '../../../context/AuthContext';
-import '../../Student/Login/StudentLogin.css';
+  Loader2,
+} from "lucide-react";
+import { useAuthContext } from "../../../context/AuthContext";
+import "../../Student/Login/StudentLogin.css";
 
 const AdminLogin = () => {
   const { login } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/admin/dashboard';
+  const from = location.state?.from?.pathname || "/admin/dashboard";
 
   const [formData, setFormData] = useState({
-    email: 'admin@qorzen-technologies.in',
-    password: 'Admin@123',
-    rememberMe: false
+    email: "admin@qorzen-technologies.in",
+    password: "Admin@123",
+    rememberMe: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
-    setError('');
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const response = await login({
         email: formData.email,
         password: formData.password,
-        rememberMe: formData.rememberMe
+        rememberMe: formData.rememberMe,
       });
 
-      if (response?.user?.role !== 'admin') {
-        setError('Access denied: Administrator privileges required.');
+      if (response?.user?.role !== "admin") {
+        setError("Access denied: Administrator privileges required.");
         return;
       }
 
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || 'Invalid administrator credentials. Please check your email and password.');
+      setError(
+        err.message ||
+          "Invalid administrator credentials. Please check your email and password.",
+      );
     } finally {
       setLoading(false);
     }
@@ -76,7 +79,14 @@ const AdminLogin = () => {
         >
           {/* Header */}
           <div className="student-login-header">
-            <img src="/logo.jpeg" alt="QorZen Logo" className="student-logo-img" />
+            <div className="student-brand-row" >
+              <img
+                src="/logo.jpeg"
+                alt="QorZen Logo"
+                className="student-logo-img"
+              />
+              <h1 className="student-brand-name">Qorzen Technologies</h1>
+            </div>
             <div className="student-brand-badge">
               <Sparkles size={13} color="#c9b59c" />
               <span>Control Panel Entry</span>
@@ -89,7 +99,10 @@ const AdminLogin = () => {
 
           {/* Error Message Alert */}
           {error && (
-            <div className="student-error-alert" style={{ marginBottom: '1rem' }}>
+            <div
+              className="student-error-alert"
+              style={{ marginBottom: "1rem" }}
+            >
               <AlertCircle size={15} />
               <span>{error}</span>
             </div>
@@ -126,7 +139,7 @@ const AdminLogin = () => {
                 <input
                   id="adminPassword"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   autoComplete="current-password"
                   placeholder="Enter your password"
@@ -146,7 +159,10 @@ const AdminLogin = () => {
             </div>
 
             {/* Remember Me */}
-            <div className="student-remember-row" style={{ justifyContent: 'flex-start' }}>
+            <div
+              className="student-remember-row"
+              style={{ justifyContent: "flex-start" }}
+            >
               <label className="student-remember-label">
                 <input
                   type="checkbox"
