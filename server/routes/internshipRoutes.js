@@ -10,7 +10,7 @@ import {
   updateApplicationStatus,
 } from "../controllers/internshipController.js";
 import { protect, authorize, optionalAuth } from "../middleware/auth.js";
-import uploadDocument from "../middleware/uploadDocument.js";
+import { uploadResume } from "../middleware/uploadDocument.js";
 
 const router = Router();
 
@@ -24,7 +24,7 @@ router.post("/", protect, authorize("admin"), createInternship);
 router.put("/:id", protect, authorize("admin"), updateInternship);
 router.delete("/:id", protect, authorize("admin"), deleteInternship);
 
-router.post("/:id/apply", optionalAuth, uploadDocument.single("cv"), applyToInternship);
+router.post("/:id/apply", optionalAuth, uploadResume.single("cv"), applyToInternship);
 router.get("/:id/applications", protect, authorize("admin"), getInternshipApplications);
 
 export default router;

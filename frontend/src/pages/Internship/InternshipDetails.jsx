@@ -61,6 +61,7 @@ const InternshipDetails = () => {
   const [selectedPlanModal, setSelectedPlanModal] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
   const [cvFile, setCvFile] = useState(null);
+  const [cvError, setCvError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submittedApplication, setSubmittedApplication] = useState(null);
@@ -188,6 +189,36 @@ const InternshipDetails = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Same allowed types as the server's uploadResume filter — checked here
+  // too so a wrong file type is caught the moment it's picked, not after
+  // a failed submit round-trip.
+  const ALLOWED_CV_TYPES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+  const ALLOWED_CV_EXTENSIONS = ['.pdf', '.doc', '.docx'];
+
+  const handleCvChange = (e) => {
+    const file = e.target.files[0] || null;
+    if (!file) {
+      setCvFile(null);
+      setCvError(null);
+      return;
+    }
+    const nameLower = file.name.toLowerCase();
+    const hasAllowedExtension = ALLOWED_CV_EXTENSIONS.some((ext) => nameLower.endsWith(ext));
+    const hasAllowedType = ALLOWED_CV_TYPES.includes(file.type);
+    if (!hasAllowedExtension && !hasAllowedType) {
+      setCvFile(null);
+      setCvError('Please upload your CV in PDF or DOC format.');
+      e.target.value = '';
+      return;
+    }
+    setCvFile(file);
+    setCvError(null);
+  };
+
   const handleSubmitApplication = async (e) => {
     e.preventDefault();
     setSubmitError(null);
@@ -209,7 +240,9 @@ const InternshipDetails = () => {
       const res = await applyToInternship(internship._id, data);
       setSubmittedApplication(res.data.data);
     } catch (err) {
-      setSubmitError(err.response?.data?.message || 'Something went wrong. Please try again.');
+      setSubmitError(
+        err.response?.data?.error || err.response?.data?.message || 'Something went wrong. Please try again.',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -629,12 +662,17 @@ const InternshipDetails = () => {
                           id="cv"
                           type="file"
                           name="cv"
-                          accept=".pdf,.doc,.docx,application/pdf"
+                          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                           required
-                          onChange={(e) => setCvFile(e.target.files[0] || null)}
+                          onChange={handleCvChange}
                           className="input"
                         />
                       </div>
+                      {cvError && (
+                        <p className="field-error-text" style={{ color: '#b91c1c', fontSize: '0.78rem', marginTop: '0.3rem' }}>
+                          {cvError}
+                        </p>
+                      )}
                     </div>
 
                     <button
@@ -710,17 +748,24 @@ const InternshipDetails = () => {
                         </div>
                       )}
 
-                      {razorpayEnabled && (
-                        <button
-                          onClick={handlePayOnline}
-                          disabled={paymentInProgress}
-                          className="btn-confirm-enrollment"
-                          style={{ marginBottom: '0.6rem' }}
-                        >
-                          <span>{paymentInProgress ? 'Processing...' : 'Pay Online & Enroll Instantly'}</span>
-                          <ArrowRight size={16} />
-                        </button>
-                      )}
+                      <button
+                        onClick={handlePayOnline}
+                        disabled={!razorpayEnabled || paymentInProgress}
+                        className="btn-confirm-enrollment"
+                        style={{
+                          marginBottom: '0.6rem',
+                          ...(razorpayEnabled ? {} : { opacity: 0.5, cursor: 'not-allowed' }),
+                        }}
+                      >
+                        <span>
+                          {razorpayEnabled
+                            ? paymentInProgress
+                              ? 'Processing...'
+                              : 'Pay Online & Enroll Instantly'
+                            : 'Online Payment Not Available (Coming Soon)'}
+                        </span>
+                        <ArrowRight size={16} />
+                      </button>
 
                       <a
                         href={buildWhatsAppUrl()}

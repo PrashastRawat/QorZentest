@@ -3,10 +3,23 @@ import crypto from "crypto";
 import EnrollmentRequest from "../models/EnrollmentRequest.js";
 import { grantEnrollmentAccess } from "./enrollmentRequestController.js";
 
-// Lazily create the Razorpay instance only if keys exist,
-// so the server doesn't crash when they're not set yet.
+// RAZORPAY_ENABLED is an explicit admin kill-switch, separate from whether
+// keys are configured — lets the team disable online payments (e.g. during
+// setup or a gateway issue) without touching the actual key env vars.
+// Defaults to enabled (unset or anything other than the literal "false")
+// so existing deployments that never set this var keep working as before.
+const razorpayExplicitlyDisabled = () =>
+  process.env.RAZORPAY_ENABLED === "false";
+
+const isRazorpayEnabled = () =>
+  !razorpayExplicitlyDisabled() &&
+  Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+
+// Lazily create the Razorpay instance only if keys exist AND the
+// RAZORPAY_ENABLED kill-switch isn't off, so the server doesn't crash when
+// keys aren't set yet and honors the explicit disable flag.
 const getRazorpayInstance = () => {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  if (!isRazorpayEnabled()) {
     return null;
   }
   return new Razorpay({
@@ -17,10 +30,11 @@ const getRazorpayInstance = () => {
 
 // GET /api/payments/config
 // Public — tells the frontend whether to show the Razorpay option at all.
+// Frontend never needs its own env var for this: it always calls this
+// endpoint at runtime, so flipping RAZORPAY_ENABLED on the server (and
+// restarting) is enough — no frontend rebuild/redeploy required.
 export const getPaymentConfig = (req, res) => {
-  const enabled = Boolean(
-    process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET,
-  );
+  const enabled = isRazorpayEnabled();
   res.json({
     success: true,
     data: {
@@ -128,4 +142,3 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ message: "Payment verification error" });
   }
 };
-

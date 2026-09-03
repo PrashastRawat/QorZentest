@@ -19,7 +19,33 @@ const uploadDocument = multer({
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF or ZIP files are allowed"), false);
+      const error = new Error("Only PDF or ZIP files are allowed");
+      error.statusCode = 400;
+      cb(error, false);
+    }
+  },
+});
+
+// Separate instance for CV/resume uploads (internship applications) —
+// these are advertised to applicants as "PDF/DOC", so unlike
+// uploadDocument above, this one accepts Word docs instead of zips.
+export const uploadResume = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword", // .doc
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      const error = new Error("Please upload your CV in PDF or DOC format.");
+      error.statusCode = 400;
+      cb(error, false);
     }
   },
 });
