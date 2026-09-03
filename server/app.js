@@ -1,6 +1,7 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/authRoutes.js";
 import errorMiddleware from "./middleware/errorHandler.js";
@@ -41,6 +42,7 @@ const limiter = rateLimit({
 });
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("QorZen API is running");

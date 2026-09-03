@@ -52,7 +52,6 @@ export default function AdminLayout() {
     } else if (logout) {
       await logout();
     } else {
-      localStorage.removeItem('qorzen_token');
       localStorage.removeItem('qorzen_user');
     }
     navigate('/admin/login', { replace: true });

@@ -13,79 +13,56 @@
  *    - avatar (String, default URL)
  *    - enrollmentDate (Date)
  *
- * 2. ENDPOINTS TO CREATE IN NODE/EXPRESS BACKEND:
- *    - POST /api/v1/auth/login       -> { email, password } -> returns { success: true, token, user }
- *    - POST /api/v1/auth/register    -> { fullName, email, phone, password } -> returns { success: true, token, user }
- *    - GET  /api/v1/auth/me          -> verify JWT from Header -> returns { user }
- *    - POST /api/v1/auth/forgot-password -> { email } -> sends reset email/OTP
- *
- * 3. REAL BACKEND INTEGRATION:
- *    Jab Express backend ready ho jaye, mock logic ko comment karke `api.post('/auth/login', ...)` use karein.
+ * 2. AUTH MODEL: cookie-only. The backend signs a JWT and sets it as an
+ *    httpOnly cookie (`qorzen_token`) — it never appears in a JSON response
+ *    and is never touched by frontend JS (so it can't be read by XSS, and
+ *    isn't sitting in localStorage). Every fetch from axiosInstance.js sends
+ *    `credentials: 'include'` so the browser attaches the cookie automatically.
+ *    Session restore on page refresh goes through GET /api/auth/me, which
+ *    reads the cookie server-side and returns the current user.
  * ============================================================================
  */
 
 import { mockStudentUser } from "../data/studentMockData";
-import api from "../api/axiosInstance";
 import {
   login as apiLogin,
   googleAuth as apiGoogleAuth,
   adminLogin as apiAdminLogin,
   signup as apiSignup,
+  getMe as apiGetMe,
+  logout as apiLogout,
 } from "../api/authApi";
 
-const TOKEN_KEY = "qorzen_token";
+// Only ever caches the (non-sensitive) user object for instant UI on
+// refresh — never a token. The cookie is the actual source of auth truth;
+// this cache is just optimistic display data until /me confirms it.
 const USER_KEY = "qorzen_user";
-const REGISTERED_USERS_KEY = "qorzen_registered_users";
 
-// LocalStorage se registered users fetch karne ka helper (Mock / Offline fallback)
-const getRegisteredUsers = () => {
+const cacheUser = (user) => {
   try {
-    const raw = localStorage.getItem(REGISTERED_USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
   } catch {
-    return [];
+    // ignore storage failures (private browsing, quota, etc.)
   }
 };
 
-// Naya registered user local storage me save karne ka helper
-const saveRegisteredUser = (newUser) => {
-  const users = getRegisteredUsers();
-  const existingIdx = users.findIndex(
-    (u) => u.email.toLowerCase() === newUser.email.toLowerCase(),
-  );
-  if (existingIdx >= 0) {
-    users[existingIdx] = newUser;
-  } else {
-    users.push(newUser);
-  }
-  localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+const clearCachedUser = () => {
+  localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(USER_KEY);
 };
 
 export const authService = {
-  /**
-   * User Login (Student & Admin)
-   * Calls backend API at POST /api/auth/login
-   */
-  login: async ({ email, password, rememberMe = true }) => {
+  login: async ({ email, password }) => {
     try {
       const res = await apiLogin({ email, password });
-
-      const token = res.data?.data?.token || res.data?.token || res.token;
       const user = res.data?.data?.user || res.data?.user || res.user;
 
-      if (!token || !user) {
+      if (!user) {
         throw new Error("Invalid response from server. Please try again.");
       }
 
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem(TOKEN_KEY, token);
-      storage.setItem(USER_KEY, JSON.stringify(user));
-
-      // Also set in localStorage for cross-tab communication
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-
-      return { success: true, token, user };
+      cacheUser(user);
+      return { success: true, user };
     } catch (error) {
       throw new Error(
         error.response?.data?.message ||
@@ -97,41 +74,27 @@ export const authService = {
 
   loginWithGoogle: async (credential) => {
     const res = await apiGoogleAuth(credential);
-    const token = res.data?.data?.token;
     const user = res.data?.data?.user;
 
-    if (!token || !user) {
+    if (!user) {
       throw new Error("Google sign-in failed.");
     }
 
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
-    return { success: true, token, user };
+    cacheUser(user);
+    return { success: true, user };
   },
 
-  /**
-   * User Registration (Sign Up)
-   * Calls backend API at POST /api/auth/signup
-   */
   register: async ({ fullName, email, phone, password }) => {
     try {
       const res = await apiSignup({ fullName, email, phone, password });
-
-      const token = res.data?.data?.token || res.data?.token || res.token;
       const user = res.data?.data?.user || res.data?.user || res.user;
 
-      if (!token || !user) {
+      if (!user) {
         throw new Error("Invalid response from server. Please try again.");
       }
 
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-
-      return {
-        success: true,
-        token,
-        user,
-      };
+      cacheUser(user);
+      return { success: true, user };
     } catch (error) {
       throw new Error(
         error.response?.data?.message ||
@@ -144,17 +107,14 @@ export const authService = {
   adminLogin: async ({ email, password }) => {
     try {
       const res = await apiAdminLogin({ email, password });
-
-      const token = res.data?.data?.token || res.data?.token || res.token;
       const user = res.data?.data?.user || res.data?.user || res.user;
-      if (!token || !user) {
+
+      if (!user) {
         throw new Error("Invalid response from server. Please try again.");
       }
 
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-
-      return { success: true, token, user };
+      cacheUser(user);
+      return { success: true, user };
     } catch (error) {
       throw new Error(
         error.response?.data?.message ||
@@ -165,15 +125,38 @@ export const authService = {
   },
 
   logout: async () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(USER_KEY);
+    try {
+      await apiLogout();
+    } catch {
+      // even if the network call fails, drop the local cache below
+    }
+    clearCachedUser();
     return { success: true };
   },
 
   adminLogout: async () => {
     return authService.logout();
+  },
+
+  /**
+   * Asks the backend who's logged in, using the httpOnly cookie. This is
+   * the real session check — call on app mount instead of trusting the
+   * locally cached user.
+   */
+  restoreSession: async () => {
+    try {
+      const res = await apiGetMe();
+      const user = res.data?.user || res.data?.data?.user;
+      if (user) {
+        cacheUser(user);
+        return user;
+      }
+      clearCachedUser();
+      return null;
+    } catch {
+      clearCachedUser();
+      return null;
+    }
   },
 
   getCurrentUser: () => {
@@ -184,18 +167,6 @@ export const authService = {
     } catch {
       return null;
     }
-  },
-
-  getAuthToken: () => {
-    return (
-      localStorage.getItem(TOKEN_KEY) ||
-      sessionStorage.getItem(TOKEN_KEY) ||
-      null
-    );
-  },
-
-  isAuthenticated: () => {
-    return !!authService.getAuthToken();
   },
 
   isAdmin: () => {
@@ -216,10 +187,7 @@ export const authService = {
     await new Promise((resolve) => setTimeout(resolve, 300));
     const current = authService.getCurrentUser() || { ...mockStudentUser };
     const merged = { ...current, ...updatedData };
-
-    localStorage.setItem(USER_KEY, JSON.stringify(merged));
-    sessionStorage.setItem(USER_KEY, JSON.stringify(merged));
-
+    cacheUser(merged);
     return { success: true, user: merged };
   },
 };

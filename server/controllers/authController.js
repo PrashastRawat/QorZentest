@@ -5,7 +5,18 @@ import User from "../models/User.js"
 import Student from "../models/Student.js"
 
 import { OAuth2Client } from "google-auth-library";
-
+// Cookie-only auth: the JWT never touches the response body or localStorage.
+// httpOnly blocks JS (and therefore XSS) from reading it; the browser just
+// sends it back automatically on every request to our API origin.
+const COOKIE_NAME = "qorzen_token";
+const setAuthCookie = (res, token) => {
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+};
 export const signUp = async (req, res, next)=>{
     try {
         const {fullName, email, password} = req.body
@@ -25,12 +36,11 @@ export const signUp = async (req, res, next)=>{
         const token = jwt.sign({userId:newUser._id}, process.env.JWT_SECRET,{
             expiresIn: process.env.JWT_EXPIRES_IN,
         })
-
+        setAuthCookie(res, token);
         res.status(201).json({
             success: true,
             message:"User called successfully",
             data:{
-                token,
                 user:{
                     id: newUser._id,
                     name: newUser.name,
@@ -66,11 +76,12 @@ export const signIn = async (req,res,next)=>{
             expiresIn: process.env.JWT_EXPIRES_IN,
         })
 
+        setAuthCookie(res, token);
+
         res.status(200).json({
             success: true,
             message: "User signed in successfully",
             data:{
-                token,
                 user:{
                     id: user._id,
                     name: user.name,
@@ -130,11 +141,12 @@ export const adminLogin = async (req, res, next) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
+    setAuthCookie(res, token);
+
     res.status(200).json({
       success: true,
       message: "Admin signed in successfully",
       data: {
-        token,
         user: {
           id: user._id,
           name: user.name,
@@ -180,13 +192,28 @@ export const googleAuth = async (req, res, next) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
+    setAuthCookie(res, token);
+
     res.status(200).json({
       success: true,
       message: "Signed in with Google",
-      data: { token, user: { id: user._id, name: user.name, email: user.email, role: user.role } },
+      data: { user: { id: user._id, name: user.name, email: user.email, role: user.role } },
     });
   } catch (error) {
     error.statusCode = 401;
+    next(error);
+  }
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    res.clearCookie(COOKIE_NAME, {
+     httpOnly: true,
+     secure: process.env.NODE_ENV === "production",
+     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
     next(error);
   }
 };
