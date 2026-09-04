@@ -67,13 +67,13 @@
   justify-content: center;
 }
 
-/* Sidebar */
-.student-sidebar {
+/* Sidebar */.student-sidebar {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   width: 16.5rem;
+  height: 100vh;
   background-color: var(--surface-card, #ffffff);
   border-right: 0.0625rem solid var(--border-medium, #d9cfc7);
   display: flex;
@@ -87,9 +87,6 @@
 
 @media (min-width: 64em) {
   .student-sidebar {
-    position: sticky;
-    top: 0;
-    height: 100vh;
     transform: none !important;
   }
 }
@@ -180,11 +177,13 @@
 /* Nav links */
 .student-nav-menu {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.85rem 0.75rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .student-nav-link {
@@ -296,6 +295,12 @@
   }
 }
 
+@media (min-width: 64em) {
+  .student-main-content {
+    margin-left: 16.5rem;
+    max-width: calc(100% - 16.5rem);
+  }
+}
 /* Top App Bar in Desktop */
 .student-topbar {
   height: 4rem;

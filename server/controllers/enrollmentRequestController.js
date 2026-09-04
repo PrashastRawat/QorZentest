@@ -71,7 +71,7 @@ const pctChange = (current, previous) => {
 
 // Generates a short, human-shareable code like "QZ-482913", retrying
 // on the rare chance of a collision with an existing request.
-const generateRequestCode = async () => {
+export const generateRequestCode = async () => {
   let code;
   let exists = true;
   while (exists) {
@@ -383,27 +383,31 @@ export const deleteEnrollmentRequest = async (req, res, next) => {
 // @route  GET /api/enrollment-requests/stats/revenue
 export const getRevenueSummary = async (req, res, next) => {
   try {
-        const [enrollments, servicePayments] = await Promise.all([
+            const [enrollments, servicePayments] = await Promise.all([
       EnrollmentRequest.find({ status: "confirmed" })
         .select("itemType amount confirmedAt createdAt itemTitle")
         .lean(),
       ServicePayment.find({ status: "Paid" })
         .select("amount paidAt projectTitle")
         .lean(),
-      InternshipApplication.find({ status: "enrolled" })
-        .select("selectedPrice updatedAt createdAt")
-        .lean(),
     ]);
 
     // Normalize both sources into one shape: { amount, date, stream }
+    // NOTE: internship revenue comes ONLY from confirmed EnrollmentRequest
+    // docs (itemType: "internship") — every internship enrollment, whether
+    // paid online or marked enrolled manually by an admin, now always has
+    // exactly one confirmed EnrollmentRequest behind it (see
+    // internshipController.updateApplicationStatus). Do NOT add a second
+    // InternshipApplication query here — that was double-counting the same
+    // payment.
     const entries = [
       ...enrollments.map((e) => ({
-        amount: e.amount || 0,
+        amount: Number(e.amount) || 0,
         date: new Date(e.confirmedAt || e.createdAt),
         stream: e.itemType, // "course" | "training" | "internship"
       })),
       ...servicePayments.map((s) => ({
-        amount: s.amount || 0,
+        amount: Number(s.amount) || 0,
         date: new Date(s.paidAt),
         stream: "service",
       })),

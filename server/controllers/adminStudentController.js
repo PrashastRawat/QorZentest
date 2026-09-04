@@ -178,3 +178,92 @@ export const getManageStudentsDirectory = async (req, res, next) => {
     next(error);
   }
 };
+// Generates a short, human-shareable credential id like "QZ-CERT-482913",
+// retrying on the rare chance of a collision with an existing one.
+const generateCredentialId = async () => {
+  let code;
+  let exists = true;
+  while (exists) {
+    const random = Math.floor(100000 + Math.random() * 900000);
+    code = `QZ-CERT-${random}`;
+    exists = await Student.findOne({ "certificate.credentialId": code });
+  }
+  return code;
+};
+
+// @desc   Admin issues a course certificate to a student. Only allowed once
+//         the student has actually met the same criteria the "eligible"
+//         badge in Manage Students already computes: 100% course progress
+//         AND every assignment for that course submitted/graded. Course
+//         certificates only — Training/Internship have no certificate
+//         concept yet.
+// @route  PUT /api/student/admin/students/:studentId/certificate
+// @body   { courseId }
+export const issueCertificate = async (req, res, next) => {
+  try {
+    const { courseId } = req.body;
+    if (!courseId) {
+      const error = new Error("courseId is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const student = await Student.findById(req.params.studentId);
+    if (!student) {
+      const error = new Error("Student not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const enrollment = student.enrolledCourses.find(
+      (e) => e.courseId && e.courseId.toString() === courseId
+    );
+    if (!enrollment) {
+      const error = new Error("Student is not enrolled in this course");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const alreadyIssued = student.certificate.find(
+      (c) => c.courseId && c.courseId.toString() === courseId
+    );
+    if (alreadyIssued) {
+      return res.status(200).json({
+        success: true,
+        message: "Certificate was already issued for this course",
+        data: alreadyIssued,
+      });
+    }
+
+    const assignments = await Assignment.find({ courseId }).select("_id");
+    const assignmentIds = assignments.map((a) => a._id.toString());
+    const submissions = await Submission.find({
+      studentId: student._id,
+      assignmentId: { $in: assignmentIds },
+      status: { $in: ["submitted", "graded"] },
+    });
+
+    const progressOk = (enrollment.progress || 0) >= 100;
+    const assignmentsOk = assignmentIds.length === 0 || submissions.length >= assignmentIds.length;
+
+    if (!progressOk || !assignmentsOk) {
+      const error = new Error(
+        "Student hasn't met certificate criteria yet (100% progress + all assignments completed)"
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const credentialId = await generateCredentialId();
+    student.certificate.push({ courseId, credentialId, issuedAt: new Date() });
+    await student.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Certificate issued",
+      data: student.certificate[student.certificate.length - 1],
+    });
+  } catch (error) {
+    next(error);
+  }
+};

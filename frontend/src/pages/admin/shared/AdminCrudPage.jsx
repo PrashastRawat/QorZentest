@@ -36,6 +36,8 @@ import AdminAssignmentsModal from "./AdminAssignmentsModal";
 import AdminLiveClassesModal from "./AdminLiveClassesModal";
 import AdminInternshipApplicationsModal from "./AdminInternshipApplicationsModal";
 import "./AdminCrudPage.css";
+import AdminItemDetailModal from "./AdminItemDetailModal";
+import AdminItemStudentsModal from "./AdminItemStudentsModal";
 
 /**
  * Reusable CRUD Page Component for Admin Management Sections
@@ -56,7 +58,10 @@ export default function AdminCrudPage({
   const [editingItem, setEditingItem] = useState(null);
   const [assignmentsModalCourse, setAssignmentsModalCourse] = useState(null);
   const [liveClassModalItem, setLiveClassModalItem] = useState(null);
-  const [applicationsModalInternship, setApplicationsModalInternship] = useState(null);
+  const [applicationsModalInternship, setApplicationsModalInternship] =
+    useState(null);
+  const [detailModalItem, setDetailModalItem] = useState(null);
+  const [studentsModalItem, setStudentsModalItem] = useState(null);
 
   // Course-specific state: real File object + real lessons array
   // (kept separate from formData because formData only ever holds plain strings)
@@ -280,7 +285,10 @@ export default function AdminCrudPage({
           isTrending: Boolean(formData.isTrending),
         };
         if (editingItem) {
-          await apiHelpers.update(editingItem._id || editingItem.id, trainingPayload);
+          await apiHelpers.update(
+            editingItem._id || editingItem.id,
+            trainingPayload,
+          );
         } else {
           await apiHelpers.create(trainingPayload);
         }
@@ -366,7 +374,9 @@ export default function AdminCrudPage({
         tag: item.tag || "",
         iconName: item.iconName || "",
         description: item.description || "",
-        tools: Array.isArray(item.tools) ? item.tools.join(", ") : item.tools || "",
+        tools: Array.isArray(item.tools)
+          ? item.tools.join(", ")
+          : item.tools || "",
         mode: item.mode || "Online",
         price1Month: item.price1Month ?? "",
         price3Month: item.price3Month ?? "",
@@ -379,7 +389,9 @@ export default function AdminCrudPage({
         tag: item.tag || "",
         iconName: item.iconName || "",
         description: item.description || "",
-        tools: Array.isArray(item.tools) ? item.tools.join(", ") : item.tools || "",
+        tools: Array.isArray(item.tools)
+          ? item.tools.join(", ")
+          : item.tools || "",
         duration: item.duration || "",
         price: item.price ?? "",
         mode: item.mode || "Online",
@@ -560,7 +572,9 @@ export default function AdminCrudPage({
     if (lowerTitle.includes("internship")) {
       return (
         <div className="admin-form-container">
-          {renderFormHeader(editingItem ? "Edit Internship" : "+ Add New Internship")}
+          {renderFormHeader(
+            editingItem ? "Edit Internship" : "+ Add New Internship",
+          )}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
               <input
@@ -666,7 +680,9 @@ export default function AdminCrudPage({
                 {submitting ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : null}
-                <span>{editingItem ? "Save Internship" : "Add Internship"}</span>
+                <span>
+                  {editingItem ? "Save Internship" : "Add Internship"}
+                </span>
               </button>
             </div>
           </form>
@@ -1234,7 +1250,9 @@ export default function AdminCrudPage({
     if (lowerTitle.includes("training")) {
       return (
         <div className="admin-form-container">
-          {renderFormHeader(editingItem ? "Edit Training" : "+ Add New Training")}
+          {renderFormHeader(
+            editingItem ? "Edit Training" : "+ Add New Training",
+          )}
           <form onSubmit={handleSubmit} className="admin-crud-form">
             <div className="form-row-2col">
               <input
@@ -1405,6 +1423,36 @@ export default function AdminCrudPage({
   };
 
   const lowerTitle = title.toLowerCase();
+  const isTableEntity =
+    lowerTitle.includes("course") ||
+    lowerTitle.includes("training") ||
+    lowerTitle.includes("internship");
+  const entityType = lowerTitle.includes("course")
+    ? "course"
+    : lowerTitle.includes("training")
+      ? "training"
+      : lowerTitle.includes("internship")
+        ? "internship"
+        : null;
+
+  const crudTh = {
+    textAlign: "left",
+    padding: "0.75rem 1rem",
+    fontSize: "0.72rem",
+    fontWeight: 800,
+    textTransform: "uppercase",
+    color: "var(--text-secondary, #78716c)",
+    borderBottom: "0.0625rem solid var(--border-medium, #d9cfc7)",
+    whiteSpace: "nowrap",
+  };
+
+  const crudTd = {
+    padding: "0.85rem 1rem",
+    fontSize: "0.85rem",
+    color: "var(--text-primary, #1c1917)",
+    borderBottom: "0.0625rem solid var(--border-light, #efe9e3)",
+    verticalAlign: "top",
+  };
 
   return (
     <div className="admin-crud-container">
@@ -1475,6 +1523,61 @@ export default function AdminCrudPage({
           <div className="admin-empty-card">
             <p>No records found. Use the form above to add a new record.</p>
           </div>
+        ) : isTableEntity ? (
+          <div
+            style={{
+              overflowX: "auto",
+              border: "0.0625rem solid var(--border-medium, #d9cfc7)",
+              borderRadius: "0.75rem",
+              backgroundColor: "#fff",
+            }}
+          >
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th style={crudTh}>Title</th>
+                  <th style={crudTh}>Category</th>
+                  {entityType !== "internship" && (
+                    <th style={crudTh}>Duration</th>
+                  )}
+                  <th style={crudTh}>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => {
+                  const itemId = item._id || item.id;
+                  const priceDisplay =
+                    entityType === "internship"
+                      ? `₹${item.price1Month || 0}/1mo · ₹${item.price3Month || 0}/3mo · ₹${item.price6Month || 0}/6mo`
+                      : item.price
+                        ? `₹${item.price}`
+                        : "—";
+                  return (
+                    <tr
+                      key={itemId}
+                      onClick={() => setDetailModalItem(item)}
+                      style={{ cursor: "pointer" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#f9f8f6")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "transparent")
+                      }
+                    >
+                      <td style={crudTd}>
+                        {item.title || `Record #${itemId}`}
+                      </td>
+                      <td style={crudTd}>{item.category || "—"}</td>
+                      {entityType !== "internship" && (
+                        <td style={crudTd}>{item.duration || "—"}</td>
+                      )}
+                      <td style={crudTd}>{priceDisplay}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="admin-records-grid">
             {items.map((item) => {
@@ -1519,11 +1622,6 @@ export default function AdminCrudPage({
                           ₹{item.price}
                         </span>
                       )}
-                      {(item.price1Month || item.price3Month || item.price6Month) && (
-                        <span className="admin-record-chip price">
-                          ₹{item.price1Month}/1mo · ₹{item.price3Month}/3mo · ₹{item.price6Month}/6mo
-                        </span>
-                      )}
                     </div>
 
                     <h4 className="admin-record-title">
@@ -1536,11 +1634,6 @@ export default function AdminCrudPage({
                     {item.tagline && (
                       <p className="admin-record-tagline">"{item.tagline}"</p>
                     )}
-                    {item.instructor && (
-                      <p className="admin-record-instructor">
-                        <strong>Instructor:</strong> {item.instructor}
-                      </p>
-                    )}
 
                     <p className="admin-record-desc">
                       {item.description ||
@@ -1548,50 +1641,6 @@ export default function AdminCrudPage({
                         item.overview ||
                         JSON.stringify(item)}
                     </p>
-
-                    {item.features && (
-                      <div
-                        className="admin-record-requirements"
-                        style={{ marginTop: "0.4rem" }}
-                      >
-                        <strong>Features:</strong> {item.features}
-                      </div>
-                    )}
-
-                    {item.whyChooseUs && (
-                      <p
-                        className="admin-record-desc"
-                        style={{ marginTop: "0.4rem", fontStyle: "italic" }}
-                      >
-                        <strong>Why Choose Us:</strong> {item.whyChooseUs}
-                      </p>
-                    )}
-
-                    {item.technologies && (
-                      <div className="admin-record-tags-row">
-                        {(Array.isArray(item.technologies)
-                          ? item.technologies
-                          : String(item.technologies).split(",")
-                        ).map((t, i) => (
-                          <span key={i} className="admin-tag-label">
-                            #{String(t).trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {item.tools && (
-                      <div className="admin-record-tags-row">
-                        {(Array.isArray(item.tools)
-                          ? item.tools
-                          : String(item.tools).split(",")
-                        ).map((t, i) => (
-                          <span key={i} className="admin-tag-label">
-                            #{String(t).trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
 
                     {item.requirements && (
                       <div className="admin-record-requirements">
@@ -1614,68 +1663,13 @@ export default function AdminCrudPage({
                   </div>
 
                   <div className="admin-record-card-footer">
-                    {lowerTitle.includes("course") && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(item)}
-                          className="btn-admin-edit"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setAssignmentsModalCourse(item)}
-                          className="btn-admin-edit"
-                        >
-                          Assignments
-                        </button>
-                      </>
-                    )}
-                    {lowerTitle.includes("internship") && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(item)}
-                          className="btn-admin-edit"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setApplicationsModalInternship(item)}
-                          className="btn-admin-edit"
-                        >
-                          Applications
-                        </button>
-                      </>
-                    )}
-                    {lowerTitle.includes("training") && (
-                      <button
-                        type="button"
-                        onClick={() => handleEdit(item)}
-                        className="btn-admin-edit"
-                      >
-                        Edit
-                      </button>
-                    )}
-                    {(lowerTitle.includes("course") ||
-                      lowerTitle.includes("training")) && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setLiveClassModalItem({
-                            item,
-                            itemType: lowerTitle.includes("course")
-                              ? "course"
-                              : "training",
-                          })
-                        }
-                        className="btn-admin-edit"
-                      >
-                        Live Class
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(item)}
+                      className="btn-admin-edit"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => handleDelete(itemId)}
                       className="btn-admin-delete"
@@ -1707,6 +1701,47 @@ export default function AdminCrudPage({
         <AdminInternshipApplicationsModal
           internship={applicationsModalInternship}
           onClose={() => setApplicationsModalInternship(null)}
+        />
+      )}
+      {detailModalItem && (
+        <AdminItemDetailModal
+          item={detailModalItem}
+          itemType={entityType}
+          onClose={() => setDetailModalItem(null)}
+          onEdit={() => {
+            handleEdit(detailModalItem);
+            setDetailModalItem(null);
+          }}
+          onDelete={() => {
+            handleDelete(detailModalItem._id || detailModalItem.id);
+            setDetailModalItem(null);
+          }}
+          onOpenLiveClass={() => {
+            setLiveClassModalItem({
+              item: detailModalItem,
+              itemType: entityType,
+            });
+            setDetailModalItem(null);
+          }}
+          onOpenAssignments={() => {
+            setAssignmentsModalCourse(detailModalItem);
+            setDetailModalItem(null);
+          }}
+          onOpenApplications={() => {
+            setApplicationsModalInternship(detailModalItem);
+            setDetailModalItem(null);
+          }}
+          onOpenStudents={() => {
+            setStudentsModalItem(detailModalItem);
+            setDetailModalItem(null);
+          }}
+        />
+      )}
+      {studentsModalItem && (
+        <AdminItemStudentsModal
+          item={studentsModalItem}
+          itemType={entityType}
+          onClose={() => setStudentsModalItem(null)}
         />
       )}
     </div>

@@ -335,6 +335,17 @@ export const getEnrolledTrainings = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+export const getEnrolledInternships = async (req, res) => {
+    try {
+        const student = await Student.findOne({ userId: req.user._id }).populate('enrolledInternships.internshipId');
+        if (!student) {
+            return res.status(404).json({ message: "Student profile not found" });
+        }
+        res.json(student.enrolledInternships);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 export const deleteNotification = async (req, res) => {
     try {

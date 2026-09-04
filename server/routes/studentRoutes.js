@@ -4,6 +4,7 @@ import{
     getStudentDashboard,
     getEnrolledCourses,
     getEnrolledTrainings,
+    getEnrolledInternships,
     markLessonCompleted,
     getCourseDetails,
     getCourseLessons,
@@ -17,7 +18,7 @@ import{
     getLiveClasses,
     deleteNotification,
 } from '../controllers/studentController.js'
-import { getManageStudentsDirectory } from '../controllers/adminStudentController.js'
+import { getManageStudentsDirectory, issueCertificate } from '../controllers/adminStudentController.js'
 import uploadDocument from '../middleware/uploadDocument.js'
 
 const router = Router()
@@ -32,6 +33,7 @@ router.use(protect)
 // path-level param at this depth, order isn't actually load-bearing here,
 // but keeping it grouped up top makes the admin-only surface easy to spot.
 router.get('/admin/directory', authorize('admin'), getManageStudentsDirectory)
+router.put('/admin/students/:studentId/certificate', authorize('admin'), issueCertificate)
 router.get('/dashboard', getStudentDashboard)
 router.get('/courses', getEnrolledCourses)
 router.get('/courses/:courseId', getCourseDetails)
@@ -45,6 +47,8 @@ router.get('/notifications', getNotifications)
 router.put('/notifications/:notificationId/read', markNotificationRead)
 router.get('/live-classes', getLiveClasses)
 router.get('/trainings', getEnrolledTrainings)
+router.get('/internships', getEnrolledInternships)
 router.delete('/notifications/:notificationId', deleteNotification)
+
 
 export default router;

@@ -128,6 +128,8 @@ export const getRevenueSummary = () => api.get('/enrollment-requests/stats/reven
 
 // --- Manage Students Directory (admin) ---
 export const getManageStudentsDirectory = () => api.get('/student/admin/directory');
+export const issueCertificate = (studentId, courseId) =>
+  api.put(`/student/admin/students/${studentId}/certificate`, { courseId });
 // --- Category order/trending manager (admin) ---
 export const getAdminCategories = (scope) => api.get('/categories', { params: { scope } });
 export const createCategory = (data) => api.post('/categories', data);

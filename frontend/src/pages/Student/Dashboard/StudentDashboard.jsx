@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Sparkles,
   BookOpen,
@@ -12,16 +12,17 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  Calendar
-} from 'lucide-react';
-import { useAuthContext } from '../../../context/AuthContext';
+  Calendar,
+} from "lucide-react";
+import { useAuthContext } from "../../../context/AuthContext";
 import {
   getEnrolledCourses,
+  getEnrolledInternships,
   getAssignments,
   getLiveClasses,
-  getNotifications
-} from '../../../api/studentApi';
-import './StudentDashboard.css';
+  getNotifications,
+} from "../../../api/studentApi";
+import "./StudentDashboard.css";
 
 /**
  * StudentDashboard Component
@@ -31,6 +32,7 @@ const StudentDashboard = () => {
   const { user } = useAuthContext();
 
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [enrolledInternships, setEnrolledInternships] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [liveClasses, setLiveClasses] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -41,19 +43,22 @@ const StudentDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [coursesRes, assignmentsRes, liveRes, notifRes] = await Promise.all([
-          getEnrolledCourses(),
-          getAssignments(),
-          getLiveClasses(),
-          getNotifications()
-        ]);
+        const [coursesRes, internshipsRes, assignmentsRes, liveRes, notifRes] =
+          await Promise.all([
+            getEnrolledCourses(),
+            getEnrolledInternships(),
+            getAssignments(),
+            getLiveClasses(),
+            getNotifications(),
+          ]);
 
         setEnrolledCourses(coursesRes.data);
+        setEnrolledInternships(internshipsRes.data);
         setAssignments(assignmentsRes.data);
         setLiveClasses(liveRes.data);
         setNotifications(notifRes.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load dashboard');
+        setError(err.response?.data?.message || "Failed to load dashboard");
       } finally {
         setLoading(false);
       }
@@ -67,13 +72,15 @@ const StudentDashboard = () => {
   }
 
   if (error) {
-    return <div className="student-dash-page">Something went wrong: {error}</div>;
+    return (
+      <div className="student-dash-page">Something went wrong: {error}</div>
+    );
   }
 
   const primaryEnrollment = enrolledCourses[0];
   const primaryCourse = primaryEnrollment?.courseId;
   const upcomingLive = liveClasses[0];
-  const pendingAssignments = assignments.filter((a) => a.status === 'pending');
+  const pendingAssignments = assignments.filter((a) => a.status === "pending");
 
   return (
     <div className="student-dash-page">
@@ -87,14 +94,23 @@ const StudentDashboard = () => {
         <div className="welcome-info-col">
           <div className="welcome-pill">
             <Sparkles size={13} />
-            <span>{user?.batch || 'QorZen Student'}</span>
+            <span>{user?.batch || "QorZen Student"}</span>
           </div>
           <h1 className="welcome-heading">
-            Welcome back, {user?.name || 'Student'}! 👋
+            Welcome back, {user?.name || "Student"}! 👋
           </h1>
           <p className="welcome-sub">
-            You have <strong>{liveClasses.length} live class{liveClasses.length !== 1 ? 'es' : ''} scheduled</strong> and{' '}
-            <strong>{pendingAssignments.length} pending assignment{pendingAssignments.length !== 1 ? 's' : ''}</strong>.
+            You have{" "}
+            <strong>
+              {liveClasses.length} live class
+              {liveClasses.length !== 1 ? "es" : ""} scheduled
+            </strong>{" "}
+            and{" "}
+            <strong>
+              {pendingAssignments.length} pending assignment
+              {pendingAssignments.length !== 1 ? "s" : ""}
+            </strong>
+            .
           </p>
         </div>
 
@@ -120,11 +136,26 @@ const StudentDashboard = () => {
 
         <div className="stat-metric-card">
           <div className="stat-icon-wrap">
+            <Award size={20} />
+          </div>
+          <div className="stat-data-col">
+            <span className="stat-val">{enrolledInternships.length}</span>
+            <span className="stat-lbl">Internships</span>
+          </div>
+        </div>
+
+        <div className="stat-metric-card">
+          <div className="stat-icon-wrap">
             <FileCheck2 size={20} />
           </div>
           <div className="stat-data-col">
             <span className="stat-val">
-              {assignments.filter(a => a.status === 'submitted' || a.status === 'graded').length}/{assignments.length}
+              {
+                assignments.filter(
+                  (a) => a.status === "submitted" || a.status === "graded",
+                ).length
+              }
+              /{assignments.length}
             </span>
             <span className="stat-lbl">Assignments</span>
           </div>
@@ -176,7 +207,13 @@ const StudentDashboard = () => {
                       Instructor: {primaryCourse.instructor}
                     </p>
                   </div>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1c1917' }}>
+                  <span
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: 800,
+                      color: "#1c1917",
+                    }}
+                  >
                     {primaryEnrollment.progress || 0}% Completed
                   </span>
                 </div>
@@ -188,11 +225,20 @@ const StudentDashboard = () => {
                   />
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: "0.5rem",
+                    marginTop: "0.25rem",
+                  }}
+                >
                   <Link
                     to="/learning"
                     className="btn-resume-learning"
-                    style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}
+                    style={{ padding: "0.45rem 0.85rem", fontSize: "0.78rem" }}
                   >
                     <span>Start Lesson</span>
                     <ArrowRight size={14} />
@@ -201,7 +247,8 @@ const StudentDashboard = () => {
               </div>
             ) : (
               <p className="dash-empty-text">
-                You're not enrolled in any courses yet. <Link to="/courses">Browse courses</Link>
+                You're not enrolled in any courses yet.{" "}
+                <Link to="/courses">Browse courses</Link>
               </p>
             )}
           </div>
@@ -219,15 +266,22 @@ const StudentDashboard = () => {
             </div>
 
             {assignments.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
                 {assignments.map((asg) => (
                   <div key={asg._id} className="dash-assignment-item">
                     <div className="dash-assignment-info">
-                      <h4 className="dash-assignment-title">
-                        {asg.title}
-                      </h4>
+                      <h4 className="dash-assignment-title">{asg.title}</h4>
                       <span className="dash-assignment-meta">
-                        {asg.courseName} • Due: <strong>{new Date(asg.dueDate).toLocaleDateString()}</strong>
+                        {asg.courseName} • Due:{" "}
+                        <strong>
+                          {new Date(asg.dueDate).toLocaleDateString()}
+                        </strong>
                       </span>
                     </div>
 
@@ -255,20 +309,41 @@ const StudentDashboard = () => {
             <div className="live-highlight-box">
               <div className="live-badge-row">
                 <span className="live-indicator">
-                  <span style={{ width: '0.35rem', height: '0.35rem', borderRadius: '50%', backgroundColor: '#ffffff' }} />
+                  <span
+                    style={{
+                      width: "0.35rem",
+                      height: "0.35rem",
+                      borderRadius: "50%",
+                      backgroundColor: "#ffffff",
+                    }}
+                  />
                   Upcoming Live
                 </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#854d0e' }}>
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    color: "#854d0e",
+                  }}
+                >
                   {upcomingLive.date}
                 </span>
               </div>
 
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.25rem' }}>
+                <h3
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 800,
+                    color: "#1c1917",
+                    marginBottom: "0.25rem",
+                  }}
+                >
                   {upcomingLive.title}
                 </h3>
-                <p style={{ fontSize: '0.78rem', color: '#78716c', margin: 0 }}>
-                  Instructor: {upcomingLive.instructor} ({upcomingLive.duration})
+                <p style={{ fontSize: "0.78rem", color: "#78716c", margin: 0 }}>
+                  Instructor: {upcomingLive.instructor} ({upcomingLive.duration}
+                  )
                 </p>
               </div>
 
@@ -284,7 +359,9 @@ const StudentDashboard = () => {
             </div>
           ) : (
             <div className="dash-content-card">
-              <p className="dash-empty-text">No live classes scheduled right now.</p>
+              <p className="dash-empty-text">
+                No live classes scheduled right now.
+              </p>
             </div>
           )}
 
@@ -301,22 +378,45 @@ const StudentDashboard = () => {
             </div>
 
             {notifications.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.65rem",
+                }}
+              >
                 {notifications.slice(0, 3).map((notif) => (
                   <div
                     key={notif._id}
                     style={{
-                      padding: '0.65rem 0.75rem',
-                      borderRadius: '0.5rem',
-                      backgroundColor: notif.unread ? '#efe9e3' : '#f9f8f6',
-                      border: '0.0625rem solid #d9cfc7'
+                      padding: "0.65rem 0.75rem",
+                      borderRadius: "0.5rem",
+                      backgroundColor: notif.unread ? "#efe9e3" : "#f9f8f6",
+                      border: "0.0625rem solid #d9cfc7",
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.15rem' }}>
-                      <strong style={{ fontSize: '0.78rem', color: '#1c1917' }}>{notif.title}</strong>
-                      <span style={{ fontSize: '0.68rem', color: '#78716c' }}>{notif.time}</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "0.15rem",
+                      }}
+                    >
+                      <strong style={{ fontSize: "0.78rem", color: "#1c1917" }}>
+                        {notif.title}
+                      </strong>
+                      <span style={{ fontSize: "0.68rem", color: "#78716c" }}>
+                        {notif.time}
+                      </span>
                     </div>
-                    <p style={{ fontSize: '0.75rem', color: '#44403c', margin: 0, lineHeight: 1.35 }}>
+                    <p
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "#44403c",
+                        margin: 0,
+                        lineHeight: 1.35,
+                      }}
+                    >
                       {notif.message}
                     </p>
                   </div>

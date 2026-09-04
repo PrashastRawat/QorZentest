@@ -15,6 +15,7 @@ export const verifyCertificate = (credentialId) => api.get(`/student/certificate
 export const getNotifications = () => api.get('/student/notifications');
 export const markNotificationRead = (notificationId) => api.put(`/student/notifications/${notificationId}/read`, {});
 export const getEnrolledTrainings = () => api.get('/student/trainings');
+export const getEnrolledInternships = () => api.get('/student/internships');
 export const deleteNotification = (notificationId) => api.delete(`/student/notifications/${notificationId}`);
 export const getPaymentConfig = () => api.get('/payments/config');
 export const createRazorpayOrder = (data) => api.post('/payments/create-order', data);
