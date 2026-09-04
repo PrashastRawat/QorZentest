@@ -1,6 +1,7 @@
 import Internship from "../models/Internship.js";
 import InternshipApplication from "../models/InternshipApplication.js";
 import Student from "../models/Student.js";
+import User from "../models/User.js";
 import EnrollmentRequest from "../models/EnrollmentRequest.js";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
 import { grantEnrollmentAccess, generateRequestCode } from "./enrollmentRequestController.js";
@@ -191,16 +192,28 @@ export const updateApplicationStatus = async (req, res, next) => {
     let syncedToStudent = false;
 
     if (status === "enrolled") {
+      // Guest application (submitted while not logged in) — try to
+      // auto-link it to a real account by matching email before giving up.
       if (!application.studentId) {
-        // Guest applicant — no account to attach a paid enrollment to yet.
-        res.status(200).json({
-          success: true,
-          message:
-            "Status updated to enrolled, but this application has no linked student account — nothing was added to any student record and no revenue was recorded. Ask the student to log in and re-submit, or link their account first.",
-          data: application,
-          syncedToStudent: false,
-        });
-        return;
+        const matchedUser = await User.findOne({ email: application.email.toLowerCase().trim() });
+
+        if (!matchedUser) {
+          res.status(200).json({
+            success: true,
+            message: `No QorZen account found for ${application.email} — ask them to sign up with this exact email, then retry marking this "enrolled".`,
+            data: application,
+            syncedToStudent: false,
+          });
+          return;
+        }
+
+        const studentDoc = await Student.findOneAndUpdate(
+          { userId: matchedUser._id },
+          { $setOnInsert: { userId: matchedUser._id } },
+          { upsert: true, new: true }
+        );
+        application.studentId = studentDoc._id;
+        await application.save();
       }
 
       const studentDoc = await Student.findById(application.studentId);
@@ -217,10 +230,6 @@ export const updateApplicationStatus = async (req, res, next) => {
         throw error;
       }
 
-      // Reuse an existing request for this application if one already
-      // exists (e.g. the student did submit a WhatsApp/Razorpay request
-      // and the admin is confirming it from this modal instead of the
-      // Enrollment Requests tab) — never create a duplicate.
       let request = await EnrollmentRequest.findOne({ applicationId: application._id });
 
       if (!request) {
