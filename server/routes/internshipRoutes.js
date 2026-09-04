@@ -24,7 +24,7 @@ router.post("/", protect, authorize("admin"), createInternship);
 router.put("/:id", protect, authorize("admin"), updateInternship);
 router.delete("/:id", protect, authorize("admin"), deleteInternship);
 
-router.post("/:id/apply", optionalAuth, uploadResume.single("cv"), applyToInternship);
+router.post("/:id/apply", protect, uploadResume.single("cv"), applyToInternship);
 router.get("/:id/applications", protect, authorize("admin"), getInternshipApplications);
 
 export default router;

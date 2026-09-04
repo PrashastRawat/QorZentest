@@ -113,12 +113,12 @@ export const applyToInternship = async (req, res, next) => {
       throw error;
     }
 
-    let studentId = null;
-    if (req.user) {
-      const student = await Student.findOne({ userId: req.user._id });
-      if (student) studentId = student._id;
-    }
-
+       const studentDoc = await Student.findOneAndUpdate(
+      { userId: req.user._id },
+      { $setOnInsert: { userId: req.user._id } },
+      { upsert: true, new: true }
+    );
+    const studentId = studentDoc._id;
     const { url, publicId } = await uploadToCloudinary(req.file.buffer, "qorzen/cvs");
 
     const application = await InternshipApplication.create({

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { useParams, useSearchParams, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
   CheckCircle2,
@@ -17,48 +17,109 @@ import {
   User,
   Mail,
   Phone,
-  FileUp
-} from 'lucide-react';
-import { getInternshipById, applyToInternship } from '../../api/internshipApi';
-import { createEnrollmentRequest, getPaymentConfig, createRazorpayOrder, verifyRazorpayPayment } from '../../api/studentApi';
-import './InternshipDetails.css';
+  FileUp,
+} from "lucide-react";
+import { getInternshipById, applyToInternship } from "../../api/internshipApi";
+import {
+  createEnrollmentRequest,
+  getPaymentConfig,
+  createRazorpayOrder,
+  verifyRazorpayPayment,
+} from "../../api/studentApi";
+import { useAuthContext } from "../../context/AuthContext";
+import "./InternshipDetails.css";
 
-const ADMIN_EMAIL = 'prashastdev@gmail.com';
+const ADMIN_EMAIL = "prashastdev@gmail.com";
 
 const journeyTimelineSteps = [
-  { step: '01', title: 'Enrollment Process', desc: 'Select your preferred duration tier (1, 3, or 6 Months) and submit your registration details.' },
-  { step: '02', title: 'Offer Letter', desc: 'Receive your official QorZen Internship Offer Letter within 24 hours of verification.' },
-  { step: '03', title: 'Introduction Session', desc: 'Join the live orientation with your technical mentor, industry team leads, and co-interns.' },
-  { step: '04', title: 'Elementary Task', desc: 'Complete an initial baseline assignment to benchmark your current skill set and tool proficiency.' },
-  { step: '05', title: 'Live Projects', desc: 'Work on actual corporate client deliverables, software repos, or real-time business campaigns.' },
-  { step: '06', title: 'Certification & LOR', desc: 'Receive your QorZen Verified Internship Certificate and official Letter of Recommendation (LOR).' },
-  { step: '07', title: 'Career Growth', desc: 'Access PPO (Pre-Placement Offer) conversion tracks, resume reviews, and corporate referrals.' }
+  {
+    step: "01",
+    title: "Enrollment Process",
+    desc: "Select your preferred duration tier (1, 3, or 6 Months) and submit your registration details.",
+  },
+  {
+    step: "02",
+    title: "Offer Letter",
+    desc: "Receive your official QorZen Internship Offer Letter within 24 hours of verification.",
+  },
+  {
+    step: "03",
+    title: "Introduction Session",
+    desc: "Join the live orientation with your technical mentor, industry team leads, and co-interns.",
+  },
+  {
+    step: "04",
+    title: "Elementary Task",
+    desc: "Complete an initial baseline assignment to benchmark your current skill set and tool proficiency.",
+  },
+  {
+    step: "05",
+    title: "Live Projects",
+    desc: "Work on actual corporate client deliverables, software repos, or real-time business campaigns.",
+  },
+  {
+    step: "06",
+    title: "Certification & LOR",
+    desc: "Receive your QorZen Verified Internship Certificate and official Letter of Recommendation (LOR).",
+  },
+  {
+    step: "07",
+    title: "Career Growth",
+    desc: "Access PPO (Pre-Placement Offer) conversion tracks, resume reviews, and corporate referrals.",
+  },
 ];
 
 const performanceBenefits = [
-  { icon: DollarSign, title: 'Stipend & Rewards', desc: 'Performance-based monthly stipend incentives for top-performing interns.' },
-  { icon: UserCheck, title: 'Job Opportunity & PPO', desc: 'Direct placement pathways and full-time hiring opportunities with QorZen network partners.' },
-  { icon: ShieldCheck, title: '1-on-1 Mentorship', desc: 'Weekly code reviews and direct guidance from senior architects and tech leaders.' }
+  {
+    icon: DollarSign,
+    title: "Stipend & Rewards",
+    desc: "Performance-based monthly stipend incentives for top-performing interns.",
+  },
+  {
+    icon: UserCheck,
+    title: "Job Opportunity & PPO",
+    desc: "Direct placement pathways and full-time hiring opportunities with QorZen network partners.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "1-on-1 Mentorship",
+    desc: "Weekly code reviews and direct guidance from senior architects and tech leaders.",
+  },
 ];
 
 const learningBenefits = [
-  { icon: BookOpen, title: 'Real Live Projects', desc: 'Hands-on production codebase experience instead of artificial theoretical assignments.' },
-  { icon: Award, title: 'Verified Certification', desc: 'Industry-recognized QorZen Internship Certificate with QR verification.' },
-  { icon: CheckCircle2, title: 'Official LOR', desc: 'Customized Letter of Recommendation for university credits and job applications.' }
+  {
+    icon: BookOpen,
+    title: "Real Live Projects",
+    desc: "Hands-on production codebase experience instead of artificial theoretical assignments.",
+  },
+  {
+    icon: Award,
+    title: "Verified Certification",
+    desc: "Industry-recognized QorZen Internship Certificate with QR verification.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Official LOR",
+    desc: "Customized Letter of Recommendation for university credits and job applications.",
+  },
 ];
 
-const WHATSAPP_NUMBER = '919917529504';
+const WHATSAPP_NUMBER = "919917529504";
+
 
 const InternshipDetails = () => {
   const params = useParams();
   const [searchParams] = useSearchParams();
   const internshipId = params.id || searchParams.get('id');
 
+  const { user } = useAuthContext();   // <-- HERE: top level, alongside the useState calls
+
   const [internship, setInternship] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
-  const [selectedPlanModal, setSelectedPlanModal] = useState(null);
+    const [selectedPlanModal, setSelectedPlanModal] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
   const [cvFile, setCvFile] = useState(null);
   const [cvError, setCvError] = useState(null);
@@ -75,7 +136,9 @@ const InternshipDetails = () => {
   useEffect(() => {
     if (submittedApplication) {
       getPaymentConfig()
-        .then((res) => setRazorpayEnabled(res.data?.data?.razorpayEnabled || false))
+        .then((res) =>
+          setRazorpayEnabled(res.data?.data?.razorpayEnabled || false),
+        )
         .catch(() => setRazorpayEnabled(false));
     }
   }, [submittedApplication]);
@@ -84,7 +147,7 @@ const InternshipDetails = () => {
     let cancelled = false;
     const fetchInternship = async () => {
       if (!internshipId) {
-        setFetchError('No internship specified.');
+        setFetchError("No internship specified.");
         setLoading(false);
         return;
       }
@@ -97,8 +160,8 @@ const InternshipDetails = () => {
         if (!cancelled) {
           setFetchError(
             err.response?.status === 404
-              ? 'This internship could not be found. It may have been removed.'
-              : 'Could not load this internship. Please try again shortly.'
+              ? "This internship could not be found. It may have been removed."
+              : "Could not load this internship. Please try again shortly.",
           );
         }
       } finally {
@@ -106,13 +169,18 @@ const InternshipDetails = () => {
       }
     };
     fetchInternship();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [internshipId]);
 
   if (loading) {
     return (
       <div className="internship-details-page">
-        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+        <div
+          className="container"
+          style={{ padding: "4rem 0", textAlign: "center" }}
+        >
           <p>Loading internship...</p>
         </div>
       </div>
@@ -122,58 +190,75 @@ const InternshipDetails = () => {
   if (fetchError || !internship) {
     return (
       <div className="internship-details-page">
-        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-          <h2>{fetchError || 'Internship not found'}</h2>
+        <div
+          className="container"
+          style={{ padding: "4rem 0", textAlign: "center" }}
+        >
+          <h2>{fetchError || "Internship not found"}</h2>
           <Link to="/internship">Back to all internships</Link>
         </div>
       </div>
     );
   }
 
-  const { title, category, tag, description, price1Month, price3Month, price6Month, tools = [] } = internship;
+  const {
+    title,
+    category,
+    tag,
+    description,
+    price1Month,
+    price3Month,
+    price6Month,
+    tools = [],
+  } = internship;
 
   // Real (charged) prices come straight from the DB fields above and are
   // NEVER modified — same rule as Course/Training. The struck-through
   // "original" price shown here is a pure marketing display: it's
   // reverse-computed so that it always shows exactly 80% OFF against the
   // real price (original = real ÷ 0.2 = real × 5), not a hardcoded number.
-  const formatINR = (amount) => `₹${Number(amount || 0).toLocaleString("en-IN")}`;
-  const originalFromReal = (realPrice) => formatINR(Math.round((realPrice || 0) * 5));
+  const formatINR = (amount) =>
+    `₹${Number(amount || 0).toLocaleString("en-IN")}`;
+  const originalFromReal = (realPrice) =>
+    formatINR(Math.round((realPrice || 0) * 5));
 
   const durationCards = [
     {
-      duration: '1 Month',
-      badge: '80% OFF',
+      duration: "1 Month",
+      badge: "80% OFF",
       originalPrice: originalFromReal(price1Month),
       discountPrice: formatINR(price1Month),
-      mode: 'Online',
-      subtext: 'Perfect for quick skill development & baseline project experience.',
-      popular: false
+      mode: "Online",
+      subtext:
+        "Perfect for quick skill development & baseline project experience.",
+      popular: false,
     },
     {
-      duration: '3 Months',
-      badge: '80% OFF',
+      duration: "3 Months",
+      badge: "80% OFF",
       originalPrice: originalFromReal(price3Month),
       discountPrice: formatINR(price3Month),
-      mode: 'Online',
-      subtext: 'Ideal for in-depth learning, real client projects, and full certification.',
-      popular: true
+      mode: "Online",
+      subtext:
+        "Ideal for in-depth learning, real client projects, and full certification.",
+      popular: true,
     },
     {
-      duration: '6 Months',
-      badge: '80% OFF',
+      duration: "6 Months",
+      badge: "80% OFF",
       originalPrice: originalFromReal(price6Month),
       discountPrice: formatINR(price6Month),
-      mode: 'Online',
-      subtext: 'Complete professional experience with LOR, performance stipend & PPO track.',
-      popular: false
-    }
+      mode: "Online",
+      subtext:
+        "Complete professional experience with LOR, performance stipend & PPO track.",
+      popular: false,
+    },
   ];
 
   const openApplyModal = (plan) => {
     setSubmitError(null);
     setSubmittedApplication(null);
-    setFormData({ name: '', email: '', phone: '' });
+    setFormData({ name: "", email: "", phone: "" });
     setCvFile(null);
     setEnrollError(null);
     setEnrollRequest(null);
@@ -193,11 +278,11 @@ const InternshipDetails = () => {
   // too so a wrong file type is caught the moment it's picked, not after
   // a failed submit round-trip.
   const ALLOWED_CV_TYPES = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ];
-  const ALLOWED_CV_EXTENSIONS = ['.pdf', '.doc', '.docx'];
+  const ALLOWED_CV_EXTENSIONS = [".pdf", ".doc", ".docx"];
 
   const handleCvChange = (e) => {
     const file = e.target.files[0] || null;
@@ -207,12 +292,14 @@ const InternshipDetails = () => {
       return;
     }
     const nameLower = file.name.toLowerCase();
-    const hasAllowedExtension = ALLOWED_CV_EXTENSIONS.some((ext) => nameLower.endsWith(ext));
+    const hasAllowedExtension = ALLOWED_CV_EXTENSIONS.some((ext) =>
+      nameLower.endsWith(ext),
+    );
     const hasAllowedType = ALLOWED_CV_TYPES.includes(file.type);
     if (!hasAllowedExtension && !hasAllowedType) {
       setCvFile(null);
-      setCvError('Please upload your CV in PDF or DOC format.');
-      e.target.value = '';
+      setCvError("Please upload your CV in PDF or DOC format.");
+      e.target.value = "";
       return;
     }
     setCvFile(file);
@@ -223,25 +310,33 @@ const InternshipDetails = () => {
     e.preventDefault();
     setSubmitError(null);
 
-    if (!cvFile) {
-      setSubmitError('Please attach your CV to apply.');
+    if (!user) {
+      setSubmitError("AUTH_REQUIRED");
       return;
     }
+
+    if (!cvFile) {
+      setSubmitError("Please attach your CV to apply.");
+      return;
+    }
+    // ...rest unchanged
 
     setIsSubmitting(true);
     try {
       const data = new FormData();
-      data.append('name', formData.name);
-      data.append('email', formData.email);
-      data.append('phone', formData.phone);
-      data.append('selectedDuration', selectedPlanModal.duration);
-      data.append('cv', cvFile);
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("phone", formData.phone);
+      data.append("selectedDuration", selectedPlanModal.duration);
+      data.append("cv", cvFile);
 
       const res = await applyToInternship(internship._id, data);
       setSubmittedApplication(res.data.data);
     } catch (err) {
       setSubmitError(
-        err.response?.data?.error || err.response?.data?.message || 'Something went wrong. Please try again.',
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Something went wrong. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -266,7 +361,7 @@ const InternshipDetails = () => {
   // Manual path: logs an enrollment request (so admin sees & can confirm it),
   // then opens WhatsApp or the mail client. Still opens the link even if the
   // student isn't logged in (request just won't be tracked in that case).
-  const handleManualContact = async (channel) => {
+   const handleManualContact = async (channel) => {
     setEnrollError(null);
     try {
       const res = await createEnrollmentRequest({
@@ -277,13 +372,16 @@ const InternshipDetails = () => {
         contactChannel: channel,
       });
       setEnrollRequest(res.data.data);
-    } catch (err) {
-      if (err.response?.status !== 401) console.error('Enrollment request failed:', err);
-    } finally {
       window.open(channel === 'whatsapp' ? buildWhatsAppUrl() : buildMailtoUrl(), '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setEnrollError('AUTH_REQUIRED');
+      } else {
+        console.error('Enrollment request failed:', err);
+        setEnrollError(err.response?.data?.message || 'Something went wrong. Please try again.');
+      }
     }
   };
-
   // Razorpay path: create the enrollment request, open checkout, verify on success —
   // access is granted automatically, no admin step needed (mirrors course/training flow).
   const handlePayOnline = async () => {
@@ -291,25 +389,32 @@ const InternshipDetails = () => {
     setPaymentInProgress(true);
     try {
       const reqRes = await createEnrollmentRequest({
-        itemType: 'internship',
+        itemType: "internship",
         itemId: internship._id,
         applicationId: submittedApplication._id,
-        method: 'razorpay',
+        method: "razorpay",
       });
       const enrollmentRequestId = reqRes.data.data._id;
       const amount = reqRes.data.data.amount;
 
-      const orderRes = await createRazorpayOrder({ amount, enrollmentRequestId });
+      const orderRes = await createRazorpayOrder({
+        amount,
+        enrollmentRequestId,
+      });
       const { orderId } = orderRes.data.data;
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         order_id: orderId,
         amount: amount * 100,
-        currency: 'INR',
-        name: 'QorZen',
+        currency: "INR",
+        name: "QorZen",
         description: `Internship enrollment: ${title}`,
-        prefill: { name: formData.name, email: formData.email, contact: formData.phone },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
+        },
         handler: async (response) => {
           try {
             await verifyRazorpayPayment({
@@ -318,9 +423,11 @@ const InternshipDetails = () => {
               razorpaySignature: response.razorpay_signature,
               enrollmentRequestId,
             });
-            setEnrollRequest({ ...reqRes.data.data, status: 'confirmed' });
+            setEnrollRequest({ ...reqRes.data.data, status: "confirmed" });
           } catch (verifyErr) {
-            setEnrollError('Payment verification failed. Please contact support.');
+            setEnrollError(
+              "Payment verification failed. Please contact support.",
+            );
           } finally {
             setPaymentInProgress(false);
           }
@@ -331,8 +438,9 @@ const InternshipDetails = () => {
     } catch (err) {
       setEnrollError(
         err.response?.status === 401
-          ? 'AUTH_REQUIRED'
-          : err.response?.data?.message || 'Something went wrong. Please try again.'
+          ? "AUTH_REQUIRED"
+          : err.response?.data?.message ||
+              "Something went wrong. Please try again.",
       );
       setPaymentInProgress(false);
     }
@@ -399,7 +507,10 @@ const InternshipDetails = () => {
           <div className="section-header center">
             <span className="section-subtitle">Flexible Duration Options</span>
             <h2 className="section-title">Select Your Internship Duration</h2>
-            <p className="section-desc">Choose the program duration that fits your learning pace and career goals.</p>
+            <p className="section-desc">
+              Choose the program duration that fits your learning pace and
+              career goals.
+            </p>
           </div>
 
           <div className="duration-pricing-grid">
@@ -411,9 +522,11 @@ const InternshipDetails = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 whileHover={{ y: -6 }}
-                className={`duration-card ${plan.popular ? 'popular' : ''}`}
+                className={`duration-card ${plan.popular ? "popular" : ""}`}
               >
-                {plan.popular && <span className="popular-badge">Most Popular</span>}
+                {plan.popular && (
+                  <span className="popular-badge">Most Popular</span>
+                )}
 
                 <div className="duration-card-header">
                   <span className="duration-title">{plan.duration}</span>
@@ -439,9 +552,13 @@ const InternshipDetails = () => {
                   </div>
                   <div className="duration-feature-item">
                     <Check size={16} className="check-icon" />
-                    <span>{plan.duration === '1 Month' ? 'Basic Portfolio Project' : 'Advanced Client Projects'}</span>
+                    <span>
+                      {plan.duration === "1 Month"
+                        ? "Basic Portfolio Project"
+                        : "Advanced Client Projects"}
+                    </span>
                   </div>
-                  {plan.duration !== '1 Month' && (
+                  {plan.duration !== "1 Month" && (
                     <div className="duration-feature-item">
                       <Check size={16} className="check-icon" />
                       <span>Official Letter of Recommendation (LOR)</span>
@@ -468,7 +585,9 @@ const InternshipDetails = () => {
           <div className="section-header center">
             <span className="section-subtitle">Structured Roadmap</span>
             <h2 className="section-title">Your Internship Journey</h2>
-            <p className="section-desc">7 step-by-step milestones from day one to career growth.</p>
+            <p className="section-desc">
+              7 step-by-step milestones from day one to career growth.
+            </p>
           </div>
 
           <div className="vertical-timeline-container">
@@ -477,7 +596,7 @@ const InternshipDetails = () => {
                 key={stepItem.step}
                 initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
                 className="timeline-item"
               >
@@ -498,7 +617,9 @@ const InternshipDetails = () => {
           <div className="section-header center">
             <span className="section-subtitle">Program Perks</span>
             <h2 className="section-title">What You'll Get</h2>
-            <p className="section-desc">Comprehensive career advantages designed for student success.</p>
+            <p className="section-desc">
+              Comprehensive career advantages designed for student success.
+            </p>
           </div>
 
           <div className="benefits-two-col-grid">
@@ -512,7 +633,9 @@ const InternshipDetails = () => {
                   const Icon = b.icon;
                   return (
                     <div key={b.title} className="benefit-card">
-                      <div className="benefit-icon-box"><Icon size={20} /></div>
+                      <div className="benefit-icon-box">
+                        <Icon size={20} />
+                      </div>
                       <div>
                         <h4 className="benefit-title">{b.title}</h4>
                         <p className="benefit-desc">{b.desc}</p>
@@ -533,7 +656,9 @@ const InternshipDetails = () => {
                   const Icon = b.icon;
                   return (
                     <div key={b.title} className="benefit-card">
-                      <div className="benefit-icon-box"><Icon size={20} /></div>
+                      <div className="benefit-icon-box">
+                        <Icon size={20} />
+                      </div>
                       <div>
                         <h4 className="benefit-title">{b.title}</h4>
                         <p className="benefit-desc">{b.desc}</p>
@@ -577,13 +702,26 @@ const InternshipDetails = () => {
 
                   <h2 className="modal-title">Apply for {title}</h2>
                   <p className="modal-subtitle">
-                    Selected Plan: <strong>{selectedPlanModal.duration} Duration</strong> at{' '}
-                    <strong className="modal-highlight-price">{selectedPlanModal.discountPrice}</strong> ({selectedPlanModal.badge})
+                    Selected Plan:{" "}
+                    <strong>{selectedPlanModal.duration} Duration</strong> at{" "}
+                    <strong className="modal-highlight-price">
+                      {selectedPlanModal.discountPrice}
+                    </strong>{" "}
+                    ({selectedPlanModal.badge})
                   </p>
 
-                  {submitError && (
+                                    {submitError && (
                     <div className="enrollment-error-banner" role="alert">
-                      <span>{submitError}</span>
+                      {submitError === "AUTH_REQUIRED" ? (
+                        <span>
+                          Please sign in to apply for this internship.{" "}
+                          <a href="/signin" className="enrollment-error-link">
+                            Sign In
+                          </a>
+                        </span>
+                      ) : (
+                        <span>{submitError}</span>
+                      )}
                     </div>
                   )}
 
@@ -598,11 +736,16 @@ const InternshipDetails = () => {
                     </div>
                     <div className="summary-row total">
                       <span>Total Amount:</span>
-                      <strong className="modal-total-price">{selectedPlanModal.discountPrice}</strong>
+                      <strong className="modal-total-price">
+                        {selectedPlanModal.discountPrice}
+                      </strong>
                     </div>
                   </div>
 
-                  <form onSubmit={handleSubmitApplication} className="enrollment-entry-form">
+                  <form
+                    onSubmit={handleSubmitApplication}
+                    className="enrollment-entry-form"
+                  >
                     <div className="form-field-wrap">
                       <label htmlFor="name">Full Name</label>
                       <div className="input-with-icon">
@@ -669,7 +812,14 @@ const InternshipDetails = () => {
                         />
                       </div>
                       {cvError && (
-                        <p className="field-error-text" style={{ color: '#b91c1c', fontSize: '0.78rem', marginTop: '0.3rem' }}>
+                        <p
+                          className="field-error-text"
+                          style={{
+                            color: "#b91c1c",
+                            fontSize: "0.78rem",
+                            marginTop: "0.3rem",
+                          }}
+                        >
                           {cvError}
                         </p>
                       )}
@@ -680,7 +830,11 @@ const InternshipDetails = () => {
                       disabled={isSubmitting}
                       className="btn-modal-primary"
                     >
-                      <span>{isSubmitting ? 'Submitting Application...' : 'Confirm & Submit Application'}</span>
+                      <span>
+                        {isSubmitting
+                          ? "Submitting Application..."
+                          : "Confirm & Submit Application"}
+                      </span>
                       <ArrowRight size={17} />
                     </button>
                   </form>
@@ -703,8 +857,11 @@ const InternshipDetails = () => {
 
                   <h2 className="success-title">Application Submitted!</h2>
                   <p className="success-subtitle">
-                    Thank you, <strong className="text-highlight">{formData.name}</strong>. Your application for{' '}
-                    <strong className="text-highlight">{title}</strong> ({selectedPlanModal.duration}) has been received.
+                    Thank you,{" "}
+                    <strong className="text-highlight">{formData.name}</strong>.
+                    Your application for{" "}
+                    <strong className="text-highlight">{title}</strong> (
+                    {selectedPlanModal.duration}) has been received.
                   </p>
 
                   <div className="order-summary-box">
@@ -726,21 +883,34 @@ const InternshipDetails = () => {
                     </div>
                   </div>
 
-                  {enrollRequest?.status === 'confirmed' ? (
+                  {enrollRequest?.status === "confirmed" ? (
                     <p className="next-steps-text">
-                      Payment successful! Your access has been granted — check your dashboard and email for onboarding details.
+                      Payment successful! Your access has been granted — check
+                      your dashboard and email for onboarding details.
                     </p>
                   ) : (
                     <>
                       <p className="next-steps-text">
-                        Pay online to enroll instantly, or reach out on WhatsApp / email and our team will confirm your payment and send your offer letter within 24 hours.
+                        Pay online to enroll instantly, or reach out on WhatsApp
+                        / email and our team will confirm your payment and send
+                        your offer letter within 24 hours.
                       </p>
 
                       {enrollError && (
-                        <div className="enrollment-error-banner" role="alert" style={{ marginBottom: '0.6rem' }}>
-                          {enrollError === 'AUTH_REQUIRED' ? (
+                        <div
+                          className="enrollment-error-banner"
+                          role="alert"
+                          style={{ marginBottom: "0.6rem" }}
+                        >
+                          {enrollError === "AUTH_REQUIRED" ? (
                             <span>
-                              Please sign in to pay online. <a href="/signin" className="enrollment-error-link">Sign In</a>
+                              Please sign in to pay online.{" "}
+                              <a
+                                href="/signin"
+                                className="enrollment-error-link"
+                              >
+                                Sign In
+                              </a>
                             </span>
                           ) : (
                             <span>{enrollError}</span>
@@ -753,25 +923,33 @@ const InternshipDetails = () => {
                         disabled={!razorpayEnabled || paymentInProgress}
                         className="btn-confirm-enrollment"
                         style={{
-                          marginBottom: '0.6rem',
-                          ...(razorpayEnabled ? {} : { opacity: 0.5, cursor: 'not-allowed' }),
+                          marginBottom: "0.6rem",
+                          ...(razorpayEnabled
+                            ? {}
+                            : { opacity: 0.5, cursor: "not-allowed" }),
                         }}
                       >
                         <span>
                           {razorpayEnabled
                             ? paymentInProgress
-                              ? 'Processing...'
-                              : 'Pay Online & Enroll Instantly'
-                            : 'Online Payment Not Available (Coming Soon)'}
+                              ? "Processing..."
+                              : "Pay Online & Enroll Instantly"
+                            : "Online Payment Not Available (Coming Soon)"}
                         </span>
                         <ArrowRight size={16} />
                       </button>
 
                       <a
                         href={buildWhatsAppUrl()}
-                        onClick={(e) => { e.preventDefault(); handleManualContact('whatsapp'); }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleManualContact("whatsapp");
+                        }}
                         className="btn-confirm-enrollment"
-                        style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
+                        style={{
+                          marginBottom: "0.6rem",
+                          textDecoration: "none",
+                        }}
                       >
                         <span>Continue on WhatsApp</span>
                         <ArrowRight size={16} />
@@ -779,9 +957,15 @@ const InternshipDetails = () => {
 
                       <a
                         href={buildMailtoUrl()}
-                        onClick={(e) => { e.preventDefault(); handleManualContact('email'); }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleManualContact("email");
+                        }}
                         className="btn-confirm-enrollment"
-                        style={{ marginBottom: '0.6rem', textDecoration: 'none' }}
+                        style={{
+                          marginBottom: "0.6rem",
+                          textDecoration: "none",
+                        }}
                       >
                         <span>Continue via Email</span>
                         <ArrowRight size={16} />
