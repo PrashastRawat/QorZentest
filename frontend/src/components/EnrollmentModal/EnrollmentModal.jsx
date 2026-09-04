@@ -462,7 +462,7 @@ const EnrollmentModal = () => {
                         style={hiddenRadioStyle}
                         disabled={isSubmitting || paymentInProgress}
                       />
-                      <span>Continue on WhatsApp</span>
+                      <span>Continue on WhatsApp for payment</span>
                     </label>
 
                     <label
@@ -561,7 +561,7 @@ const EnrollmentModal = () => {
                     className="btn-confirm-enrollment"
                     style={{ marginBottom: "0.6rem", textDecoration: "none" }}
                   >
-                    <span>Continue on WhatsApp</span>
+                    <span>Continue on WhatsApp for payment</span>
                     <ArrowRight size={16} />
                   </a>
                 </>

@@ -951,7 +951,7 @@ const InternshipDetails = () => {
                           textDecoration: "none",
                         }}
                       >
-                        <span>Continue on WhatsApp</span>
+                        <span>Continue on WhatsApp for payment</span>
                         <ArrowRight size={16} />
                       </a>
 
