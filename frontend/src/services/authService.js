@@ -31,6 +31,9 @@ import {
   signup as apiSignup,
   getMe as apiGetMe,
   logout as apiLogout,
+  forgotPassword as apiForgotPassword,
+  resetPassword as apiResetPassword,
+  changePassword as apiChangePassword,
 } from "../api/authApi";
 
 // Only ever caches the (non-sensitive) user object for instant UI on
@@ -174,13 +177,49 @@ export const authService = {
     return user?.role === "admin";
   },
 
+  // Step 1: request a reset link by email. Backend always returns a generic
+  // success message (even for unknown emails) so this can't be used to probe
+  // which addresses are registered.
   resetPassword: async (email) => {
-    await new Promise((resolve) => setTimeout(resolve, 400));
     if (!email) throw new Error("Please enter a valid email address.");
-    return {
-      success: true,
-      message: `Password reset instructions have been dispatched to ${email}.`,
-    };
+    try {
+      const res = await apiForgotPassword(email);
+      return {
+        success: true,
+        message: res.data?.message || `If an account exists for ${email}, a reset link has been sent.`,
+      };
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || error.message || "Could not send reset email. Please try again.",
+      );
+    }
+  },
+
+  // Step 2: called from the /reset-password/:token page once the user picks a new password.
+  confirmPasswordReset: async (token, newPassword) => {
+    try {
+      const res = await apiResetPassword(token, newPassword);
+      return { success: true, message: res.data?.message || "Password has been reset." };
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || error.message || "Reset link is invalid or has expired.",
+      );
+    }
+  },
+
+  // Used from the profile page. currentPassword is omitted for a Google user
+  // setting a password for the first time.
+  changePassword: async ({ currentPassword, newPassword }) => {
+    try {
+      const res = await apiChangePassword({ currentPassword, newPassword });
+      const user = authService.getCurrentUser();
+      if (user) cacheUser({ ...user, authProvider: user.authProvider, hasPassword: true });
+      return { success: true, message: res.data?.message || "Password updated." };
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || error.message || "Could not update password.",
+      );
+    }
   },
 
   updateProfile: async (updatedData) => {

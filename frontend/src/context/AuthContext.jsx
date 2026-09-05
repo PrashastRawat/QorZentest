@@ -117,6 +117,14 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = user?.role === "admin";
   const isStudent = user?.role === "student" || (!isAdmin && isAuthenticated);
 
+  // Re-asks the backend who's logged in — used after changing/setting a
+  // password so `user.hasPassword` reflects reality without a full page reload.
+  const refreshUser = async () => {
+    const confirmedUser = await authService.restoreSession();
+    setUser(confirmedUser);
+    return confirmedUser;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -134,6 +142,7 @@ export const AuthProvider = ({ children }) => {
         adminLogout,
         saveAuth,
         updateUser,
+        refreshUser,
       }}
     >
       {children}

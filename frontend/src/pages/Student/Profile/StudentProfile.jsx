@@ -6,6 +6,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useAuthContext } from '../../../context/AuthContext';
+import PasswordSecuritySection from '../../../components/Profile/PasswordSecuritySection';
 
 const StudentProfile = () => {
   const { user } = useAuthContext();
@@ -147,6 +148,8 @@ const StudentProfile = () => {
           </a>
         </div>
       </div>
+
+      <PasswordSecuritySection />
     </div>
   );
 };

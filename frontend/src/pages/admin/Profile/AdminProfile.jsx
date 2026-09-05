@@ -11,6 +11,7 @@ import {
   User
 } from 'lucide-react';
 import { useAuthContext } from '../../../context/AuthContext';
+import PasswordSecuritySection from '../../../components/Profile/PasswordSecuritySection';
 
 const AdminProfile = () => {
   const { user, updateUser } = useAuthContext();
@@ -152,6 +153,8 @@ const AdminProfile = () => {
           </button>
         </div>
       </form>
+
+      <PasswordSecuritySection />
     </div>
   );
 };

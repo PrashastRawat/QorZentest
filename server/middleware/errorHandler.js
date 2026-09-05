@@ -3,7 +3,13 @@ const errorMiddleware = (err, req, res, next) => {
         let error = { ...err };
         error.message = err.message;
 
-        console.error(err);
+        // A 401 here almost always just means "no one is logged in yet" —
+        // GET /api/auth/me gets called on every page load to check for a
+        // session, so this fires constantly and isn't a real error.
+        // Only dump the noisy stack trace for genuine server-side failures.
+        if (!err.statusCode || err.statusCode >= 500) {
+            console.error(err);
+        }
 
         // Mongoose bad ObjectId
         if (err.name === 'CastError') {

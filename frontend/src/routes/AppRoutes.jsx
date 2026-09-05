@@ -20,6 +20,7 @@ import TermsAndConditions from "../pages/Legal/TermsAndConditions";
 // Unified Authentication Pages
 import SignIn from "../pages/Auth/SignIn/SignIn";
 import SignUp from "../pages/Auth/SignUp/SignUp";
+import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 
 // Student Classroom Portal Setup (Mock Auth & Protected Routes)
 import StudentProtectedRoute from "./StudentProtectedRoute";
@@ -79,6 +80,7 @@ const AppRoutes = () => {
       <Route path="/auth/login" element={<SignIn />} />
       <Route path="/auth/signup" element={<SignUp />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
 
       {/* ================= 2. PROTECTED STUDENT CLASSROOM PORTAL ================= */}
       <Route

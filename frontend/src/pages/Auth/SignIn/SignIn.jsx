@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
-import { Sparkles, Mail, Lock, ArrowRight, CheckCircle2, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Sparkles, Mail, Lock, ArrowRight, CheckCircle2, ShieldCheck, AlertCircle, Eye, EyeOff, X } from 'lucide-react';
 import { useAuthContext } from '../../../context/AuthContext';
 import { navigateToDashboard } from '../../../utils/navigation';
+import authService from '../../../services/authService';
 import './SignIn.css';
 
 
@@ -22,6 +23,32 @@ const SignIn = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState('');
+  const [resetError, setResetError] = useState('');
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setResetError('');
+    try {
+      const res = await authService.resetPassword(resetEmail);
+      setResetSuccess(res.message);
+    } catch (err) {
+      setResetError(err.message);
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const closeForgotModal = () => {
+    setShowForgotModal(false);
+    setResetSuccess('');
+    setResetError('');
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -36,13 +63,6 @@ const SignIn = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
-    // Logging payload prepped for MERN backend API (e.g. POST /api/auth/login)
-    console.log('Ready for Node/Express API', {
-      endpoint: '/api/auth/login',
-      payload: formData,
-      timestamp: new Date().toISOString()
-    });
 
     try {
       const res = await login({
@@ -135,7 +155,17 @@ const SignIn = () => {
           <div className="form-group">
             <div className="label-flex">
               <label className="form-label" htmlFor="password">Password</label>
-              <a href="#" className="forgot-password-link" onClick={(e) => { e.preventDefault(); alert('Password reset instructions have been dispatched to your email.'); }}>Forgot password?</a>
+              <a
+                href="#"
+                className="forgot-password-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setResetEmail(formData.email);
+                  setShowForgotModal(true);
+                }}
+              >
+                Forgot password?
+              </a>
             </div>
             <div className="input-input-icon-wrap" style={{ position: 'relative' }}>
               <Lock size={18} className="input-icon" />
@@ -202,6 +232,61 @@ const SignIn = () => {
           </div>
         </div>
       </motion.div>
+
+      {showForgotModal && (
+        <div
+          onClick={closeForgotModal}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: '12px', padding: '1.5rem', width: '100%', maxWidth: '380px' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Reset Password</h3>
+              <button onClick={closeForgotModal} style={{ background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Close">
+                <X size={18} />
+              </button>
+            </div>
+
+            {resetError && (
+              <div style={{ marginBottom: '0.85rem', padding: '0.6rem 0.8rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', borderRadius: '8px', fontSize: '0.8rem' }}>
+                {resetError}
+              </div>
+            )}
+
+            {!resetSuccess ? (
+              <form onSubmit={handleForgotSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
+                  Enter your account email and we'll send you a link to reset your password.
+                </p>
+                <div className="input-input-icon-wrap">
+                  <Mail size={16} className="input-icon" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+                <button type="submit" disabled={resetLoading} className="btn-auth-submit">
+                  <span>{resetLoading ? 'Sending...' : 'Send Reset Link'}</span>
+                </button>
+              </form>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
+                <CheckCircle2 size={36} color="#16a34a" style={{ margin: '0 auto 0.75rem auto' }} />
+                <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>{resetSuccess}</p>
+                <button onClick={closeForgotModal} className="btn-auth-submit" style={{ marginTop: '1rem' }}>
+                  Back to Sign In
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
